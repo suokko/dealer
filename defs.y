@@ -4,7 +4,7 @@
 
 #ifdef WIN32
 
-// void * _alloca( size_t ) ;
+/* void * _alloca( size_t ) ; */
 #define alloca _alloca
 
 #endif /* WIN32 */
@@ -49,23 +49,23 @@ void new_var(char *s, struct tree *t) ;
         char    y_distr[4];
 }
 
-%left QUERY, COLON
+%left QUERY COLON
 %left OR2
 %left AND2
-%left CMPEQ, CMPNE
-%left CMPLT, CMPLE, CMPGT, CMPGE
-%left ARPLUS, ARMINUS
-%left ARTIMES, ARDIVIDE, ARMOD
+%left CMPEQ CMPNE
+%left CMPLT CMPLE CMPGT CMPGE
+%left ARPLUS ARMINUS
+%left ARTIMES ARDIVIDE ARMOD
 %nonassoc NOT
 
-%token GENERATE, PRODUCE, HCP, SHAPE, ANY, EXCEPT, CONDITION, ACTION
-%token PRINT, PRINTALL,PRINTEW, PRINTPBN, PRINTCOMPACT, PRINTONELINE
-%token AVERAGE, HASCARD, FREQUENCY, PREDEAL, POINTCOUNT, ALTCOUNT
-%token CONTROL, LOSER, DEALER, VULNERABLE
-%token QUALITY, CCCC
-%token TRICKS, NOTRUMPS, NORTHSOUTH, EASTWEST
-%token EVALCONTRACT, ALL, NONE, SCORE, IMPS, RND
-%token PT0,PT1,PT2,PT3,PT4,PT5,PT6,PT7,PT8,PT9,PRINTES
+%token GENERATE PRODUCE HCP SHAPE ANY EXCEPT CONDITION ACTION
+%token PRINT PRINTALL PRINTEW PRINTPBN PRINTCOMPACT PRINTONELINE
+%token AVERAGE HASCARD FREQUENCY PREDEAL POINTCOUNT ALTCOUNT
+%token CONTROL LOSER DEALER VULNERABLE
+%token QUALITY CCCC
+%token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
+%token EVALCONTRACT ALL NONE SCORE IMPS RND
+%token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
 %token <y_int> NUMBER
 %token <y_str> HOLDING
@@ -77,10 +77,10 @@ void new_var(char *s, struct tree *t) ;
 %token <y_int> SUIT
 %token <y_int> CARD
 %token <y_int> CONTRACT
-%token <y_distr> DISTR, DISTR_OR_NUMBER
+%token <y_distr> DISTR DISTR_OR_NUMBER
 
 %type <y_tree>  expr
-%type <y_int> number, compass, printlist, shlprefix, any, vulnerable
+%type <y_int> number compass printlist shlprefix any vulnerable
 %type <y_distr> shape
 %type <y_action> actionlist action
 %type <y_expr> exprlist
