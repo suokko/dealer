@@ -51,6 +51,7 @@ void yyerror (char *);
 #define DEFAULT_MODE STAT_MODE
 #define RANDBITS 16
 #define NRANDVALS (1<<RANDBITS)
+#define NRANDMASK (NRANDVALS-1)
 
 #ifdef MSDOS
   char *crlf = "\r\n";
@@ -866,7 +867,7 @@ int shuffle (deal d) {
              /* Upper bits most random */
              k = (RANDOM () >> (31 - RANDBITS));
 #endif /* STD_RAND */
-             j = zero52[k];
+             j = zero52[k & NRANDMASK];
            } while (j == 0xFF);
         } while (stacked_pack[j] != NO_CARD);
 
