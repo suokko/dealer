@@ -423,14 +423,16 @@ struct tree *var_lookup(char *s, int mustbethere)
 void new_var(char *s, struct tree *t)
 {
         struct var *v;
+        struct tree *var;
         /* char *mycalloc(); */
 
         if (var_lookup(s, 0)!=0)
                 yyerror("redefined variable");
         v = (struct var *) mycalloc(1, sizeof(*v));
+        var = newtree(TRT_VAR, t, NULL, -1, 0);
         v->v_next = vars;
         v->v_ident = s;
-        v->v_tree = t;
+        v->v_tree = var;
         vars = v;
 }
 

@@ -1103,6 +1103,12 @@ int evaltree (struct tree *t) {
       assert (0);
     case TRT_NUMBER:
       return t->tr_int1;
+    case TRT_VAR:
+      if (ngen != t->tr_int1) {
+        t->tr_int2 = evaltree(t->tr_leaf1);
+        t->tr_int1 = ngen;
+      }
+      return t->tr_int2;
     case TRT_AND2:
       return evaltree (t->tr_leaf1) && evaltree (t->tr_leaf2);
     case TRT_OR2:
