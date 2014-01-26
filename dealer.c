@@ -87,11 +87,11 @@ double average = 0.0;
 
 /* Various handshapes can be asked for. For every shape the user is
    interested in a number is generated. In every distribution that fits that
-   shape the corresponding bit is set in the distrbitmaps 4-dimensional array.
+   shape the corresponding bit is set in the distrbitmaps 3-dimensional array.
    This makes looking up a shape a small constant cost.
 */
 #define MAXDISTR 8*sizeof(int)
-int ***distrbitmaps[14];
+int **distrbitmaps[14];
 
 int results[2][5][14];
 int use_compass[NSUITS];
@@ -398,21 +398,17 @@ char * mycalloc (unsigned nel, unsigned siz) {
 }
 
 void initdistr () {
-  int ***p4, **p3, *p2;
-  int clubs, diamonds, hearts;
+  int **p4, *p3;
+  int clubs, diamonds;
 
   /* Allocate the four dimensional pointer array */
 
   for (clubs = 0; clubs <= 13; clubs++) {
-    p4 = (int ***) mycalloc ((unsigned) 14 - clubs, sizeof (*p4));
+    p4 = (int **) mycalloc ((unsigned) 14 - clubs, sizeof (*p4));
     distrbitmaps[clubs] = p4;
     for (diamonds = 0; diamonds <= 13 - clubs; diamonds++) {
-      p3 = (int **) mycalloc ((unsigned) 14 - clubs - diamonds, sizeof (*p3));
+      p3 = (int *) mycalloc ((unsigned) 14 - clubs - diamonds, sizeof (*p3));
       p4[diamonds] = p3;
-      for (hearts = 0; hearts <= 13 - clubs - diamonds; hearts++) {
-        p2 = (int *) mycalloc ((unsigned) 14 - clubs - diamonds - hearts, sizeof (*p2));
-        p3[hearts] = p2;
-      }
     }
   }
 }
@@ -420,9 +416,9 @@ void initdistr () {
 void setshapebit (int cl, int di, int ht, int sp, int msk, int excepted) {
 
   if (excepted)
-    distrbitmaps[cl][di][ht][sp] &= ~msk;
+    distrbitmaps[cl][di][ht] &= ~msk;
   else
-    distrbitmaps[cl][di][ht][sp] |= msk;
+    distrbitmaps[cl][di][ht] |= msk;
 }
 
 void newpack (deal d) {
@@ -654,8 +650,7 @@ void analyze (deal d, struct handstat *hsbase) {
 
     hs->hs_bits = distrbitmaps[hs->hs_length[SUIT_CLUB]]
       [hs->hs_length[SUIT_DIAMOND]]
-      [hs->hs_length[SUIT_HEART]]
-      [hs->hs_length[SUIT_SPADE]];
+      [hs->hs_length[SUIT_HEART]];
   } /* end for each player */
 }
 
@@ -1079,13 +1074,11 @@ void exh_analyze_vec (int high_vec, int low_vec, struct handstat *hs) {
   hs0->hs_bits = distrbitmaps
     [hs0->hs_length[SUIT_CLUB]]
     [hs0->hs_length[SUIT_DIAMOND]]
-    [hs0->hs_length[SUIT_HEART]]
-    [hs0->hs_length[SUIT_SPADE]];
+    [hs0->hs_length[SUIT_HEART]];
   hs1->hs_bits = distrbitmaps
     [hs1->hs_length[SUIT_CLUB]]
     [hs1->hs_length[SUIT_DIAMOND]]
-    [hs1->hs_length[SUIT_HEART]]
-    [hs1->hs_length[SUIT_SPADE]];
+    [hs1->hs_length[SUIT_HEART]];
 }
 
 /* End of Specific routines for EXHAUST_MODE */
