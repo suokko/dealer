@@ -29,21 +29,21 @@ int pointcount_index;    /* global variable for pointcount communication */
 
 int shapeno ;
 
-struct tree *var_lookup(char *s, int mustbethere) ;
-struct action *newaction(int type, struct tree * p1, char * s1, int, struct tree * ) ;
-struct tree *newtree (int, struct tree*, struct tree*, int, int);
-struct expr  *newexpr(struct tree* tr1, char* ch1, struct expr* ex1);
+struct treebase *var_lookup(char *s, int mustbethere) ;
+struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
+struct treebase *newtree (int, struct treebase*, struct treebase*, int, int);
+struct expr  *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1);
 void bias_deal(int suit, int compass, int length) ;
 void predeal_holding(int compass, char *holding) ;
 void insertshape(char s[4], int any, int neg_shape) ;
-void new_var(char *s, struct tree *t) ;
+void new_var(char *s, struct treebase *t) ;
 %}
 
 
 %union {
         int     y_int;
         char    *y_str;
-        struct tree *y_tree;
+        struct treebase *y_treebase;
         struct action *y_action;
         struct expr   *y_expr;
         char    y_distr[4];
@@ -79,7 +79,7 @@ void new_var(char *s, struct tree *t) ;
 %token <y_int> CONTRACT
 %token <y_distr> DISTR DISTR_OR_NUMBER
 
-%type <y_tree>  expr
+%type <y_treebase>  expr
 %type <y_int> number compass printlist shlprefix any vulnerable
 %type <y_distr> shape
 %type <y_action> actionlist action
@@ -113,9 +113,9 @@ def
         | ALTCOUNT number
                 { clearpointcount_alt($2); pointcount_index=12;} pointcountargs
         | CONDITION expr
-                { extern struct tree *decisiontree; decisiontree = $2; }
+                { extern struct treebase *decisiontree; decisiontree = $2; }
         | expr
-                { extern struct tree *decisiontree; decisiontree = $1; }
+                { extern struct treebase *decisiontree; decisiontree = $1; }
         | IDENT '=' expr
                 { new_var($1, $3); }
         | ACTION actionlist
@@ -361,7 +361,7 @@ action
                   $$=newaction(ACT_PRINTPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
                 { will_print++;
-                  $$=newaction(ACT_PRINTES,(struct tree*)$3,0,0, NIL); }
+                  $$=newaction(ACT_PRINTES,(struct treebase*)$3,0,0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
                 { will_print++;
                   $$=newaction(ACT_EVALCONTRACT,0,0,0, NIL);}
@@ -405,10 +405,10 @@ printlist
 struct var {
         struct var *v_next;
         char *v_ident;
-        struct tree *v_tree;
+        struct treebase *v_tree;
 } *vars=0;
 
-struct tree *var_lookup(char *s, int mustbethere)
+struct treebase *var_lookup(char *s, int mustbethere)
 {
         struct var *v;
 
@@ -420,10 +420,10 @@ struct tree *var_lookup(char *s, int mustbethere)
         return 0;
 }
 
-void new_var(char *s, struct tree *t)
+void new_var(char *s, struct treebase *t)
 {
         struct var *v;
-        struct tree *var;
+        struct treebase *var;
         /* char *mycalloc(); */
 
         if (var_lookup(s, 0)!=0)
@@ -519,29 +519,29 @@ int d2n(char s[4]) {
         return atoi(copys);
 }
 
-struct tree *newtree(type, p1, p2, i1, i2)
+struct treebase *newtree(type, p1, p2, i1, i2)
 int type;
-struct tree *p1, *p2;
+struct treebase *p1, *p2;
 int i1,i2;
 {
         /* char *mycalloc(); */
         struct tree *p;
 
         p = (struct tree *) mycalloc(1, sizeof(*p));
-        p->tr_type = type;
+        p->base.tr_type = type;
         p->tr_leaf1 = p1;
         p->tr_leaf2 = p2;
         p->tr_int1 = i1;
         p->tr_int2 = i2;
-        return p;
+        return &p->base;
 }
 
 struct action *newaction(type, p1, s1, i1, p2)
 int type;
-struct tree *p1;
+struct treebase *p1;
 char *s1;
 int i1;
-struct tree *p2;
+struct treebase *p2;
 {
         /* char *mycalloc(); */
         struct action *a;
@@ -555,7 +555,7 @@ struct tree *p2;
         return a;
 }
 
-struct expr *newexpr(struct tree* tr1, char* ch1, struct expr* ex1)
+struct expr *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1)
 {
     struct expr* e;
     e=(struct expr*) mycalloc(1, sizeof(*e));

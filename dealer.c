@@ -99,8 +99,8 @@ int use_vulnerable[NSUITS];
 int nprod, maxproduce;
 int ngen;
 
-struct tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
-struct tree *decisiontree = &defaulttree;
+struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0};
+struct treebase *decisiontree = &defaulttree.base;
 struct action defaultaction = {(struct action *) 0, ACT_PRINTALL};
 struct action *actionlist = &defaultaction;
 unsigned char zero52[NRANDVALS];
@@ -1090,8 +1090,9 @@ int trix (char c) {
   return c - 'A' + 10;
 }
 
-int evaltree (struct tree *t) {
-  switch (t->tr_type) {
+int evaltree (struct treebase *b) {
+  struct tree *t = (struct tree*)b;
+  switch (b->tr_type) {
     default:
       assert (0);
     case TRT_NUMBER:
@@ -1245,8 +1246,11 @@ int evaltree (struct tree *t) {
       return quality (t->tr_int1, t->tr_int2);
     case TRT_IF:
       assert (t->tr_leaf2->tr_type == TRT_THENELSE);
-      return (evaltree (t->tr_leaf1) ? evaltree (t->tr_leaf2->tr_leaf1) :
-            evaltree (t->tr_leaf2->tr_leaf2));
+      {
+        struct tree *leaf2 = (struct tree *)t->tr_leaf2;
+        return (evaltree (t->tr_leaf1) ? evaltree (leaf2->tr_leaf1) :
+              evaltree (leaf2->tr_leaf2));
+      }
     case TRT_TRICKS:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);

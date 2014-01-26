@@ -4,21 +4,25 @@
  * decision tree and other expression stuff
  */
 
+struct treebase {
+        int tr_type;
+};
+
 struct tree {
-        int             tr_type;
-        struct tree     *tr_leaf1, *tr_leaf2;
+        struct treebase base;
+        struct treebase *tr_leaf1, *tr_leaf2;
         int             tr_int1;
         int             tr_int2;
         int             tr_int3;
 };
 
 struct expr {
-        struct tree*    ex_tr;
+        struct treebase*    ex_tr;
         char*               ex_ch;
         struct expr*    next;
 };
 
-#define NIL     ((struct tree *) 0)
+#define NIL     ((struct treebase *) 0)
 
 #define SUIT_CLUB       0
 #define SUIT_DIAMOND    1
@@ -127,8 +131,8 @@ struct acuft2d{
 struct action {
         struct action   *ac_next;
         int             ac_type;
-        struct tree     *ac_expr1;
-        struct tree *ac_expr2;
+        struct treebase *ac_expr1;
+        struct treebase *ac_expr2;
         int             ac_int1;
         char            *ac_str1;
         union {
