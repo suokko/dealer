@@ -4,6 +4,8 @@
  * decision tree and other expression stuff
  */
 
+#include <stdint.h>
+
 struct treebase {
         int tr_type;
 };
@@ -14,6 +16,18 @@ struct tree {
         int             tr_int1;
         int             tr_int2;
         int             tr_int3;
+};
+
+struct shape {
+        /* Shape function requires 560 bits. That is one per distinct shape.
+         * 560/32=17.5 */
+        uint32_t bits[18];
+};
+
+struct treeshape {
+        struct treebase base;
+        int compass;
+        struct shape    shape;
 };
 
 struct expr {

@@ -14,7 +14,7 @@
 #include "dealer.h"
 
 void  yyerror (char*);
-void  setshapebit (int, int, int, int, int, int);
+void  setshapebit (struct shape *, int, int, int, int);
 void  predeal (int, card);
 card  make_card(char,char);
 void  clearpointcount(void);
@@ -27,15 +27,15 @@ int predeal_compass;     /* global variable for predeal communication */
 
 int pointcount_index;    /* global variable for pointcount communication */
 
-int shapeno ;
-
 struct treebase *var_lookup(char *s, int mustbethere) ;
 struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
 struct treebase *newtree (int, struct treebase*, struct treebase*, int, int);
 struct expr  *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1);
 void bias_deal(int suit, int compass, int length) ;
 void predeal_holding(int compass, char *holding) ;
-void insertshape(char s[4], int any, int neg_shape) ;
+struct shape makeshape(char s[4], int any);
+struct shape compineshape(struct shape *a, int op, struct shape *b);
+struct treebase *newshapetree(int compass, struct shape *list);
 void new_var(char *s, struct treebase *t) ;
 %}
 
@@ -44,6 +44,7 @@ void new_var(char *s, struct treebase *t) ;
         int     y_int;
         char    *y_str;
         struct treebase *y_treebase;
+        struct shape  y_shape;
         struct action *y_action;
         struct expr   *y_expr;
         char    y_distr[4];
@@ -85,6 +86,7 @@ void new_var(char *s, struct treebase *t) ;
 %type <y_action> actionlist action
 %type <y_expr> exprlist
 %type <y_str> optstring
+%type <y_shape> shapelistel shapelist
 
 %start defs
 
@@ -190,13 +192,17 @@ shape
         | DISTR_OR_NUMBER
         ;
 shapelistel
-        : shlprefix any shape
-                { insertshape($3, $2, $1); }
+        : any shape
+                { $$ = makeshape($2, $1); }
         ;
 
 shapelist
-        : shapelistel
-        | shapelist shapelistel
+        : shapelistel shlprefix shapelistel
+                { $$ = compineshape(&$1, $2, &$3); }
+        | shapelist shlprefix shapelistel
+                { $$ = compineshape(&$1, $2, &$3); }
+        | shapelistel
+                { $$ = $1; }
         ;
 
 expr
@@ -264,11 +270,7 @@ expr
                 { $$ = newtree(TRT_QUALITY, NIL, NIL, $3, $5); }
         | SHAPE '(' compass ',' shapelist ')'
                 {
-		  $$ = newtree(TRT_SHAPE, NIL, NIL, $3, 1<<(shapeno++));
-		  if (shapeno >= 32) {
-		    yyerror("Too many shapes -- only 32 allowed!\n");
-		    YYERROR;
-		  }
+		  $$ = newshapetree($3, &$5);
 		}
         | HASCARD '(' COMPASS ',' CARD ')'
                 { $$ = newtree(TRT_HASCARD, NIL, NIL, $3, $5); }
@@ -470,13 +472,35 @@ int perm[24][4] = {
         {       3,      2,      1,      0       },
 };
 
-int shapeno;
-void insertshape(s, any, neg_shape)
-char s[4];
+struct shape compineshape(struct shape *a, int op, struct shape *b)
+{
+        struct shape r = {{0}};
+        int i, max;
+        max = sizeof(r.bits) / sizeof(r.bits[0]);
+        for (i = 0; i < max; i++) {
+                r.bits[i] = op == 0 ? a->bits[i] | b->bits[i] : a->bits[i] & (~b->bits[i]);
+        }
+        return r;
+}
+
+struct treebase *newshapetree(int compass, struct shape *list)
+{
+        struct treeshape *t;
+
+        t = mycalloc(1, sizeof *t);
+        t->base.tr_type = TRT_SHAPE;
+        t->compass = compass;
+        t->shape = *list;
+
+        return &t->base;
+}
+
+struct shape makeshape(char s[4], int any)
 {
         int i,j,p;
         int xcount=0, ccount=0;
         char copy_s[4];
+        struct shape r = {{0}};
 
         for (i=0;i<4;i++) {
 		if (s[i]=='x')
@@ -489,9 +513,8 @@ char s[4];
                 if (ccount!=13)
                         yyerror("wrong number of cards in shape");
                 for (p=0; p<(any? 24 : 1); p++)
-                        setshapebit(s[perm[p][3]]-'0', s[perm[p][2]]-'0',
-                                s[perm[p][1]]-'0', s[perm[p][0]]-'0',
-                                1<<shapeno, neg_shape);
+                        setshapebit(&r, s[perm[p][3]]-'0', s[perm[p][2]]-'0',
+                                s[perm[p][1]]-'0', s[perm[p][0]]-'0');
                 break;
         default:
                 if (ccount>13)
@@ -501,15 +524,18 @@ char s[4];
                         ;
                 if (xcount==1) {
                         copy_s[i] = 13-ccount+'0';      /* could go above '9' */
-                        insertshape(copy_s, any, neg_shape);
+                        r = makeshape(copy_s, any);
                 } else {
                         for (j=0; j<=13-ccount; j++) {
+                                struct shape temp;
                                 copy_s[i] = j+'0';
-                                insertshape(copy_s, any, neg_shape);
+                                temp = makeshape(copy_s, any);
+                                r = compineshape(&r, 0, &temp);
                         }
                 }
                 break;
         }
+        return r;
 }
 
 int d2n(char s[4]) {

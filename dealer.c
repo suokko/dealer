@@ -399,7 +399,9 @@ char * mycalloc (unsigned nel, unsigned siz) {
 
 void initdistr () {
   int **p4, *p3;
-  int clubs, diamonds;
+  int clubs, diamonds, hearts;
+
+  int shape = 0;
 
   /* Allocate the four dimensional pointer array */
 
@@ -409,16 +411,33 @@ void initdistr () {
     for (diamonds = 0; diamonds <= 13 - clubs; diamonds++) {
       p3 = (int *) mycalloc ((unsigned) 14 - clubs - diamonds, sizeof (*p3));
       p4[diamonds] = p3;
+      for (hearts = 0; hearts <= 13 - clubs - diamonds; hearts++) {
+        p3[hearts] = ++shape;
+      }
     }
   }
 }
 
-void setshapebit (int cl, int di, int ht, int sp, int msk, int excepted) {
+int getshapenumber (int cl, int di, int ht, int sp)
+{
+  (void)sp;
+  return distrbitmaps[cl][di][ht];
+}
 
-  if (excepted)
-    distrbitmaps[cl][di][ht] &= ~msk;
-  else
-    distrbitmaps[cl][di][ht] |= msk;
+void  setshapebit (struct shape *s, int cl, int di, int ht, int sp)
+{
+  int nr = getshapenumber(cl, di, ht, sp);
+  int idx = nr / 32;
+  int bit = nr % 32;
+  s->bits[idx] |= 1 << bit;
+}
+
+int checkshape (int nr, struct shape *s)
+{
+  int idx = nr / 32;
+  int bit = nr % 32;
+  int r = (s->bits[idx] & (1 << bit)) != 0;
+  return r;
 }
 
 void newpack (deal d) {
@@ -1215,7 +1234,10 @@ int evaltree (struct treebase *b) {
     case TRT_SHAPE:      /* compass, shapemask */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       /* assert (t->tr_int2 >= 0 && t->tr_int2 < MAXDISTR); */
-      return (hs[t->tr_int1].hs_bits & t->tr_int2) != 0;
+      {
+        struct treeshape *s = (struct treeshape *)b;
+        return (checkshape(hs[s->compass].hs_bits, &s->shape));
+      }
     case TRT_HASCARD:      /* compass, card */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
 #ifdef FRANCOIS
