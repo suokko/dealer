@@ -12,11 +12,11 @@ OUTPUT = $(wildcard Output.*)
 test: examples distribution 
 
 distribution:
-	../dealer -s 1 <Test.distribution | convert.pl >Output.distribution	
+	../dealer -s 1 <Test.distribution | ./convert.pl >Output.distribution	
 	diff Output.distribution Refer.distribution
 
 examples:
-	test_dealer.pl
+	./test_dealer.pl
 
 refer:
 	-for f in ${OUTPUT}; do \
