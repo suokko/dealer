@@ -24,7 +24,7 @@ dealer: ${OBJ} ${LOBJ} ${YOBJ}
 	$(CC) -o $@ ${OBJ} -L./Random -lgnurand
 
 clean:
-	rm -f ${OBJ} ${LOBJ} ${YOBJ} 
+	rm -f ${OBJ} ${LOBJ} ${YOBJ} dealer
 	${MAKE} -C Examples clean
 	${MAKE} -C Random   clean
 
