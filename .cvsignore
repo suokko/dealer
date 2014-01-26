@@ -4,3 +4,4 @@ scan.c
 *.a
 dealer
 dealer.tar.gz
+Examples/Output.*
