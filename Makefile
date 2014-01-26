@@ -1,7 +1,7 @@
 # $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
 CC      = gcc
-CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -c
+CFLAGS = -Wall -pedantic -O2 -g -I. -DNDEBUG -c
 FLEX    = flex
 YACC    = yacc
 
