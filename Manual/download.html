@@ -1,0 +1,139 @@
+<HTML>
+<TITLE>Downloading and Installation</TITLE>
+
+<BODY BGCOLOR="wheat">
+
+<h1>Downloading and installation</h1>
+
+Click <a href="ftp:dealer.tar.gz">here</a> to download the code.  This is
+a so-called gzipped tar file.  To install the program on any Unix
+platform, do:
+<ul>
+ <li> gzip -dc dealer.tar.gz | tar xvf -
+ <li> cd dealer
+ <li> make
+</ul>
+And you should end up with the <font color=red>dealer</font> executable in
+your current working directory.  Then test the program with
+<ul>
+ <li> cd Examples
+ <li> make test 
+</ul>
+This will process all examples in the Examples directory, store the 
+output for visual inspection and compare the output against a reference
+copy of the output.  The output from the test typically starts with:
+<FONT COLOR="blue">
+<PRE>
+test_dealer.pl
+------------------------------------------------------------------
+Now processing Descr.6c
+Done, output in Output.6c
+Comparing against reference output from Refer.6c
+6c6
+< Time needed  25.55 sec
+---
+> Time needed  12.99 sec
+<I>...And so on for other examples...</I>
+</PRE>
+</FONT>
+The example that was run was "Descr.6c", output of this example 
+can be found in "Output.6c".  Comparing the output against the reference
+output showed 1 difference: the CPU time that was needed to process the 
+input file.  The example took 25.55s when it was just run, the machine
+where the reference copy was produced needed only 12.99 seconds.
+
+<P>
+This particular difference is, of course, harmless, as the CPU time needed
+to process an example varies from computer to computer.  Other differences
+that can be safely ignored are the dates in the PBN example.  However, if the
+program had crashed on this example, the output from the test had started with:
+<FONT COLOR="blue">
+<PRE>
+test_dealer.pl
+------------------------------------------------------------------
+Now processing Descr.6c
+Done, output in Output.6c
+Comparing against reference output from Refer.6c
+0a1,6
+> king drops: 0.573465
+> finesse: 0.749792
+> Generated 1000000 hands
+> Produced 110556 hands
+> Initial random seed 1
+> Time needed  12.99 sec
+</PRE>
+</FONT>
+and it would be time to start debugging.
+<P>
+The exhaust mode is still under development. By default, it is switched
+off. To include the code, edit the Makefile and change the line:
+<ul>
+ <li> CFLAGS= (...) -DNDEBUG 
+</ul>
+into
+<ul>
+ <li> CFLAGS= (...) -DNDEBUG -DFRANCOIS
+</ul>
+
+<h2>Problems when compiling</H2>
+
+<UL>
+ <LI> Not all versions of make support the -C flag.  If this happens on your
+      system, edit the Makefile and replace all lines:
+  <BLOCKQUOTE>
+  ${MAKE} -C <i>directory</i> <i>action</i>
+  </BLOCKQUOTE>
+  by
+  <BLOCKQUOTE>
+  cd <i>directory</i> ; make <i>action</i>
+  </BLOCKQUOTE>
+ <LI> Mike Zimmermann  <zimmy@nc.rr.com> reported that on MAC OS X (aka Darwin), the
+      line CFLAGS has to be:
+      <ul>
+       <li> CFLAGS= -g -DNDEBUG -DFRANCOIS -I.
+      </ul>
+
+</UL>
+
+<h1>Portability</H1>
+
+The program has been developed under SunOS on Sun hardware. I (Hans) am a
+reasonably competent programmer though, and I expect the program to be
+highly portable. The most suspect part is in the initialisation of the
+random number generator. The system call used here might need to be
+changed on other OSes.
+
+<p> 
+There has been a DOS and OS/2 port by Pedl Rau. I tested the speed at
+about 9000 hands a second on my 486DX33.  <b>Note:</b> this has been
+superseeded by the work from (a.o.) Paul Baxter, Alex Martelli and Danil
+Suits.  
+
+<P>
+Henk Uijterwaal has compiled his version under Linux (2.0.x and 2.2.x)
+without any problem, except that one needed to do:
+<blockquote>
+<font size=-1>
+   ln -s /usr/bin/flex /usr/bin/lex
+</font></blockquote>
+as flex has succeeded lex on Linux.  On Ultrix, DEC Alpha(OSF), BSDI/3.x
+and SGI, the program compiled without any problem.
+
+<P>
+A. Martelli <A HREF="mailto:alex@magenta.com">(alex@magenta.com)</A> used
+to build and run Dealer on Win/NT and Win/98 with the free Cygwin GCC
+C/C++ compiler and Unix emulation environment. Main changes needed were
+byacc instead of yacc, as well as flex instead of lex, in the Makefile. A
+Makefile with all these changes is available in the MSDOS subdirectory.
+
+<P>
+Dealer's latest versions build and run fine using Microsoft Visual Studio
+5 and 6 (still using byacc and flex if needed for syntax mods, but with no
+other known dependency on Cygwin); there is a current dependency on the
+Winsock2 DLL (for ntohs, ntohl functions) soon to be removed.
+
+<HR>
+<A HREF="authors.html"><IMG SRC="prev.gif" BORDER=0></A>
+<A HREF="index.html"><IMG SRC="index.gif" BORDER=0></A>
+<A HREF="input.html"><IMG SRC="next.gif" BORDER=0></A>
+

@@ -1,0 +1,61 @@
+<HTML>
+<head>
+<title>DEALER, a bridge hand generator program</title>
+</head>
+
+<body bgcolor=wheat>
+<center>
+<h1>DEALER, a bridge hand generator program</h1>
+</center>
+
+<h2>Description</h2>
+The program <font color=red>dealer</font> can be used to generate hands for
+partnerships bidding training or for generating statistics that can be used to
+design conventions, or win postmortems.
+
+<P>
+Running the program involves 3 steps.  First, the user has to write
+an input file containing hand-descriptions and action. 
+A very simple example would look something like:
+A simple example:
+<font color=navy size=-1>
+<blockquote>
+condition shape(north, any 4333 + any 4423) and hcp(north)>=19<BR>
+action printall
+</blockquote>
+</font>
+The first 2 lines specify a condition for the north hand, in this case,
+a hand with 4333 or 4432 shape and at least 19 high card points.  The
+last 2 lines tell the program to print the 4 hands.  The program reads
+from standard input, so in principle, it is possible to enter the
+conditions directly into the program.  Using a file is a lot more
+practical though, as it allows the user to re-use conditions and
+fine-tune the conditions.
+
+<P>
+Then the program has to be run, it reads the file, looks at the
+various <A HREF="command.html">command line switches</A>
+ and then produces a number of hands.
+The output appears on the screen but can be re-directed to a file.
+
+<P> 
+Finally, the user has to look at output and analyze the produced
+hands.  Alternatively, the output can be used for a playing program.
+
+<H2>Index</H2>
+<DL>
+ <LI> <A HREF="disclaimers.html">Read this first</A>
+ <LI> Copyright
+ <LI> <A HREF="authors.html">Authors</A>
+ <LI> <A HREF="download.html">Downloading and installation</A>
+ <LI> Using the program
+  <UL>
+   <LI> <A HREF="input.html">The input file</A>
+   <LI> <A HREF="command.html">Command Line Switches</A>
+   <LI> <A HREF="running.html">Running the program</A>
+   <LI> <A HREF="postproc.html">Using the Output</A>
+  </UL>
+ <LI> <A HREF="perf.html">Performance</A>
+
+ <LI> <A HREF="updates.html">Updates and modifications</A>
+</DL>

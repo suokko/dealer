@@ -1,0 +1,258 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.51 [en] (X11; I; Linux 2.2.5 i686) [Netscape]">
+   <title>Pre-Processors</title>
+</head>
+<body bgcolor="#F5DEB3">
+
+<h1>
+Pre-Processors</h1>
+The pre-processor directory contains code that can be used to generate
+input for dealer. Currently there is only 1 contribution, <b>DPP</b> by
+Francois Dellacherie.
+<hr>
+<h2>
+DPP</h2>
+<h3>
+<a href="mailto:sr007-2@dial.oleane.com">Fran&ccedil;ois Dellacherie</a></h3>
+
+<h3>
+1. What is dpp ?</h3>
+dpp stands for dealer-pre-processor. Its main purpose is to preprocess
+input files for Hans van Staveren's great dealer program.
+<h3>
+2. How is it written ?</h3>
+dpp is written in Perl-object. In fact, it was a small part of a package
+that I will probably never finish to write (a package that should do automatic
+checking of bidding conventions...).
+<p>It contains two file:
+<ul>
+<li>
+the executable file 'dpp',</li>
+
+<li>
+the package 'Dist.pm'.</li>
+</ul>
+
+<h3>
+3. What do I need to make it work ?</h3>
+
+<ul>
+<li>
+You need Perl (and anyway, even if you don't plan to use dpp, you probably
+need perl, with or without knowing it !),</li>
+
+<li>
+You may need to change the first line of dpp, depending on where your perl
+interpreter is located, and where you plan to install the package file
+'Dist.pm'.</li>
+
+<li>
+You need to read this...</li>
+</ul>
+
+<h3>
+4. What can I do with it ?</h3>
+The greatest idea of Hans van Staveren was his 'shape' function (please
+reread his manual). The 'shape' function speed is the same for any number
+of args in it. Unfortunately, there's no convenient way to express ideas
+like "a balanced shape with 4 in a major". With the regular dealer, you
+have to write :
+<pre>shape(north,2443 + 2434 + 3424 + 3442 + 3433 + 4243 + 4423 + 4234 +
+                 4432 + 4324 + 4342 + 4333)</pre>
+or, if you are clever :
+<pre>shape(north, any 4432 + any 4333 - 3343 - 3334 - 2344 - 3244)</pre>
+With dpp, you will just write :
+<pre>shape{north, 4M(3+3+2+)}</pre>
+nice isn't it ??
+
+<h3>5. Differences with the original syntax of shape:</h3>
+Perl is great. (Repeat after me...)
+<p>The only thing it misses regarding text-parsing is the hability to handle
+sexp (in a more general case, I don't recommend having sex-p with a computer
+;-). The bad news is that I had to change the parenthesis () into braces
+{}, because I wanted to use () for other purposes inside the shape-func.
+The only other difference is that shape doesn't recognize the word 'any'
+anymore.
+<p>(I confess I may have kept the old syntax and invent a new word like
+dist{}. If people complain about this, I may change it... I just wanted
+to keep HVS-soul alive in my files...)
+<p>The new general syntax is :
+<pre>shape{COMPASS, shp1 + shp2 + ... + shpM - shm1 - ... - shmN}</pre>
+See below for the atomic (shp or shm) shapes...
+<h3>
+6. Features:</h3>
+when you see a shape after a &raquo; signs, it's the result of a shape
+after being dp-processed...
+<ol>
+<li>
+regular shapes : 7xxx, 4432, 4xx5 have the same meaning as in original
+dealer.
+
+<li>
+the 'at least' operator : whenever you put a '+' after a suit-length, it
+means 'at least'.</li>
+<p>Example: shape{north, 5+xx5+} : at least 5/5 in the blacks, &raquo;shape(north,5xx5
++ 5xx6 + 6xx5 + 5xx7 + 6xx6 + 7xx5 + 5008 + 6007 + 7006 + 8005)
+<li>
+the 'at most' operator : same as the 'at least', just use a '-' :
+<p>Example: shape{north, 2-xxx} : at most 2 spades, &raquo;shape(north,0xxx
++ 1xxx + 2xxx)
+<li>
+the 'range' operator : the range operator operates on a single suit. It
+comes with [], like in Perl.
+
+<p>Example: shape{north, x[3-5]x[13]} : (3 to 5) hearts, and one or 3 clubs
+&raquo;shape(north,x3x1 + x4x1 + x3x3 + x5x1 + x4x3 + x5x3)
+<p>Note that shape{north, 3-xxx} is equivalent to shape{north,[0-3]xxx}
+You can write compound ranges if you want : shape{north, [013-68]xxx} means:
+0,1,3,4,5,6 or 8 spades.
+<li>
+the 'permutation' operator : the permutation operator will appears as ()
+like in the WBF rules of specifying shapes. Example :
+<p>shape{north, (4432)} : any 4432 hand. &raquo;shape(north,any 4432)
+<p>what's best is that the () operator can operate on restricted groups
+of cards :
+<p>Example: shape{north, 5s(431)} : 5 spades, the others suits being (431).
+&raquo;shape(north,5134 + 5314 + 5143 + 5341 + 5413 + 5431)
+<p>What you have to do is :
+<ul>
+<li>
+specify the suit names (s,h,d,c in english) in the left part of the shape,
+in any order,
+<li>
+and enclose the rest of the permutation into () in the right part.</li>
+</ul>
+A (complicated) example : shape{north, 4+c3+d(2+2+)} : at least 5 clubs,
+at least 3 diamonds, and no short major. &raquo;shape(north,3334 +
+4234 + 2434 + 3244 + 2344 + 2254 + 3235 + 2335 + 2245 + 2236)
+<li>
+the 'Major' operator : has to be used together with the () operator. 'M'
+stands for 'a major' The 'M' operator can only be used in the left part
+(never put a M inside the parens)
+<p>Examples :
+<br>shape{north, 5M(xxx)} &raquo;shape(north,x5xx + 5xxx)
+<br>shape{north, 5+M3+c(31)} &raquo;shape(north,1534 + 3514 + 1633
++ 3613 + 5134 + 5314 + 6133 + 6313)
+<li>
+the 'minor' operator : same as the 'Major' operator, but in lowercase 'm'.
+<p>Example : shape{north, 5M5m(xx)} &raquo;shape(north,x5x5 + 5xx5
++ x55x + 5x5x)
+<li>
+the 'conditional' operator : you've got the possibility of specifying complex
+conditions to be verified that cannot be simply expressed by other operators.
+In order to do that, you use the ':' operator, just after the atomic-shape
+specification : shape{north, shp1:condition1,condition2,...}
+<p>The conditions use the letters (s,h,d,c) as variables for the suit lengths,
+and the usual C-operators (*,+,-,/,>,&lt;,==,!,?, and so on) Note that
+the ',' stands for the 'and-logical' operator. You can use 'or' for the
+'or-logical' operator.
+<p>Example: shape{north, 4+s4+h(xx):d>c,h+s==10} &raquo;shape(north,6421
++ 6430 + 5521 + 5530 + 4621 + 4630)</ol>
+
+<h3>
+7. Some other examples:</h3>
+
+<ul>
+<li>
+A balanced hand : (3+3+3+2+)</li>
+
+<li>
+A french 1H opening : x5+xx:h>s,h>=d,h>=c</li>
+
+<li>
+a michaels (spade+minor) : 5+s5+m(xx)</li>
+
+<li>
+my No_trump opening :</li>
+
+<br>hn = hcp(north)
+<br>n1NT = (hn > 14 and hn &lt; 18 and shape{north, 5m(332) + 5m2s(42)}
+) or
+<br>(hn > 13 and hn &lt; 17 and shape{north, 6m(322)} ) or
+<br>(hn > 15 and hn &lt; 18 and shape{north, 5M(332)} ) or
+<br>(hn > 15 and hn &lt; 19 and shape{north, (4432) + (4333)} )</ul>
+
+<h3>
+8. How to use dpp:</h3>
+
+<ol>
+<li>
+Unix world: dpp my_input_file | dealer</li>
+
+<li>
+Windows/DOS world: I don't know. I've never used windows/DOS in my life
+:-). I guess 2 possibilities :</li>
+
+<ol>
+<li>
+'dpp my_input_file > dppfile' followed by 'dealer dppfile'</li>
+
+<li>
+Include the dpp code inside the dealer code. Maybe somebody can do that
+on the next dealer distribution, and add a '-dpp' option to dealer. I won't
+do it, since I cannot check if that works properly.</li>
+</ol>
+
+<li>
+you can also try some shapes by typing 'dpp' on the command line, and enter
+shape{} one by one to see how it transforms them.</li>
+</ol>
+
+<h3>
+9. Languages:</h3>
+The suit specifications can be made in french or english. The default mode
+is english. To change the mode, you can do 2 things:
+<ul>
+<li>
+add a "Dist->language('French');" in dpp (after the Dist->new)</li>
+
+<li>
+Change the DefaultLanguage value in Dist.pm</li>
+</ul>
+If somebody wants to add other languages, it's possible...
+<h3>
+10. Bugs and further developments:</h3>
+If you :
+<ul>
+<li>
+notice bugs or,</li>
+
+<li>
+don't understand a peculiar behaviour of dpp (but please reread this README
+first),</li>
+
+<li>
+have suggestions for further developments,</li>
+</ul>
+you can e-mail me at
+<a href="mailto:sr007-2@dial.oleane.com">sr007-2@dial.oleane.com</a>
+<p>On the other hand, if you :
+<ul>
+<li>
+don't understand the *code*,</li>
+
+<li>
+cannot install perl on your machine,</li>
+</ul>
+there is unfortunately nothing that I can do for you.
+<p>Quoting Hans van Staveren :
+<blockquote>
+<font color="blue">
+This program is hereby put in the public domain. Do with it
+whatever you want, but I would like you not to redistribute it in modified
+form without mentioning the fact of modification. I will accept bug reports
+and modification requests, without any obligation of course, but fixing
+bugs someone else put in is beyond me.
+<p>When you report bugs please mention the version number in the source
+files, and preferably send context diffs if you changed anything. I might
+put in your fixes, and ask Henk to distribute a new version someday.
+</font></blockquote>
+Have Fun!
+<blockquote>Fran&ccedil;ois Dellacherie<BR> Paris, FRANCE</blockquote>
+
+<hr><a href="input.html"><img SRC="prev.gif" BORDER=0 ></a><a href="index.html"><img SRC="index.gif" BORDER=0 ></a><a href="command.html"><img SRC="next.gif" BORDER=0 ></a>
+</body>
+</html>

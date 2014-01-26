@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>Performance</TITLE> 
+</HEAD>
+<BODY BGCOLOR="wheat">
+<h2>Performance</h2>
+
+The speed of the program obviously depends on the machine it runs on and
+how complicated the problem is.  Last time the program was systematically
+benchmarked (a couple of major versions ago), these were some results:
+<UL>
+ <LI> On Hans' home machine, a SparcStation 1+, it generates about 4000 hands
+      a second if the condition is not too complicated. As he rarely plays
+      more than 150 hands a week, he can generate all the boards for a year
+      in less than 2 seconds.
+ <LI> The Descr.test_dealer example, which generates 1,000,000 hands
+      and keeps track of some 72 frequencies, takes about 5.2 minutes, or
+      some 3100 hands/second, on Henk's laptop (a PII/266 with 32 Mb,
+      running RedHat Linux 5.2).  The program was compiled with the -g flag. 
+ <LI> Recompiling with the -O2 flag reduces this to 2:40 minutes or 6250
+      hands/second.
+ <LI> Removing all frequencies but one (e.g. just generating the 1,000,000
+      hands) reduces this to 26 seconds or 37000 hands/second. 
+ <LI> Recompiling with the -O2 flag reduces this to 18.4s or 55000 
+      hands/second.
+</UL>
+<p>
+If the "tricks" function is used, the run-time will be, by far, dominated
+by the time GIB takes to analyze the double-dummy deal result, which can
+run from half a second to several seconds per analyzed deal, in any case
+orders of magnitude more than other parts.
+
+<HR>
+<A HREF="output.html"><IMG SRC="prev.gif" BORDER=0></A>
+<A HREF="index.html"><IMG SRC="index.gif" BORDER=0></A>
+<A HREF="bugs.html"><IMG SRC="next.gif" BORDER=0></A>
+
+</BODY>
+</HTML>

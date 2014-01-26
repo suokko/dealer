@@ -1,0 +1,5 @@
+defs.c
+scan.c
+*.o
+dealer
+dealer.tar.gz

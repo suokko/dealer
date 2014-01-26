@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>Updates and Modifications</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="wheat">
+
+<H1>Updates and Modifications</H1>
+
+<UL>
+ <LI> <B>March 13, 1999 (HU):</B> Created this list.
+ <LI> <B>March 13, 1999 (HU):</B> Moved all examples to a separate directory,
+      added a perl script that runs them all.
+ <LI> <B>March 13, 1999 (HU):</B> Started on this manual.
+ <LI> <B>March 19, 1999 (HU):</B> Moved GNU random code to a separate library
+ <LI> <B>April 11, 1999 (HU):</B> Added GPL to random code dir.
+ <LI> <B>April 11, 1999 (Robin Barker, HU):</B> Added post-processor code.
+ <LI> <B>April 18, 1999 (HU):</B> Moved code under CVS.
+ <LI> <B>April 18, 1999 (HU):</B> Inserted code from Danil Suits, Paul Hankin,
+                                  Micke Hovmoller.  Released Alpha version of
+                                  all this. 
+ <LI> <B>April 22, 1999 (HU):</B> Clean-up of the code, reduced the number
+                                  of warnings on compilation from 3 screens,
+                                  to half a page. 
+ <LI> <B>June  13, 1999 (??):</B> Patches from Alex Martelli, MSVC support
+                                  from Paul Baxter, put together another release.
+ <LI> <B>June  19, 1999 (HU):</B> Incorporated bug fixes from Danil Suits,
+                                  manual updates from Alex Martelli, 
+                                  more fixes for MSDOS by Paul Baxter.
+ <LI> <B>July   1, 1999 (HU):</B> 
+  <UL>
+   <LI> New version of exhaust mode from Francois,
+   <LI> Macros instead of function calls whenever possible. 
+   <LI> Preprocessor code from Francois.  
+   <LI> Better code for calculating HCP (etc.) from Danil. 
+   <LI> Updates for defs.y from Danil.  
+   <LI> Clean-up to reduce warnings.
+   <LI> Reference output for the examples.
+  </UL>
+ <LI> <B>July   5, 1999 (AM):</B> 
+  <UL>  
+   <LI> Key issue: a line (the body of a while loop!) had mysteriously disappeared
+        from defs.y, causing several problems with printes/printoneline
+   <LI> Lesser issue: a long-standing syntax glitch caused all input of the form
+        "-" followed by a digit to be interpreted as a single token, thus
+        mandating a separating spaces in non-obvious places, e.g.:
+        "spades(south)-2" would be an error, "spades(south)- 2" correct.
+        I fixed that by removing from scan.l the lexical production for negative
+        number and adding "ARMINUS NUMBER" to defs.y for nonterminal
+        "number"; shift/reduce conflicts go up from 9 to 16 but I don't think that
+        breaks anything (I'm not sure how to test for this specifically).
+   <LI> Sundry stuff: some clarifications & error fixes in the manual HTML files.
+  </UL>
+ <LI> <B>July   7, 1999 (DS):</B> Macro for hascard() and interesting() to
+        reduce the number of ifdef's.
+ <LI> <B>July  13, 1999 (HU):</B> Review of manual.
+ <LI> <B>August  3, 1999 (HU):</B> Included defs.c in the distribution (for 
+                                   people that don't have yacc on their machine).
+                                   Removed libgnurand.a from the distribution, 
+                                   the binary doesn't belong in there.
+                                   Added a few comments about compiling to the manual.
+ <LI> <B>August 21, 1999 (HU):</B> Check range for -s value, rotate dealer in 
+                                   pbn output, suggestions from
+                                   Alan Jaffray (jaffray@pobox.com).
+                                   Print board number in printall output,
+                                   suggested by Thorvald Aagaard 
+                                   (aagaard@webtrade.dk).
+
+ <LI>  <B>May 26, 2004 (HU):</B> Finally found time for this again.  
+  <UL>
+   <LI> Made it compile without warnings on GCC 3.3.1
+   <LI> Instructions for compiling on Darwin
+  </UL>
+
+</UL>
+
+<HR>
+
+<A HREF="bugs.html"><IMG SRC="prev.gif" BORDER=0></A>
+<A HREF="index.html"><IMG SRC="index.gif" BORDER=0></A>
+<A HREF="disclaimers.html"><IMG SRC="next.gif" BORDER=0></A>
+

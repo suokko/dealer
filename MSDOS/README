@@ -1,0 +1,32 @@
+
+This directory contains bits and pieces needed to compile the program under
+MSVC 5.x and 6.x, submitted by Paul Baxter.  
+
+I have not tested this stuff, as I don't have access to a machine with MSVC.
+
+Henk Uijterwaal
+-----------------------------------------------------------------------------
+
+Files in this area.
+
+Makefile-MSDOS           A makefile for MSDOS, replace the makefile in the
+                         top level directory by this one to compile  under
+                         MSDOS
+
+cygtest.bat              Shell-scripts to run the program under DOS.
+ddostest.bat
+dostest.bat
+
+readme_mods.txt          A file describing the changes for MSVC, by 
+                         Paul Baxter.
+
+VC++5_project_files.zip  MSVC project files for VC++ version 5.
+VC++6_project_files.zip  MSVC project files for VC++ version 6.
+
+                         Unzip the file for the version of VC++ that you are
+                         using, in order to create:
+
+                         *  dealer.dsp 
+                         *  dealer.dsw
+                         *  dealer.opt
+

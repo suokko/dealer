@@ -1,0 +1,120 @@
+<HTML>
+<HEAD>
+<TITLE>Bug reports, submitting code and all that</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="wheat">
+
+<H1>Bug Reports</H1>
+
+If you suspect a bug in the program:
+
+<UL>
+ <LI> Double-check your input file.
+ <LI> Try to reduce your input file to the absolute minimum that still
+      produces the bug.  The cleaner the example, the easier it is to 
+      debug.
+ <LI> Think again if your problem really is a bug. 
+ <LI> If so, then it is time to send in a bug-report.
+ <LI> Send an email to the <A HREF="authors.html#main">code maintainer</A>
+      that includes:
+  <ul>
+   <li> The (reduced) input file that produced the error.
+   <LI> All command-line arguments when the bug was produced,
+   <LI> What went wrong and why you think this is a problem.
+   <LI> The output of running dealer with the <b>-V</b> flag. This will 
+        produce something like:
+    <BLOCKQUOTE>
+     <FONT COLOR="blue">
+      Version info....<BR>
+      $Revision: 1.1 $<BR>
+      $Date: 1999/07/19 20:24:32 $<BR>
+      $Author: henk $<BR>
+     </FONT>
+    </BLOCKQUOTE>
+        Include this information in your bug-report. This uniquely defines
+        the version of the code that produced the bug.
+        <P>
+        If a problem did not occur with a previous version of the program,
+        do a <b>dealer -V</b> on that version as well.
+   <LI> The platform and operating system that you are using.
+   <LI> The compiler that you used to compile the program.  If you modified
+        the Makefile, include that as well.
+  </UL> 
+ <LI> If you think that problem is caused in the code from a particular
+      <A HREF="authors.html">contributer</A>, send him a copy of your
+      mail. 
+ <LI> Note that <b>dealer</b> is free and comes without any guarantee. 
+      Bugs will be investigated and might be fixed, but all authors work
+      on this on a voluntary basis in their spare time, so do not expect
+      any service.
+</UL>
+
+<H1>Submitting Code</H1>
+
+Besides submitting bugs, you can also contribute towards dealer by
+providing code that extends the functionality of the program.
+
+<P> Before modifying the source code, first check if you can solve your
+problem with a cleverly written input file and how often you would need a
+function.  Changing the code (and testing it) does take a lot of time.
+
+<P> When modifying the code, you should realize that you are on your own.  
+Other authors may be able to help you, but do not count on it. And do not
+even think about submitting code that <I>almost works but that still needs
+a few all-night debugging sessions</I>.
+
+<P> Once you are happy with your code, consider if you should submit them
+for inclusion in the "official" source tree.  In general, only submit
+changes that <b>add</b> functionality to the code. If your code is
+incompatible with existing features, then do not remove it but instead put
+"#ifdef's" into the code so that users can select the appropriate pieces
+of code and still be able to run their existing input files.
+
+<P> When submitting code, please follow the following guidelines in order
+to keep the <A HREF="authors.html#main">code maintainer</A> happy:
+<UL> 
+ <LI> Try to make your changes against the latest version of the code.
+ <LI> Test your code, at a very minimum:
+  <UL> 
+   <LI> Write an example that use the features of your code.
+   <LI> Try to test your code in combination with as many existing features
+        as possible.
+   <LI> Run a <b>make test</b> in the Examples directory and make sure
+        that the existing examples still work as before.  If they do not
+        work as they used to do, carefully check if the output is still 
+        correct and document the changes.
+  </UL>
+ <LI> Provide documentation:
+  <UL> 
+   <LI> Put comments in your code.
+   <LI> Update the manual if you change something.
+   <LI> Include an example that uses the features of the new code and include
+        the output of the example.  This makes it easier to check if your 
+        changes have been included correctly. 
+  </UL>
+ <LI> In order to make code management easy, please observe the 
+      following rules:
+  <UL> 
+   <LI> Do not change the layout of the code because you do not like
+        the style.  This makes it a lot harder when merging updates
+        from several sources into one source file. 
+   <LI> Do not use tabs, use spaces.  (Tabs may expand to different amounts
+        of white space from one machine to another, thus making it hard to
+        understand the code).
+   <LI> Always do a <b>dealer -V</b> before submitting the code and include
+        that information, but <b>never</b>
+        update the strings that produce the version info in the source.
+        The code management system will take care of that.
+   <LI> I do not really care if you submit complete source files or
+        just diffs, but do not submit source files that have not been
+        modified. 
+  </UL>
+</UL>
+
+<HR>
+
+<A HREF="perf.html"><IMG SRC="prev.gif" BORDER=0></A>
+<A HREF="index.html"><IMG SRC="index.gif" BORDER=0></A>
+<A HREF="disclaimers.html"><IMG SRC="next.gif" BORDER=0></A>
+
