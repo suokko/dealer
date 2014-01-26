@@ -1,0 +1,18 @@
+#
+# Test to check average function with filtering
+#
+
+shape4432 = shape(north, any 4432)
+
+shape5332 = shape(north, any 5332)
+
+generate
+	1000000
+
+action
+	average (shape4432, avg > 0),
+	average (shape5332, avg > 0),
+	average (shape4432, avg > 500000),
+	average (shape5332, avg > 500000),
+	average (shape4432, avg > 200000),
+	average (shape5332, avg > 200000),
