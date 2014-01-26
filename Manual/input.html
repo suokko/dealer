@@ -386,6 +386,10 @@ The different actions are:
        calculates and prints the average of the expression over all
        hands satisfying the <A HREF="#condition"><b>condition</b></a>. The optional strings is printed
 	before the average.
+<li><b>average "optional string" (expr, expr2)</b>, eg	average "points" (hcp(north), avg > 5000)<br>
+       calculates the average if expression. Printing is conditional based on experssion 2.
+       Expression 2 has a special avg variable that is average in ppm (parts per million).
+       That means 100% is one million and 50% is five hundred thousand.
 <li><b>frequency "optional string" ( (expr), (lowbnd), (highbnd) )</b><br>
 	calculates and prints a histogram of the values of (expr),
 	between the bounds (lowbnd) and (highbnd) inclusive (all

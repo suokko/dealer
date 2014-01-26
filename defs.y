@@ -64,7 +64,7 @@ void new_var(char *s, struct tree *t) ;
 %token CONTROL LOSER DEALER VULNERABLE
 %token QUALITY CCCC
 %token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
-%token EVALCONTRACT ALL NONE SCORE IMPS RND
+%token EVALCONTRACT ALL NONE SCORE IMPS RND AVG
 %token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
 %token <y_int> NUMBER
@@ -314,6 +314,8 @@ expr
                 { $$ = newtree(TRT_NOT, $2, NIL, 0, 0); }
         | RND '(' expr ')'
                 { $$ = newtree(TRT_RND, $3, NIL, 0, 0); }
+        | AVG
+                { $$ = newtree(TRT_AVG, NIL, NIL, 0, 0); }
         ;
 
 exprlist
@@ -371,6 +373,8 @@ action
                   $$=newaction(ACT_PRINTONELINE,$3,0,0, NIL);}
         | AVERAGE optstring expr
                 { $$ = newaction(ACT_AVERAGE, $3, $2, 0, NIL); }
+        | AVERAGE optstring '(' expr ',' expr ')'
+                { $$ = newaction(ACT_AVERAGE, $4, $2, 0, $6); }
         | FREQUENCY optstring '(' expr ',' number ',' number ')'
                 { $$ = newaction(ACT_FREQUENCY, $4, $2, 0, NIL);
                   $$->ac_u.acu_f.acuf_lowbnd = $6;

@@ -83,6 +83,7 @@ int swapping = 0;
 int swapindex = 0;
 int loading = 0;
 int loadindex = 0;
+double average = 0.0;
 
 /* Various handshapes can be asked for. For every shape the user is
    interested in a number is generated. In every distribution that fits that
@@ -1256,6 +1257,8 @@ int evaltree (struct tree *t) {
       return score (t->tr_int1, t->tr_int2 % 5, t->tr_int2 / 5, evaltree (t->tr_leaf1));
     case TRT_IMPS:
       return imps (evaltree (t->tr_leaf1));
+    case TRT_AVG:
+      return (int)(average*1000000);
     case TRT_RND:
       return (int) (((double) evaltree (t->tr_leaf1)) * RANDOM () / (RAND_MAX + 1.0));
   }
@@ -1455,9 +1458,12 @@ void cleanup_action () {
         }
         break;
       case ACT_AVERAGE:
+        average = (double)acp->ac_int1 / nprod;
+        if (acp->ac_expr2 && !evaltree(acp->ac_expr2))
+          break;
         if (acp->ac_str1)
           printf ("%s: ", acp->ac_str1);
-        printf ("%g\n", (double) acp->ac_int1 / nprod);
+        printf ("%g\n", average);
         break;
       case ACT_FREQUENCY:
         printf ("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
