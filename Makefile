@@ -14,7 +14,7 @@ LOBJ = ${BUILDDIR}/scan.c
 YOBJ = ${BUILDDIR}/defs.c
 SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
 
-OBJ  = ${addprefix ${BUILDDIR}/, dealer.o defs.o pbn.o c4.o getopt.o pointcount.o}
+OBJ  = ${addprefix ${BUILDDIR}/, dealer.o defs.o pbn.o c4.o pointcount.o}
 OBJCOV = ${subst .o,.cov.o,${OBJ}}
 
 ${PROGRAM}: ${OBJ}

@@ -37,7 +37,7 @@ char* input_file = 0;
   #include <sys/time.h>
 #endif /* WIN32 */
 
-#include "getopt.h"
+#include <getopt.h>
 
 #include "tree.h"
 #include "pointcount.h"
