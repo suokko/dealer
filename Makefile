@@ -1,32 +1,27 @@
-# $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
-CC      = gcc
-CFLAGS = -Wall -pedantic -O2 -g -I. -DNDEBUG -c
 FLEX    = flex
 YACC    = yacc
 
-PROGRAM  = dealer
 TARFILE  = ${PROGRAM}.tar
 GZIPFILE = ${PROGRAM}.tar.gz
 
-SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
+include ${PWD}/Makefile.vars
+
 LSRC = scan.l
 YSRC = defs.y
 HDR  = dealer.h tree.h
+LOBJ = ${BUILDDIR}/scan.c
+YOBJ = ${BUILDDIR}/defs.c
+SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
 
-OBJ  = dealer.o defs.o pbn.o c4.o getopt.o pointcount.o
-LOBJ = scan.c
-YOBJ = defs.c
+OBJ  = ${addprefix ${BUILDDIR}/, dealer.o defs.o pbn.o c4.o getopt.o pointcount.o}
 
-
-dealer: ${OBJ} ${LOBJ} ${YOBJ}
-	${MAKE} -C Random lib
-	$(CC) -o $@ ${OBJ} -L./Random -lgnurand
+${PROGRAM}: ${OBJ}
+	$(SCC) -o $@ $?
 
 clean:
-	rm -f ${OBJ} ${LOBJ} ${YOBJ} dealer
-	${MAKE} -C Examples clean
-	${MAKE} -C Random   clean
+	@rm -f ${OBJ} ${LOBJ} ${YOBJ} ${subst .o,.d,${OBJ}} ${BUILDDIR}/deb dealer
+	@[ -e ${BUILDDIR} ] && rmdir ${BUILDDIR} || true
 
 tarclean: clean ${YOBJ}
 	rm -f dealer
@@ -38,36 +33,39 @@ tarfile: tarclean
 	mv ${TARFILE} ${PROGRAM} 
 	gzip -f ${TARFILE}
 
-test: dealer
-	${MAKE} -C Examples test
-
 #
 # Lex
 #
-.l.c:
-	${FLEX} -t $< >$@
+${BUILDDIR}/%.c: %.l ${BUILDDIR}/deb
+	${SFLEX} -t $< >$@
 
 #
 # Yacc
 #
-.y.c:
-	${YACC} $<
+${BUILDDIR}/%.c: %.y ${BUILDDIR}/deb
+	${SYACC} $<
 	mv -f y.tab.c $@
 
 #
 # C-code
 #
-.c.o:
-	${CC} ${CFLAGS} -o $@ $<
+${BUILDDIR}/%.o: %.c ${BUILDDIR}/deb
+	${SCC} -c ${CFLAGS} -o $@ $<
+
+#
+# BUILDDIR
+#
+${BUILDDIR}/deb: Makefile $(wildcard */Makefile) Makefile.vars
+	${SMKDIR} $(BUILDDIR)
+	@touch $@
 
 # 
 # File dependencies
 #
-scan.c: scan.l
-defs.c: scan.c defs.y
-dealer.o: tree.h scan.l dealer.h defs.c scan.c 
-pbn.o: tree.h scan.l dealer.h
-defs.o:	tree.h
-c4.o: c4.c  c4.h
-getopt.o: getopt.h
-pointcount.o: pointcount.h
+${BUILDDIR}/scan.c: scan.l
+${BUILDDIR}/defs.c: defs.y ${BUILDDIR}/scan.c
+${BUILDDIR}/defs.o: ${BUILDDIR}/scan.c
+
+include Random/Makefile
+include Examples/Makefile
+-include $(OBJS:.o=.d)

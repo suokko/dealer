@@ -1,31 +1,21 @@
-SRC      = $(wildcard *.c) 
-OBJ      = $(subst .c,.o,$(wildcard *.c)) 
-GCC      = gcc
-GCCFLAGS = -c -Wall -O2 -I.
-HDR      = ansidecl.h
-LIB      = libgnurand.a
-AR       = ar
-ARFLAGS  = rcs
+include ${CURDIR}/Makefile.vars
 
-help:
-	@echo "Makefile tags:"
-	@echo
-	@echo "lib:   Make ${LIB}"
-	@echo "clean: Remove ${OBJ}"
-	@echo  
+SRCDIR := ${CURDIR}/Random
 
-lib: ${LIB}
+RNDOBJ      := $(addprefix ${BUILDDIR}/, $(notdir $(subst .c,.o,$(wildcard ${SRCDIR}/*.c))))
+RNDLIB      = ${BUILDDIR}/libgnurand.a
 
+rndclean:
+	-rm ${RNDOBJ} ${RNDLIB} ${subst .o,.d,${RNDOBJ}}
 
-clean:
-	-rm ${OBJ} ${LIB}
+clean: rndclean
 
-.c.o: ${HDR}
-	${GCC} ${GCCFLAGS} -o $@ $<
+${BUILDDIR}/%.o: ${SRCDIR}/%.c ${BUILDDIR}/deb
+	${SCC} -c ${CFLAGS} -o $@ $<
 
-${LIB}: ${OBJ} ${HDR}
-	${AR} ${ARFLAGS} $@ ${OBJ}
+${RNDLIB}: ${RNDOBJ}
+	${SAR} ${ARFLAGS} $@ $?
 
-__random.o: ${HDR}
-rand.o:     ${HDR}
-srand.o:    ${HDR}
+${PROGRAM}: ${RNDLIB}
+
+-include $(RNDOBJS:.o=.d)

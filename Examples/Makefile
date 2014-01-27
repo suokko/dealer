@@ -5,18 +5,20 @@
 # 30 minutes to run.
 #
 
+include ${CURDIR}/Makefile.vars
+SRCDIR := ${CURDIR}/Examples
+
 SHELL=/bin/sh
 
-OUTPUT = $(wildcard Output.*)
+OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 
 test: examples distribution 
 
-distribution:
-	../dealer -s 1 <Test.distribution | ./convert.pl >Output.distribution	
-	diff Output.distribution Refer.distribution
+distribution: ${PROGRAM}
+	@cd ${SRCDIR} && ../dealer -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
-examples:
-	./test_dealer.pl
+examples: ${PROGRAM}
+	@cd ${SRCDIR} && ./test_dealer.pl
 
 refer:
 	-for f in ${OUTPUT}; do \
@@ -27,5 +29,7 @@ refer:
 	done 
 
 
-clean:
+exampleclean:
 	-rm -f ${OUTPUT}
+
+clean: exampleclean
