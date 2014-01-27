@@ -48,7 +48,7 @@ static void new_var(char *s, struct treebase *t) ;
         struct action *y_action;
         struct expr   *y_expr;
         char    y_distr[4];
-}
+};
 
 %left QUERY COLON
 %left OR2
@@ -474,7 +474,7 @@ int perm[24][4] = {
 
 struct shape compineshape(struct shape *a, int op, struct shape *b)
 {
-        struct shape r = {{0}};
+        struct shape r;
         int i, max;
         max = sizeof(r.bits) / sizeof(r.bits[0]);
         for (i = 0; i < max; i++) {
