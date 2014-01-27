@@ -23,20 +23,20 @@ void  pointcount(int,int);
 void* mycalloc(int,size_t);
 int   make_contract (char, char);
 
-int predeal_compass;     /* global variable for predeal communication */
+static int predeal_compass;     /* global variable for predeal communication */
 
-int pointcount_index;    /* global variable for pointcount communication */
+static int pointcount_index;    /* global variable for pointcount communication */
 
-struct treebase *var_lookup(char *s, int mustbethere) ;
-struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
-struct treebase *newtree (int, struct treebase*, struct treebase*, int, int);
-struct expr  *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1);
-void bias_deal(int suit, int compass, int length) ;
-void predeal_holding(int compass, char *holding) ;
-struct shape makeshape(char s[4], int any);
-struct shape compineshape(struct shape *a, int op, struct shape *b);
-struct treebase *newshapetree(int compass, struct shape *list);
-void new_var(char *s, struct treebase *t) ;
+static struct treebase *var_lookup(char *s, int mustbethere) ;
+static struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
+static struct treebase *newtree (int, struct treebase*, struct treebase*, int, int);
+static struct expr  *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1);
+static void bias_deal(int suit, int compass, int length) ;
+static void predeal_holding(int compass, char *holding) ;
+static inline struct shape makeshape(char s[4], int any);
+static inline struct shape compineshape(struct shape *a, int op, struct shape *b);
+static struct treebase *newshapetree(int compass, struct shape *list);
+static void new_var(char *s, struct treebase *t) ;
 %}
 
 
@@ -404,7 +404,7 @@ printlist
         ;
 %%
 
-struct var {
+static struct var {
         struct var *v_next;
         char *v_ident;
         struct treebase *v_tree;
