@@ -4,6 +4,7 @@ scan.c
 *.a
 *.swp
 *~
+.clang_complete
 genlib
 genlib.cov
 genlib.prof
@@ -18,3 +19,4 @@ tags
 etags
 build.mk
 cpudetect/cpudetect
+llvm/testllvm
