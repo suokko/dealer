@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 
-$exe = "../dealer";
+$exe = "../$ARGV[0]";
+
+print $exe
 #
 # Fixed seed so that the output should be the same from run to run
 #

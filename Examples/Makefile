@@ -12,13 +12,13 @@ SHELL=/bin/sh
 
 OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 
-test: examples distribution 
+test: makehtml
 
-distribution: ${PROGRAM}
-	@cd ${SRCDIR} && ../dealer -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
+distribution: ${PROGRAMCOV} clearstats
+	@cd ${SRCDIR} && ../${PROGRAMCOV} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
-examples: ${PROGRAM}
-	@cd ${SRCDIR} && ./test_dealer.pl
+examples: ${PROGRAMCOV} clearstats
+	@cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV}
 
 refer:
 	-for f in ${OUTPUT}; do \
@@ -28,6 +28,17 @@ refer:
 		/bin/cp $$f $$f1; \
 	done 
 
+makehtml: examples distribution 
+	${SMKDIR} .test
+	@echo "  LCOV   process" && lcov --base-directory . --directory . --rc lcov_branch_coverage=1 -c -o .test/dealer.info
+	@echo "  LCOV   strip" && lcov --remove .test/dealer.info "/usr*" --rc lcov_branch_coverage=1 -o .test/dealer.info
+	@echo "  GENHTML" && genhtml --num-spaces 4 -o .test/ --branch-coverage -t "Dealer test coverage" .test/dealer.info
+
+testresults: makehtml
+	@echo "  XDGOPEN" && xdg-open .test/index.html
+
+clearstats:
+	@echo "  LCOV   clear" && lcov --base-directory . --directory . --zerocounters -q
 
 exampleclean:
 	-rm -f ${OUTPUT}
