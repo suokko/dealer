@@ -64,10 +64,7 @@ void yyerror (char *);
 enum { STAT_MODE, EXHAUST_MODE };
 int computing_mode = DEFAULT_MODE;
 
-int uppercase = 0;
-char lcrep[] = "23456789tjqka";
 char ucrep[] = "23456789TJQKA";
-#define representation (uppercase ? ucrep : lcrep );
 
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
@@ -1736,7 +1733,7 @@ int main (int argc, char **argv) {
 
   gettimeofday (&tvstart, (void *) 0);
 
-  while ((c = getopt (argc, argv, "023ehuvmqp:g:s:l:V")) != -1) {
+  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:V")) != -1) {
     switch (c) {
       case '0':
       case '2':
@@ -1774,9 +1771,6 @@ int main (int argc, char **argv) {
             exit (-1);
         }
         break;
-      case 'u':
-        uppercase = 1;
-        break;
       case 'v':
         verbose ^= 1;
         break;
@@ -1796,7 +1790,7 @@ int main (int argc, char **argv) {
       }
     }
   if (argc - optind > 2 || errflg) {
-    fprintf (stderr, "Usage: %s [-emvu] [-s seed] [-p num] [-v num] [inputfile]\n", argv[0]);
+    fprintf (stderr, "Usage: %s [-emv] [-s seed] [-p num] [-v num] [inputfile]\n", argv[0]);
     exit (-1);
   }
   if (optind < argc && freopen (input_file = argv[optind], "r", stdin) == NULL) {
