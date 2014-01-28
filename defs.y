@@ -22,6 +22,8 @@ void  clearpointcount_alt(int);
 void  pointcount(int,int);
 void* mycalloc(int,size_t);
 int   make_contract (char, char);
+extern int yylex (void);
+static int d2n(char s[4]);
 
 static int predeal_compass;     /* global variable for predeal communication */
 
@@ -62,7 +64,7 @@ static void new_var(char *s, struct treebase *t) ;
 %token GENERATE PRODUCE HCP SHAPE ANY EXCEPT CONDITION ACTION
 %token PRINT PRINTALL PRINTEW PRINTPBN PRINTCOMPACT PRINTONELINE
 %token AVERAGE HASCARD FREQUENCY PREDEAL POINTCOUNT ALTCOUNT
-%token CONTROL LOSER DEALER VULNERABLE
+%token CONTROL LOSER DEALER
 %token QUALITY CCCC
 %token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
 %token EVALCONTRACT ALL NONE SCORE IMPS RND AVG
