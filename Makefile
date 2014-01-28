@@ -13,15 +13,24 @@ HDR  = dealer.h tree.h
 LOBJ = ${BUILDDIR}/scan.c
 YOBJ = ${BUILDDIR}/defs.c
 SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
+GENSRC = genlib.c
+
 
 OBJ  = ${addprefix ${BUILDDIR}/, dealer.o defs.o pbn.o c4.o pointcount.o}
 OBJCOV = ${subst .o,.cov.o,${OBJ}}
+
+GENOBJ  = $(addprefix ${BUILDDIR}/, $(subst .c,.o,${GENSRC}))
+
+all: ${PROGRAM} ${GENLIB}
 
 ${PROGRAM}: ${OBJ}
 	$(SCC) ${CFLAGS} -o $@ $^
 
 ${PROGRAMCOV}: ${OBJCOV}
 	$(SCC) ${CFLAGS} ${COVFLAGS} -o $@ $^
+
+${GENLIB}: ${GENOBJ}
+	$(SCC) ${CFLAGS} -o $@ $^
 
 clean:
 	@rm -f ${OBJ} ${OBJCOV} ${LOBJ} ${YOBJ} ${subst .o,.d,${OBJ} ${OBJCOV}} ${BUILDDIR}/deb dealer

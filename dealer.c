@@ -44,6 +44,7 @@ char* input_file = 0;
 #include "dealer.h"
 #include "c4.h"
 #include "pbn.h"
+#include "genlib.h"
 
 void yyerror (char *);
 
@@ -64,7 +65,7 @@ void yyerror (char *);
 enum { STAT_MODE, EXHAUST_MODE };
 int computing_mode = DEFAULT_MODE;
 
-char ucrep[] = "23456789TJQKA";
+char ucrep[14] = "23456789TJQKA";
 
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
@@ -287,11 +288,7 @@ int dd (deal d, int l, int c) {
   return cached_tricks[l][c];
 }
 
-struct tagLibdeal {
-  unsigned long suits[4];
-  unsigned short tricks[5];
-  int valid;
-} libdeal;
+struct tagLibdeal libdeal;
 
 int get_tricks (int pn, int dn) {
   int tk = libdeal.tricks[dn];
@@ -303,7 +300,7 @@ int get_tricks (int pn, int dn) {
 int true_dd (deal d, int l, int c) {
   if (loading && libdeal.valid) {
     int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
-    /* This will get the number of tricks EW can get.  If the user wanted NW, 
+    /* This will get the number of tricks EW can get.  If the user wanted NS, 
        we have to subtract 13 from that number. */
     return ((l == 0) || (l == 2)) ? 13 - resu : resu;
   } else {

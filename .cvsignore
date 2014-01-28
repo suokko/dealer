@@ -2,6 +2,9 @@ defs.c
 scan.c
 *.o
 *.a
+*.swp
+*~
+genlib
 dealer
 dealer.cov
 dealer.tar.gz
