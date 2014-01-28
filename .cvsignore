@@ -3,8 +3,10 @@ scan.c
 *.o
 *.a
 dealer
+dealer.cov
 dealer.tar.gz
 Examples/Output.*
 .libs
+.test
 tags
 etags
