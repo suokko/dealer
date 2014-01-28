@@ -1,0 +1,10 @@
+generate 2
+
+value = - 2 
+value2 = -2
+value3 = 1147
+
+action
+	average "- 2" value,
+	average "-2" value2,
+	average "1147" value3,

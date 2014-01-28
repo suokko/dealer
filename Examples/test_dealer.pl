@@ -8,24 +8,52 @@ print $exe
 #
 $seed = 1;
 
+$exitcode = 0;
+
 foreach $input (`ls Descr.*`) {
   # Loop over all files that start with Descr.
   chop $input;
-  print "------------------------------------------------------------------\n";
-  print "Now processing $input\n";
+  print "  TEST   $input\n";
 
   $output = $input;
   $output =~ s/Descr/Output/;
   $refer  = $input;
   $refer  =~ s/Descr/Refer/;
 
-  system ("$exe -s $seed $input >$output");
+  system ("$exe -s $seed $input 2>$output.err >$output");
 
-  print "Done, output in $output\n";
+  if (-s "$output.err" == 0) {
+    unlink("$output.err");
+  }
 
   if (-e $refer) {
-     print "Comparing against reference output from $refer\n";
-     print `diff $output $refer`;
+    $diff = `diff $output $refer`;
+    $diff =~ s/^(.*Time needed.*|.*\[Date ".*|[^<>].*)\R//mg;
+    if (-e "$refer.err" || -e "$output.err") {
+      if (-e "$refer.err" && -e "$output.err") {
+        $err = `diff $output.err $refer.err`;
+      } else { if (-e "$output.err") {
+          print "$refer.err missing\n";
+          $err = `cat "$output.err"`;
+        } else {
+          print "$output.err missing\n";
+          $err = `cat $refer.err`;
+        }
+      }
+      if ($err ne "") {
+        print "stderr not matching\n";
+        print $err;
+        $exitcode = 2;
+      }
+    }
+    if ($diff ne "") {
+      print "output not matching\n";
+      print $diff;
+      $exitcode = 1;
+    }
+  } else {
+    print "$refer is missing\n";
   }
-}
 
+}
+exit $exitcode;

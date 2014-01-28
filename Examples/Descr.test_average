@@ -10,9 +10,9 @@ generate
 	1000000
 
 action
-	average (shape4432, avg > 0),
-	average (shape5332, avg > 0),
-	average (shape4432, avg > 500000),
-	average (shape5332, avg > 500000),
-	average (shape4432, avg > 200000),
-	average (shape5332, avg > 200000),
+	average "avg > 0" (shape4432, avg > 0),
+	average "avg > 0" (shape5332, avg > 0),
+	average "avg > 500000" (shape4432, avg > 500000),
+	average "avg > 500000" (shape5332, avg > 500000),
+	average "avg > 200000" (shape4432, avg > 200000),
+	average "avg > 200000" (shape5332, avg > 200000),

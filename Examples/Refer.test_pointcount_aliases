@@ -1,0 +1,24 @@
+tens == pt0: 1
+jacks == pt1: 1
+queens == pt2: 1
+kings == pt3: 1
+aces == pt4: 1
+top2 == pt5: 1
+top3 == pt6: 1
+top4 == pt7: 1
+top5 == pt8: 1
+c13 == pt9: 1
+tens == pt0 (spades): 1
+jacks == pt1 (spades): 1
+queens == pt2 (spades): 1
+kings == pt3 (spades): 1
+aces == pt4 (spades): 1
+top2 == pt5 (spades): 1
+top3 == pt6 (spades): 1
+top4 == pt7 (spades): 1
+top5 == pt8 (spades): 1
+c13 == pt9 (spades): 1
+Generated 100000 hands
+Produced 100000 hands
+Initial random seed 1
+Time needed    0.131 sec

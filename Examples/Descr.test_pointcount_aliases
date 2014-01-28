@@ -1,0 +1,26 @@
+
+
+produce 100000
+
+
+action
+	average "tens == pt0" (tens(north) == pt0(north)),
+	average "jacks == pt1" (jacks(north) == pt1(north)),
+	average "queens == pt2" (queens(north) == pt2(north)),
+	average "kings == pt3" (kings(north) == pt3(north)),
+	average "aces == pt4" (aces(north) == pt4(north)),
+	average "top2 == pt5" (top2(north) == pt5(north)),
+	average "top3 == pt6" (top3(north) == pt6(north)),
+	average "top4 == pt7" (top4(north) == pt7(north)),
+	average "top5 == pt8" (top5(north) == pt8(north)),
+	average "c13 == pt9" (c13(north) == pt9(north)),
+	average "tens == pt0 (spades)" (tens(north, spades) == pt0(north, spades)),
+	average "jacks == pt1 (spades)" (jacks(north, spades) == pt1(north, spades)),
+	average "queens == pt2 (spades)" (queens(north, spades) == pt2(north, spades)),
+	average "kings == pt3 (spades)" (kings(north, spades) == pt3(north, spades)),
+	average "aces == pt4 (spades)" (aces(north, spades) == pt4(north, spades)),
+	average "top2 == pt5 (spades)" (top2(north, spades) == pt5(north, spades)),
+	average "top3 == pt6 (spades)" (top3(north, spades) == pt6(north, spades)),
+	average "top4 == pt7 (spades)" (top4(north, spades) == pt7(north, spades)),
+	average "top5 == pt8 (spades)" (top5(north, spades) == pt8(north, spades)),
+	average "c13 == pt9 (spades)" (c13(north, spades) == pt9(north, spades)),

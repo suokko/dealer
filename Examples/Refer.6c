@@ -1,6 +1,12 @@
 king drops: 0.573465
 finesse: 0.749792
+score king drops: 751.144
+score king drops nv: 514.412
+score finesse: 1002.19
+score finesse nv: 677.298
+finesse gains IMPs: 2.41369
+finesse gains IMPs nv: 2.06104
 Generated 1000000 hands
 Produced 110556 hands
 Initial random seed 1
-Time needed    1.600 sec
+Time needed    0.793 sec

@@ -1,0 +1,8 @@
+nhcp = hcp(north)
+
+nhcp = hcp(north)*2
+
+generate 10000
+
+action
+	average "hcp*2" nhcp,

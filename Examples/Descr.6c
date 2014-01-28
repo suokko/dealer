@@ -30,8 +30,20 @@ predeal
 generate 
 	1000000
 
+drops = shape(west, xxx1)
+finesse = hascard(east, KH)
+
+tricksdrop = drops ? (finesse ? 13 : 12) : 11
+tricksfinesse = finesse ? 12 : 11
+
 condition
 	hcp(east)>=10 && shape(west, x5xx) && shape(east, x45x + x46x + x47x)
 action
-	average "king drops" shape(west, xxx1),
-	average "finesse" hascard(east, KH)
+	average "king drops" drops,
+	average "finesse" finesse,
+	average "score king drops"  score(vul, x6C, tricksdrop),
+	average "score king drops nv" score(nv, x6C, tricksdrop),
+	average "score finesse" score(vul, x6C, tricksfinesse),
+	average "score finesse nv" score(nv, x6C, tricksfinesse),
+ 	average "finesse gains IMPs" imps(score(vul, x6C, tricksfinesse) - score(vul, x6C, tricksdrop)),
+	average "finesse gains IMPs nv" imps(score(nv, x6C, tricksfinesse) - score(nv, x6C, tricksdrop)),

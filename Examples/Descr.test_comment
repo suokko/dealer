@@ -1,0 +1,13 @@
+# Basic comments
+
+/* code after comment */ hcp(north) /* comment in middle of code */ > 1 /* comment after code */
+
+// single line comments
+
+/* Multiline comments
+   line numbering should be tested */
+
+/***** multiple stars ******/
+
+/* multiline comment ending to EOF
+   hah!

@@ -1,0 +1,9 @@
+
+action
+	printes ("hcp south ", hcp(south), " spades south ", spades(south)),
+	printes ("
+spades south ", spades(north)),
+	printes (spades(east)),
+	printes ("
+only string
+"),

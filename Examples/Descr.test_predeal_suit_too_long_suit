@@ -1,0 +1,3 @@
+predeal spades(north) == 5
+predeal spades(south) == 5
+predeal spades(east) == 5

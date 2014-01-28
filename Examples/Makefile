@@ -18,7 +18,7 @@ distribution: ${PROGRAMCOV} clearstats
 	@cd ${SRCDIR} && ../${PROGRAMCOV} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
 examples: ${PROGRAMCOV} clearstats
-	@cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV}
+	@-cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV}
 
 refer:
 	-for f in ${OUTPUT}; do \
@@ -26,6 +26,7 @@ refer:
 		f1=`echo $$f | sed s/Output/Refer/` ; \
 		echo $$f1; \
 		/bin/cp $$f $$f1; \
+		[ -e $$f.err ] && /bin/cp $$f.err $$f1.err; \
 	done 
 
 makehtml: examples distribution 

@@ -1,0 +1,22 @@
+altcount 0 5 1 5 3 4 7 0 0 0 0  0  0  0
+altcount 0 1 2 3 4 0 0 0 0 0 0  0  0  0
+altcount 1 1 2 3 4 5 0 0 0 0 0  0  0  0
+altcount 8 1 2 3 4 5 6 7 8 9 10 11 12 13
+
+produce 100000
+
+vhcp = aces(north)*1 +
+	kings(north)*2 +
+	queens(north)*3 +
+	jacks(north)*4 +
+	tens(north)*0
+
+vcntrl = aces(north)*1 +
+	kings(north)*2 +
+	queens(north)*3 +
+	jacks(north)*4 +
+	tens(north)*5
+
+action
+	average "vhcp == hcp" (hcp(north) == vhcp),
+	average "vcntrl == controls" (controls(north) == vcntrl),

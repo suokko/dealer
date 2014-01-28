@@ -1,0 +1,4 @@
+action
+	printcompact,
+	printcompact (hcp(south)),
+	printoneline (hcp(south)),

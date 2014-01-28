@@ -1,0 +1,54 @@
+imps(10): 0
+imps(20): 1
+imps(50): 2
+imps(90): 3
+imps(130): 4
+imps(170): 5
+imps(220): 6
+imps(270): 7
+imps(320): 8
+imps(370): 9
+imps(430): 10
+imps(500): 11
+imps(600): 12
+imps(750): 13
+imps(900): 14
+imps(1100): 15
+imps(1300): 16
+imps(1500): 17
+imps(1750): 18
+imps(2000): 19
+imps(2250): 20
+imps(2500): 21
+imps(3000): 22
+imps(3500): 23
+imps(4000): 24
+imps(-10): 0
+imps(-20): -1
+imps(-50): -2
+imps(-90): -3
+imps(-130): -4
+imps(-170): -5
+imps(-220): -6
+imps(-270): -7
+imps(-320): -8
+imps(-370): -9
+imps(-430): -10
+imps(-500): -11
+imps(-600): -12
+imps(-750): -13
+imps(-900): -14
+imps(-1100): -15
+imps(-1300): -16
+imps(-1500): -17
+imps(-1750): -18
+imps(-2000): -19
+imps(-2250): -20
+imps(-2500): -21
+imps(-3000): -22
+imps(-3500): -23
+imps(-4000): -24
+Generated 1 hands
+Produced 1 hands
+Initial random seed 1
+Time needed    0.000 sec

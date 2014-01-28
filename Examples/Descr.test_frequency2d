@@ -1,0 +1,7 @@
+generate
+	2000000
+
+action
+	frequency "controls vs hcp" (hcp(north), 0, 40, controls(north), 0, 12),
+	frequency "aces vs hcp" (hcp(north), 0, 40, aces(north), 0, 4),
+	frequency "spades vs hcp(spades)" (spades(north), 1, 9, hcp(north, spades), 2, 9),
