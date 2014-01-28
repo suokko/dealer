@@ -8,7 +8,7 @@ RNDLIB      = ${BUILDDIR}/libgnurand.a
 RNDLIBCOV      = ${subst .a,.cov.a, ${RNDLIB}}
 
 rndclean:
-	-rm ${RNDOBJ} ${RNDLIB} ${subst .o,.d,${RNDOBJ}}
+	@rm -f ${RNDOBJ} ${BUILDDIR}/main.o ${BUILDDIR}/main.d ${RNDOBJCOV} ${RNDLIB} ${subst .o,.d,${RNDOBJ} ${RNDOBJCOV}}
 
 clean: rndclean
 

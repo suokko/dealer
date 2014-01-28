@@ -18,13 +18,14 @@ OBJ  = ${addprefix ${BUILDDIR}/, dealer.o defs.o pbn.o c4.o pointcount.o}
 OBJCOV = ${subst .o,.cov.o,${OBJ}}
 
 ${PROGRAM}: ${OBJ}
-	$(SCC) ${CFLAGS} -o $@ $?
+	$(SCC) ${CFLAGS} -o $@ $^
 
 ${PROGRAMCOV}: ${OBJCOV}
-	$(SCC) ${CFLAGS} ${COVFLAGS} -o $@ $?
+	$(SCC) ${CFLAGS} ${COVFLAGS} -o $@ $^
 
 clean:
-	@rm -f ${OBJ} ${LOBJ} ${YOBJ} ${subst .o,.d,${OBJ}} ${BUILDDIR}/deb dealer
+	@rm -f ${OBJ} ${OBJCOV} ${LOBJ} ${YOBJ} ${subst .o,.d,${OBJ} ${OBJCOV}} ${BUILDDIR}/deb dealer
+	@rm -f ${BUILDDIR}/*.gcda ${BUILDDIR}/*.gcno
 	@[ -e ${BUILDDIR} ] && rmdir ${BUILDDIR} || true
 
 tarclean: clean ${YOBJ}
