@@ -29,8 +29,24 @@ foreach $input (`ls $file`) {
   $output =~ s/Descr/Output/;
   $refer  = $input;
   $refer  =~ s/Descr/Refer/;
+  $params = $input;
+  $params =~ s/Descr/Params/;
 
-  system ("$exe -s $seed $input 2>$output.err >$output");
+  if (-e $params) {
+    open my $info, $params;
+    unlink $output;
+    unlink "$output.err";
+    while( my $line = <$info>) {
+      $line =~ s/\R//;
+      my($rule, $arg) = split(',', $line);
+      if (eval($rule)) {
+        system ("echo $arg $input >> $output");
+        system ("$exe $arg $input 2>>$output.err >>$output");
+      }
+    }
+  } else {
+    system ("$exe -s $seed $input 2>$output.err >$output");
+  }
 
   if (-s "$output.err" == 0) {
     unlink("$output.err");
