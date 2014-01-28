@@ -1,6 +1,16 @@
 #!/usr/bin/perl
 
-$exe = "../$ARGV[0]";
+my ($exe, $file) = @ARGV;
+
+if ($file eq "") {
+  $file = "Descr.*";
+}
+
+if ($exe eq "") {
+  $exe = "dealer"
+}
+
+$exe = "../$exe";
 
 print $exe
 #
@@ -10,7 +20,7 @@ $seed = 1;
 
 $exitcode = 0;
 
-foreach $input (`ls Descr.*`) {
+foreach $input (`ls $file`) {
   # Loop over all files that start with Descr.
   chop $input;
   print "  TEST   $input\n";

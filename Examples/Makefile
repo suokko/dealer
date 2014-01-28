@@ -11,14 +11,21 @@ SRCDIR := ${CURDIR}/Examples
 SHELL=/bin/sh
 
 OUTPUT = $(wildcard ${SRCDIR}/Output.*)
+DESCR := $(wildcard ${SRCDIR}/Descr.*)
+# move the Descr.test_dealer to front because it is slow
+DESCR := ${SRCDIR}/Descr.test_dealer $(filter-out .test_dealer,${DESCR})
+OUT = $(subst Descr.,Output.,${DESCR})
+
 
 test: makehtml
 
 distribution: ${PROGRAMCOV} clearstats
 	@cd ${SRCDIR} && ../${PROGRAMCOV} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
-examples: ${PROGRAMCOV} clearstats
-	@-cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV}
+examples: ${OUT}
+
+${SRCDIR}/Output.%: ${SRCDIR}/Descr.% ${PROGRAMCOV} clearstats
+	@-cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV} $(notdir $<)
 
 refer:
 	-for f in ${OUTPUT}; do \
@@ -31,8 +38,8 @@ refer:
 
 makehtml: examples distribution 
 	${SMKDIR} .test
-	@echo "  LCOV   process" && lcov --base-directory . --directory . --rc lcov_branch_coverage=1 -c -o .test/dealer.info
-	@echo "  LCOV   strip" && lcov --remove .test/dealer.info "/usr*" --rc lcov_branch_coverage=1 -o .test/dealer.info
+	@echo "  LCOV   process" && lcov --base-directory . --directory . --rc lcov_branch_coverage=1 -q -c -o .test/dealer.info
+	@echo "  LCOV   strip" && lcov --remove .test/dealer.info "/usr*" --rc lcov_branch_coverage=1 -q -o .test/dealer.info
 	@echo "  GENHTML" && genhtml --num-spaces 4 -o .test/ --branch-coverage -t "Dealer test coverage" .test/dealer.info
 
 testresults: makehtml
@@ -40,6 +47,7 @@ testresults: makehtml
 
 clearstats:
 	@echo "  LCOV   clear" && lcov --base-directory . --directory . --zerocounters -q
+	@echo "  RM     *.gcda" && rm -f ${BUILDDIR}/*.gcda
 
 exampleclean:
 	-rm -f ${OUTPUT}
