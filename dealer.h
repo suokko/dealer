@@ -54,8 +54,8 @@ int maxdealer;
 int maxvuln;
 int will_print;
 
-#define printcompact(d) (fprintcompact(stdout, d, 0))
-#define printoneline(d) (fprintcompact(stdout, d, 1))
+#define printcompact(d) (fprintcompact(stdout, d, 0, 0))
+#define printoneline(d) (fprintcompact(stdout, d, 1, 0))
 
 #ifdef FRANCOIS
   int hascard (deal, int, card, int);

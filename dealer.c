@@ -113,7 +113,7 @@ unsigned char zero52[NRANDVALS];
 deal *deallist;
 
 /* Function definitions */
-void fprintcompact (FILE *, deal, int);
+void fprintcompact (FILE *, deal, int, int);
 int trix (char);
 void error (char *);
 void printew (deal d);
@@ -341,27 +341,28 @@ int true_dd (deal d, int l, int c) {
     return ((l == 1) || (l == 3)) ? 13 - trix (res) : trix (res);
 #else
     FILE *f;
+    int r;
     char cmd[1024];
     char tn1[256],  tn2[256];
-    char res;
+    int res;
 
     f = fopen (tn1, "w+");
     if (f == 0 ) error ("Can't open temporary file");
-    fprintcompact (f, d, 0);
-    fprintf (f, "%c %c\n", "eswn"[l], "cdhsn"[c]);
+    fprintcompact (f, d, 1, 1);
+    fflush(stdout);
     fclose (f);
     tmpnam (tn2);
-    sprintf (cmd, "bridge -d -q %s >%s", tn1, tn2);
+    sprintf (cmd, "dds %s -trumps=%c -leader=%c -sol=1 | tail -n1 > %s;", tn1, "cdhsn"[c], "eswn"[l], tn2);
     system (cmd);
     f = fopen (tn2, "r");
     if (f == 0) error ("Can't read output of analysis");
-    fscanf (f, "%*[^\n]\n%c", &res);
+    do {
+      r = fscanf (f, " %d: ", &res);
+    } while(r != 1 && r != EOF);
     fclose (f);
     remove (tn1);
     remove (tn2);
-    /* This will get the number of tricks EW can get.  If the user wanted NW, 
-       we have to subtract 13 from that number. */
-    return ((l == 1) || (l == 3)) ? 13 - trix (res) : trix (res);
+    return res;
 #endif /* MSDOS */
   }
 }
@@ -694,11 +695,11 @@ void analyze (deal d, struct handstat *hsbase) {
   } /* end for each player */
 }
 
-void fprintcompact (FILE * f, deal d, int ononeline) {
+void fprintcompact (FILE * f, deal d, int ononeline, int disablecompass) {
   char pt[] = "nesw";
   int s, p, r;
   for (p = COMPASS_NORTH; p <= COMPASS_WEST; p++) {
-    fprintf (f, "%c ", pt[p]);
+    if (!disablecompass) fprintf (f, "%c ", pt[p]);
     for (s = SUIT_SPADE; s >= SUIT_CLUB; s--) {
       for (r = 12; r >= 0; r--)
         if (HAS_CARD (d, p, MAKECARD (s, r)))
@@ -706,7 +707,7 @@ void fprintcompact (FILE * f, deal d, int ononeline) {
       if (s > 0) fprintf (f, ".");
     }
     /* OK to use \n as this is mainly intended for internal dealer use. */ 
-    fprintf (f, ononeline ? " " : "\n");
+    fprintf (f, ononeline && p != COMPASS_WEST ? " " : "\n");
   }
 }
 
@@ -1494,9 +1495,8 @@ void action () {
         printoneline (curdeal);
         if (acp->ac_expr1) {
           expr = evaltree (acp->ac_expr1);
-          printf ("%d", expr);
+          printf ("%d\n", expr);
         }
-        printf ("\n");
         break;
 
       case ACT_PRINTES: 
