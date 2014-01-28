@@ -370,8 +370,8 @@ int true_dd (deal d, int l, int c) {
 void evalcontract () {
   int s;
   for (s = 0; s < 5; s++) {
-    results[1][s][dd (curdeal, 3, s)]++;      /* south declarer */ 
-    results[0][s][dd (curdeal, 1, s)]++;      /* north declarer */
+    results[1][s][dd (curdeal, 2, s)]++;      /* south declarer */ 
+    results[0][s][dd (curdeal, 0, s)]++;      /* north declarer */
   }
 }
 
@@ -1484,6 +1484,9 @@ void action () {
     switch (acp->ac_type) {
       default:
         assert (0); /*NOTREACHED */
+      case ACT_EVALCONTRACT:
+        evalcontract ();
+        break;
       case ACT_PRINTCOMPACT:
         printcompact (curdeal);
         if (acp->ac_expr1) {
