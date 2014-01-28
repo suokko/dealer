@@ -1286,7 +1286,14 @@ int evaltree (struct treebase *b) {
     case TRT_AVG:
       return (int)(average*1000000);
     case TRT_RND:
-      return (int) (((double) evaltree (t->tr_leaf1)) * RANDOM () / (RAND_MAX + 1.0));
+      {
+        double eval = evaltree(t->tr_leaf1);
+        int random = RANDOM() & ((RAND_MAX - 1) | RAND_MAX);
+        double mul = eval * random;
+        double res = mul / (RAND_MAX + 1.0);
+        int rv = (int)(res);
+        return rv;
+      }
   }
 }
 
