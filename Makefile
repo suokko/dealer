@@ -57,13 +57,13 @@ ${BUILDDIR}/%.o: %.c ${BUILDDIR}/deb
 	${SCC} -c ${CFLAGS} -o $@ $<
 
 ${BUILDDIR}/%.o: ${BUILDDIR}/%.c ${BUILDDIR}/deb
-	${SCC} -c ${CFLAGS} -o $@ $<
+	${SCC} -c ${CFLAGS} -Wno-unused-function -o $@ $<
 
 ${BUILDDIR}/%.cov.o: %.c ${BUILDDIR}/deb
 	${SCC} -c ${CFLAGS} ${COVFLAGS} -o $@ $<
 
 ${BUILDDIR}/%.cov.o: ${BUILDDIR}/%.c ${BUILDDIR}/deb
-	${SCC} -c ${CFLAGS} ${COVFLAGS} -o $@ $<
+	${SCC} -c ${CFLAGS} -Wno-unused-function ${COVFLAGS} -o $@ $<
 
 #
 # BUILDDIR
