@@ -5,7 +5,7 @@ typedef unsigned char card;
 
 typedef card deal[52];
 
-static char *player_name[] = { "North", "East", "South", "West" };
+extern const char * const player_name[4];
 
 int verbose;
 
