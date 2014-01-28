@@ -69,13 +69,18 @@ char lcrep[] = "23456789tjqka";
 char ucrep[] = "23456789TJQKA";
 #define representation (uppercase ? ucrep : lcrep );
 
+static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
                        {-1, -1, -1, -1}, {-1, -1, -1, -1}};
+int predealt[5][4] = { {0, 0, 0, 0}, {0, 0, 0, 0},
+                       {0, 0, 0, 0}, {0, 0, 0, 0},
+                       {0, 0, 0, 0}};
 
 int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
                  1990, 2240, 2490, 2990, 3490, 3990};
 
+static const char * const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 const char * const player_name[] = { "North", "East", "South", "West" };
 deal fullpack;
 deal stacked_pack;
@@ -177,6 +182,21 @@ int true_dd (deal d, int l, int c); /* prototype */
    /* Hamming-related tables.  See explanation below... */
   int completely_known_hand[4] = {0, 0, 0, 0};
 #endif /* FRANCOIS */
+
+static int uniform_random(int max) {
+  unsigned rnd;
+  unsigned val;
+#if STD_RAND
+  const int rand_max = RAND_MAX;
+#else
+  const unsigned rand_max = RAND_MAX << 1;
+#endif
+  do {
+    val = RANDOM ();
+    rnd = val % max;
+  } while (max - rnd > rand_max - val);
+  return (int)rnd;
+}
 
 void initevalcontract () {
   int i, j, k;
@@ -719,12 +739,120 @@ void printdeal (deal d) {
   printf ("\n");
 }
 
+void setup_bias (void) {
+  int p, s;
+  char err[256];
+  int len[4] = {0}, pretotal[4] = {0};
+  for (p = 0; p < 4; p++) {
+    int tot = 0;
+    for (s = 0; s < 4; s++) {
+      if (biasdeal[p][s] >= 0) {
+        if (predealt[p][s] > biasdeal[p][s]) {
+          sprintf(err, "More predeal cards than bias allows for %s in %s\n", player_name[p], suit_name[s]);
+          error(err);
+        }
+        len[s] += biasdeal[p][s];
+        tot += biasdeal[p][s];
+        /* Remove predealt cards from bias length */
+        biasdeal[p][s] -= predealt[p][s];
+        biastotal += biasdeal[p][s];
+      } else {
+        len[s] += predealt[p][s];
+        tot += predealt[p][s];
+      }
+      pretotal[p] += predealt[p][s];
+    }
+    if (tot > 13) {
+      sprintf(err, "%d cards predealt for %s\n", tot, player_name[p]);
+      error(err);
+    }
+  }
+  for (s = 0; s < 4; s++) {
+    if (len[s] > 13) {
+      sprintf(err, "%d cards predealt to %s\n", len[s], suit_name[s]);
+      error(err);
+    }
+  }
+
+  if (biastotal == 0)
+    return;
+
+  /* Fill in suit reservations to stacked_pack */
+  for (p = 0; p < 4; p++) {
+    for (s = 0; s < 4; s++) {
+      int b;
+      predealt[4][s] += predealt[p][s];
+      if (biasdeal[p][s] <= 0)
+        continue;
+      for (b = 0; b < biasdeal[p][s]; b++) {
+        stacked_pack[p*13 + pretotal[p]] = CARD_C + s;
+        pretotal[p]++;
+      }
+    }
+  }
+}
+
+int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
+{
+  int p, c;
+  for (p = 0; p < 4; p++) {
+    for (c = pack[p]; c < 13*(p+1); c++) {
+      if (C_SUIT(d[c]) != suit)
+        continue;
+      if (pos-- == 0)
+        return c;
+    }
+  }
+  error("No card found for bias dealing\n");
+  return -1;
+}
+
+void shuffle_bias(deal d) {
+  int pack[4], p, s, cards_left[4];
+  if (biastotal == 0)
+    return;
+  for (p = 0; p < 4; p++) {
+    cards_left[p] = 13 - predealt[4][p];
+    pack[p] = p*13;
+    while (stacked_pack[pack[p]] < CARD_C) pack[p]++;
+  }
+  for (p = 0; p < 4; p++) {
+    for (s = 0; s < 4; s++) {
+      int bias = biasdeal[p][s], b, check;
+      if (bias <= 0)
+        continue;
+      check = CARD_C + s;
+      (void)check;
+
+      for (b = 0; b < biasdeal[p][s]; b++) {
+        int pos;
+        card t;
+        assert (stacked_pack[pack[p]] == check);
+        pos = uniform_random(cards_left[s]--);
+        pos = bias_pickcard(d, p, s, pos, pack);
+        t = d[pos];
+        d[pos] = d[pack[p]];
+        d[pack[p]] = t;
+        pack[p]++;
+      }
+    }
+  }
+}
+
+int bias_filter(deal d, int pos, int idx) {
+  const int player1 = pos / 13;
+  const int suit1 = C_SUIT(d[idx]);
+  const int player2 = idx / 13;
+  const int suit2 = C_SUIT(d[pos]);
+  return biasdeal[player1][suit1] >= 0 || biasdeal[player2][suit2] >= 0;
+}
+
 void setup_deal () {
   register int i, j;
 
   j = 0;
   for (i = 0; i < 52; i++) {
-    if (stacked_pack[i] != NO_CARD) {
+    if (stacked_pack[i] < CARD_C) {
       curdeal[i] = stacked_pack[i];
     } else {
       while (fullpack[j] == NO_CARD)
@@ -744,6 +872,7 @@ void predeal (int player, card onecard) {
       for (j = player * 13; j < (player + 1) * 13; j++)
         if (stacked_pack[j] == NO_CARD) {
         stacked_pack[j] = onecard;
+        predealt[player][C_SUIT(onecard)]++;
         return;
         }
       yyerror ("More than 13 cards for one player");
@@ -755,6 +884,8 @@ void predeal (int player, card onecard) {
 void initprogram () {
   int i, i_cycle;
   int val;
+
+  setup_bias();
 
   /* Now initialize array zero52 with numbers 0..51 repeatedly. This whole
      charade is just to prevent having to do divisions. */
@@ -872,6 +1003,7 @@ int shuffle (deal d) {
     /* Algorithm according to Knuth. For each card exchange with a random
        other card. This is supposed to be the perfect shuffle algorithm. 
        It only depends on a valid random number generator.  */
+    shuffle_bias(d);
     for (i = 0; i < 52; i++) {
       if (stacked_pack[i] == NO_CARD) { 
         /* Thorvald Aagaard 14.08.1999 don't switch a predealt card */
@@ -884,7 +1016,7 @@ int shuffle (deal d) {
              k = (RANDOM () >> (31 - RANDBITS));
 #endif /* STD_RAND */
              j = zero52[k & NRANDMASK];
-           } while (j == 0xFF);
+           } while (j == 0xFF || bias_filter(d, i, j));
         } while (stacked_pack[j] != NO_CARD);
 
         t = d[j];

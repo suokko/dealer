@@ -51,6 +51,10 @@ struct expr {
 #define C_SUIT(c)               ((c)>>6)
 #define C_RANK(c)               ((c)&0x3F)
 #define NO_CARD                 0xFF
+#define CARD_S                  0xFE
+#define CARD_H                  0xFD
+#define CARD_D                  0xFC
+#define CARD_C                  0xFB
 
 #define COMPASS_NORTH   0
 #define COMPASS_EAST    1
