@@ -19,10 +19,10 @@ ${BUILDDIR}/%.cov.o: ${SRCDIR}/%.c ${BUILDDIR}/deb
 	${SCC} -c ${CFLAGS} ${COVFLAGS} -o $@ $<
 
 ${RNDLIB}: ${RNDOBJ}
-	${SAR} ${ARFLAGS} $@ $?
+	${SAR} ${ARFLAGS} $@ $^
 
 ${RNDLIBCOV}: ${RNDOBJCOV}
-	${SAR} ${ARFLAGS} $@ $?
+	${SAR} ${ARFLAGS} $@ $^
 
 ${PROGRAM}: ${RNDLIB}
 ${PROGRAMCOV}: ${RNDLIBCOV}
