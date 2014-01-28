@@ -187,6 +187,8 @@ number
                 { $$ = - $2; }
         | DISTR_OR_NUMBER
                 { $$ = d2n($1); }
+        | ARMINUS DISTR_OR_NUMBER
+                { $$ = - d2n($2); }
         ;
 
 shape
