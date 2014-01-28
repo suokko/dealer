@@ -24,7 +24,6 @@ int printpbn (int board, deal d) {
 
   /* Local variables */
   time_t timet;
-  size_t len;
   char timearray[12];
   int player, suit, rank;
 
@@ -38,7 +37,7 @@ int printpbn (int board, deal d) {
 
   /* Today's date */
   timet = time(&timet);
-  len = strftime (timearray, 12, "%Y.%m.%d", localtime(&timet));
+  strftime (timearray, 12, "%Y.%m.%d", localtime(&timet));
   printf ("[Date \"%s\"]\n", timearray);
 
   printf ("[Board \"%d\"]\n", board+1);
