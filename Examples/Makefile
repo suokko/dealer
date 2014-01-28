@@ -14,8 +14,12 @@ OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 DESCR := $(wildcard ${SRCDIR}/Descr.*)
 # move the Descr.test_dealer to front because it is slow
 DESCR := ${SRCDIR}/Descr.test_dealer $(filter-out .test_dealer,${DESCR})
-OUT = $(subst Descr.,Output.,${DESCR})
+DDSEXISTS := $(shell which dds > /dev/null; echo $?)
+ifneq (${DDSEXISTS}, 0)
+DESCR := $(filter-out .dds.,${DESCR})
+endif
 
+OUT = $(subst Descr.,Output.,${DESCR})
 
 test: makehtml
 

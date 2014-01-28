@@ -1,0 +1,19 @@
+
+#
+# This example creates hands in PBN format
+#
+west1c = hcp(west)>16
+
+east1h = hcp(east)>7 && control(east)<3
+
+condition	
+        west1c and east1h
+
+#
+
+produce 
+	10
+
+action 
+        printpbn
+

@@ -1,0 +1,4 @@
+predeal    south HKJ8732
+predeal	   hearts(east) == 4
+predeal	   hearts(west) == 4
+predeal	   hearts(north) == 4

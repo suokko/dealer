@@ -1,0 +1,4 @@
+predeal    south SAQ542, HKJ87
+predeal    spades(south) == 6
+predeal    diamonds(south) == 4
+predeal    clubs(south) == 3

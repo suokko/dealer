@@ -1,0 +1,21 @@
+nc = cccc(north)/100
+sc = cccc(south)/100
+ec = cccc(east)/100
+wc = cccc(west)/100
+
+nsq = quality(north, spades)/100
+nhq = quality(north, hearts)/100
+ndq = quality(north, diamonds)/100
+ncq = quality(north, clubs)/100
+
+generate 100000
+
+action
+	frequency (nc, 2, 30),
+	frequency (sc, 2, 30),
+	frequency (ec, 2, 30),
+	frequency (wc, 2, 30),
+	frequency (nsq, 2, 10),
+	frequency (nhq, 2, 10),
+	frequency (ndq, 2, 10),
+	frequency (ncq, 2, 10),

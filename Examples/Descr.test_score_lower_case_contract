@@ -1,0 +1,14 @@
+
+generate 1
+
+action
+	average "7♣" score(nv, x7c, 13),
+	average "7♣ vul" score(vul, x7c, 13),
+	average "7♦" score(nv, x7d, 13),
+	average "7♦ vul" score(vul, x7d, 13),
+	average "7♥" score(nv, x7h, 13),
+	average "7♥ vul" score(vul, x7h, 13),
+	average "7♠" score(nv, x7s, 13),
+	average "7♠ vul" score(vul, x7s, 13),
+	average "7N" score(nv, x7n, 13),
+	average "7N vul" score(vul, x7n, 13),

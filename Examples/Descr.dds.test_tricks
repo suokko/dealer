@@ -1,0 +1,15 @@
+
+produce 7
+
+action
+	printcompact,
+	frequency "tricks n♣" (tricks(north, clubs),0,13),
+	frequency "tricks n♦" (tricks(north, diamonds),0,13),
+	frequency "tricks n♥" (tricks(north, hearts),0,13),
+	frequency "tricks n♠" (tricks(north, spades),0,13),
+	frequency "tricks nN" (tricks(north, notrumps),0,13),
+	frequency "tricks e♣" (tricks(east, clubs),0,13),
+	frequency "tricks e♦" (tricks(east, diamonds),0,13),
+	frequency "tricks e♥" (tricks(east, hearts),0,13),
+	frequency "tricks e♠" (tricks(east, spades),0,13),
+	frequency "tricks eN" (tricks(east, notrumps),0,13),

@@ -1,0 +1,23 @@
+generate 1
+
+action
+	average "7♣" score(nv, x7C, 13),
+	average "7♣ vul" score(vul, x7C, 13),
+	average "7♦" score(nv, x7D, 13),
+	average "7♦ vul" score(vul, x7D, 13),
+	average "7♥" score(nv, x7H, 13),
+	average "7♥ vul" score(vul, x7H, 13),
+	average "7♠" score(nv, x7S, 13),
+	average "7♠ vul" score(vul, x7S, 13),
+	average "7N" score(nv, x7N, 13),
+	average "7N vul" score(vul, x7N, 13),
+	average "2♣" score(nv, x2C, 13),
+	average "2♣ vul" score(vul, x2C, 13),
+	average "2♦" score(nv, x2D, 13),
+	average "2♦ vul" score(vul, x2D, 13),
+	average "2♥" score(nv, x2H, 13),
+	average "2♥ vul" score(vul, x2H, 13),
+	average "2♠" score(nv, x2S, 13),
+	average "2♠ vul" score(vul, x2S, 13),
+	average "2N" score(nv, x2N, 13),
+	average "2N vul" score(vul, x2N, 13),

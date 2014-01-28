@@ -1,0 +1,7 @@
+condition
+	hcp(north)+hcp(south) > 20 && spades(north) + spades(south) > 7
+	
+produce 5
+
+action
+	evalcontract,
