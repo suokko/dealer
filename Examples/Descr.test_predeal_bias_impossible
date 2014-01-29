@@ -1,0 +1,6 @@
+predeal spades(north) == 2
+predeal hearts(north) == 2
+predeal diamonds(west) == 9
+predeal clubs(east) == 9
+
+generate 1
