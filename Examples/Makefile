@@ -14,22 +14,38 @@ OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 DESCR := $(wildcard ${SRCDIR}/Descr.*)
 # move the Descr.test_dealer to front because it is slow
 DESCR := ${SRCDIR}/Descr.test_dealer $(filter-out .test_dealer,${DESCR})
-DDSEXISTS := $(shell which dds > /dev/null; echo $?)
-ifneq (${DDSEXISTS}, 0)
+DDSEXISTS := $(shell which dds)
+LCOVEXISTS := $(shell which lcov)
+ifeq (${DDSEXISTS},)
 DESCR := $(filter-out .dds.,${DESCR})
+$(info *********************************************************)
+$(info * dds is optional tool but strongly encouraged to have. *)
+$(info *********************************************************)
+endif
+ifeq ($(LCOVEXISTS),)
+$(info **********************************************************)
+$(info * lcov is optional tool but strongly encouraged to have. *)
+$(info **********************************************************)
+endif
+
+ifeq ($(filter cov, ${MAKECMDGOALS}),cov)
+PROG=${PROGRAMCOV}
+else
+PROG=${PROGRAM}
 endif
 
 OUT = $(subst Descr.,Output.,${DESCR})
 
-test: makehtml
+test: distribution examples 
+cov: makehtml
 
-distribution: ${PROGRAMCOV} clearstats
-	@cd ${SRCDIR} && ../${PROGRAMCOV} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
+distribution: ${PROG} clearstats
+	@cd ${SRCDIR} && ../${PROG} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
 examples: ${OUT}
 
-${SRCDIR}/Output.%: ${SRCDIR}/Descr.% ${PROGRAMCOV} clearstats
-	@-cd ${SRCDIR} && ./test_dealer.pl ${PROGRAMCOV} $(notdir $<)
+${SRCDIR}/Output.%: ${SRCDIR}/Descr.% ${PROG} clearstats
+	@-cd ${SRCDIR} && ./test_dealer.pl ${PROG} $(notdir $<)
 
 refer:
 	-for f in ${OUTPUT}; do \

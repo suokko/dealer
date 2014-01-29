@@ -20,6 +20,23 @@ $seed = 1;
 
 $exitcode = 0;
 
+sub replaceprogname {
+  my ($exe, $file) = @_;
+  $cov  = $exe;
+  $orig = $exe;
+  $cov  =~ s/^.*\/([^\/]*[^.][^c][^o][^v])(\.cov|)$/\1.cov/;
+  $orig =~ s/^.*\/([^\/]*[^.][^c][^o][^v])(\.cov|)$/\1/;
+  open (IN, "+<$file");
+  @lines = <IN>;
+
+  seek IN,0,0;
+  foreach $line (@lines) {
+    $line =~ s/$orig([^.][^c][^o][^v])/$cov\1/g;
+    print IN $line;
+  }
+  close IN;
+}
+
 foreach $input (`ls $file`) {
   # Loop over all files that start with Descr.
   chop $input;
@@ -47,6 +64,9 @@ foreach $input (`ls $file`) {
   } else {
     system ("$exe -s $seed $input 2>$output.err >$output");
   }
+
+  replaceprogname($exe, "$output.err");
+  replaceprogname($exe, $output);
 
   if (-s "$output.err" == 0) {
     unlink("$output.err");

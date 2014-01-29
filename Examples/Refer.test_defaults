@@ -242,7 +242,7 @@ A J 4               T 8 2               Q 6 5               K 9 7 3
 Generated 40 hands
 Produced 40 hands
 Initial random seed 1
-Time needed    0.002 sec
+Time needed    0.001 sec
 -s 1 -m Descr.test_defaults
    1.
 A K Q T 3           6 5 2               J 7 4               9 8 
@@ -487,7 +487,7 @@ A J 4               T 8 2               Q 6 5               K 9 7 3
 Generated 40 hands
 Produced 40 hands
 Initial random seed 1
-Time needed    0.002 sec
+Time needed    0.001 sec
 -s 1 -m -p 200 Descr.test_defaults
    1.
 A K Q T 3           6 5 2               J 7 4               9 8 
@@ -1726,7 +1726,7 @@ A 9                 K 8 6 5 2           T                   Q J 7 4 3
 Generated 2 hands
 Produced 2 hands
 Initial random seed 1
-Time needed    0.001 sec
+Time needed    0.000 sec
 -s 1 -g 2 -V Descr.test_defaults
 Version info....
 $Revision: 1.24 $
@@ -1735,3 +1735,5 @@ $Author: henk $
 -s 1 -g 2 -h Descr.test_defaults
 -s 1 -g 2 -? Descr.test_defaults
 -s 1 SecondParam.file Descr.test_defaults
+-e Descr.test_defaults
+Exhaust mode not included in this executable
