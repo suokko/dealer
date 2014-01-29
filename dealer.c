@@ -6,7 +6,7 @@
 #include <limits.h>
 
 long seed = 0;
-int quiet = 0;
+static int quiet = 0;
 char* input_file = 0;
 
 #ifdef _MSC_VER
@@ -63,31 +63,31 @@ void yyerror (char *);
 /* Global variables */
 
 enum { STAT_MODE, EXHAUST_MODE };
-int computing_mode = DEFAULT_MODE;
+static int computing_mode = DEFAULT_MODE;
 
-char ucrep[14] = "23456789TJQKA";
+static char ucrep[14] = "23456789TJQKA";
 
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
                        {-1, -1, -1, -1}, {-1, -1, -1, -1}};
-int predealt[5][4] = { {0, 0, 0, 0}, {0, 0, 0, 0},
+static int predealt[5][4] = { {0, 0, 0, 0}, {0, 0, 0, 0},
                        {0, 0, 0, 0}, {0, 0, 0, 0},
                        {0, 0, 0, 0}};
 
-int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
+static int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
                  1990, 2240, 2490, 2990, 3490, 3990};
 
 static const char * const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 const char * const player_name[] = { "North", "East", "South", "West" };
-deal fullpack;
-deal stacked_pack;
+static deal fullpack;
+static deal stacked_pack;
 
-int swapping = 0;
-int swapindex = 0;
-int loading = 0;
-int loadindex = 0;
-double average = 0.0;
+static int swapping = 0;
+static int swapindex = 0;
+static int loading = 0;
+static int loadindex = 0;
+static double average = 0.0;
 
 /* Various handshapes can be asked for. For every shape the user is
    interested in a number is generated. In every distribution that fits that
@@ -95,28 +95,28 @@ double average = 0.0;
    This makes looking up a shape a small constant cost.
 */
 #define MAXDISTR 8*sizeof(int)
-int **distrbitmaps[14];
+static int **distrbitmaps[14];
 
-int results[2][5][14];
+static int results[2][5][14];
 int use_compass[NSUITS];
 int use_vulnerable[NSUITS];
-int nprod, maxproduce;
-int ngen;
+static int nprod;
+int maxproduce;
+static int ngen;
 
-struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0};
+static struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0};
 struct treebase *decisiontree = &defaulttree.base;
-struct action defaultaction = {(struct action *) 0, ACT_PRINTALL};
+static struct action defaultaction = {(struct action *) 0, ACT_PRINTALL};
 struct action *actionlist = &defaultaction;
-unsigned char zero52[NRANDVALS];
-deal *deallist;
+static unsigned char zero52[NRANDVALS];
+static deal *deallist;
 
 /* Function definitions */
-void fprintcompact (FILE *, deal, int, int);
-int trix (char);
-void error (char *);
-void printew (deal d);
+static void fprintcompact (FILE *, deal, int, int);
+static void error (char *);
+static void printew (deal d);
 void yyparse ();
-int true_dd (deal d, int l, int c); /* prototype */
+static int true_dd (deal d, int l, int c); /* prototype */
 
 #ifdef FRANCOIS
   /* Special variables for exhaustive mode 
@@ -196,7 +196,7 @@ static int uniform_random(int max) {
   return (int)rnd;
 }
 
-void initevalcontract () {
+static void initevalcontract () {
   int i, j, k;
   for (i = 0; i < 2; i++)
     for (j = 0; j < 5; j++)
@@ -204,7 +204,7 @@ void initevalcontract () {
         results[i][j][k] = 0;
 }
 
-int imps (int scorediff) {
+static int imps (int scorediff) {
   int i, j;
   j = abs (scorediff);
   for (i = 0; i < 24; i++)
@@ -212,7 +212,7 @@ int imps (int scorediff) {
   return scorediff < 0 ? -i : i;
 }
 
-int score (int vuln, int suit, int level, int tricks) {
+static int score (int vuln, int suit, int level, int tricks) {
   int total = 0;
 
   /* going down */
@@ -245,7 +245,7 @@ int score (int vuln, int suit, int level, int tricks) {
   return total;
 }
 
-void showevalcontract (int nh) {
+static void showevalcontract (int nh) {
   int s, l, i, v;
   for (v = 0; v < 2; v++) {
     printf ("%sVulnerable%s", v ? "" : "Not ", crlf);
@@ -268,7 +268,7 @@ void showevalcontract (int nh) {
   }
 }
 
-int dd (deal d, int l, int c) {
+static int dd (deal d, int l, int c) {
   /* results-cached version of dd() */
   /* the dd cache, and the ngen it refers to */
   static int cached_ngen = -1;
@@ -290,14 +290,14 @@ int dd (deal d, int l, int c) {
 
 struct tagLibdeal libdeal;
 
-int get_tricks (int pn, int dn) {
+static int get_tricks (int pn, int dn) {
   int tk = libdeal.tricks[dn];
   int resu;
   resu = (pn ? (tk >> (4 * pn)) : tk) & 0x0F;
   return resu;
 }
 
-int true_dd (deal d, int l, int c) {
+static int true_dd (deal d, int l, int c) {
   if (loading && libdeal.valid) {
     int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
     /* This will get the number of tricks EW can get.  If the user wanted NS, 
@@ -332,7 +332,7 @@ int true_dd (deal d, int l, int c) {
     fclose (f);
     /* This will get the number of tricks EW can get.  If the user wanted NW, 
        we have to subtract 13 from that number. */
-    return ((l == 1) || (l == 3)) ? 13 - trix (res) : trix (res);
+    return ((l == 1) || (l == 3)) ? 13 - res : res;
 #else
     FILE *f;
     int r;
@@ -340,6 +340,7 @@ int true_dd (deal d, int l, int c) {
     char tn1[256],  tn2[256];
     int res;
 
+    tmpnam (tn1);
     f = fopen (tn1, "w+");
     if (f == 0 ) error ("Can't open temporary file");
     fprintcompact (f, d, 1, 1);
@@ -361,7 +362,7 @@ int true_dd (deal d, int l, int c) {
   }
 }
 
-void evalcontract () {
+static void evalcontract () {
   int s;
   for (s = 0; s < 5; s++) {
     results[1][s][dd (curdeal, 2, s)]++;      /* south declarer */ 
@@ -369,16 +370,16 @@ void evalcontract () {
   }
 }
 
-void error (char *s) {
+static void error (char *s) {
   fprintf (stderr, "%s%s", s, crlf);
   exit (10);
 }
 
 /* implementations of regular & alternate pointcounts */
 
-int countindex = -1;
+static int countindex = -1;
 
-void zerocount (int points[13]) {
+static void zerocount (int points[13]) {
   int i;
   for (i = 12; i >= 0; i--) points[i] = 0;
 }
@@ -413,7 +414,7 @@ char * mycalloc (unsigned nel, unsigned siz) {
   exit (-1); /*NOTREACHED */
 }
 
-void initdistr () {
+static void initdistr () {
   int **p4, *p3;
   int clubs, diamonds, hearts;
 
@@ -434,7 +435,7 @@ void initdistr () {
   }
 }
 
-int getshapenumber (int cl, int di, int ht, int sp)
+static int getshapenumber (int cl, int di, int ht, int sp)
 {
   (void)sp;
   return distrbitmaps[cl][di][ht];
@@ -448,7 +449,7 @@ void  setshapebit (struct shape *s, int cl, int di, int ht, int sp)
   s->bits[idx] |= 1 << bit;
 }
 
-int checkshape (int nr, struct shape *s)
+static int checkshape (int nr, struct shape *s)
 {
   int idx = nr / 32;
   int bit = nr % 32;
@@ -456,7 +457,7 @@ int checkshape (int nr, struct shape *s)
   return r;
 }
 
-void newpack (deal d) {
+static void newpack (deal d) {
   int suit, rank, place;
 
   place = 0;
@@ -542,7 +543,7 @@ int make_contract (char suitchar, char trickchar) {
   return MAKECONTRACT (suit, trick);
 }
 
-void analyze (deal d, struct handstat *hsbase) {
+static void analyze (deal d, struct handstat *hsbase) {
 
   /* Analyze a hand.  Modified by HU to count controls and losers. */
   /* Further mod by AM to count several alternate pointcounts too  */
@@ -689,7 +690,7 @@ void analyze (deal d, struct handstat *hsbase) {
   } /* end for each player */
 }
 
-void fprintcompact (FILE * f, deal d, int ononeline, int disablecompass) {
+static void fprintcompact (FILE * f, deal d, int ononeline, int disablecompass) {
   char pt[] = "nesw";
   int s, p, r;
   for (p = COMPASS_NORTH; p <= COMPASS_WEST; p++) {
@@ -705,7 +706,7 @@ void fprintcompact (FILE * f, deal d, int ononeline, int disablecompass) {
   }
 }
 
-void printdeal (deal d) {
+static void printdeal (deal d) {
   int suit, player, rank, cards;
 
   printf ("%4d.\n", (nprod+1));
@@ -734,7 +735,7 @@ void printdeal (deal d) {
   printf ("\n");
 }
 
-void setup_bias (void) {
+static void setup_bias (void) {
   int p, s;
   char err[256];
   int len[4] = {0}, pretotal[4] = {0}, lenset[4] = {0};
@@ -790,7 +791,7 @@ void setup_bias (void) {
   }
 }
 
-int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
+static int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
 {
   int p, c;
   for (p = 0; p < 4; p++) {
@@ -805,9 +806,9 @@ int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
   return -1;
 }
 
-int biasfiltercounter;
+static int biasfiltercounter;
 
-void shuffle_bias(deal d) {
+static void shuffle_bias(deal d) {
   int pack[4], p, s, cards_left[4];
   if (biastotal == 0)
     return;
@@ -841,7 +842,7 @@ void shuffle_bias(deal d) {
   }
 }
 
-int bias_filter(deal d, int pos, int idx) {
+static int bias_filter(deal d, int pos, int idx) {
   const int player1 = pos / 13;
   const int suit1 = C_SUIT(d[idx]);
   const int player2 = idx / 13;
@@ -853,7 +854,7 @@ int bias_filter(deal d, int pos, int idx) {
   return biasdeal[player1][suit1] >= 0 || biasdeal[player2][suit2] >= 0;
 }
 
-void setup_deal () {
+static void setup_deal () {
   register int i, j;
 
   j = 0;
@@ -887,7 +888,7 @@ void predeal (int player, card onecard) {
   yyerror ("Card predealt twice");
 }
 
-void initprogram () {
+static void initprogram () {
   int i, i_cycle;
   int val;
 
@@ -919,7 +920,7 @@ void initprogram () {
   }
 }
 
-void swap2 (deal d, int p1, int p2) {
+static void swap2 (deal d, int p1, int p2) {
   /* functions to assist "simulated" shuffling with player
      swapping or loading from Ginsberg's library.dat -- AM990423 */
   card t;
@@ -933,7 +934,7 @@ void swap2 (deal d, int p1, int p2) {
   }
 }
 
-FILE * find_library (const char *basename, const char *openopt) {
+static FILE * find_library (const char *basename, const char *openopt) {
   static const char *prefixes[] = { "", "./", "../", "../../", "c:/", "c:/data/",
     "d:/myprojects/dealer/", "d:/arch/games/gib/", 0 };
   int i;
@@ -948,7 +949,7 @@ FILE * find_library (const char *basename, const char *openopt) {
   return result;
 }
 
-int shuffle (deal d) {
+static int shuffle (deal d) {
   int i, j, k;
   card t;
 
@@ -1242,13 +1243,7 @@ void exh_analyze_vec (int high_vec, int low_vec, struct handstat *hs) {
 /* End of Specific routines for EXHAUST_MODE */
 #endif /* FRANCOIS */
 
-int trix (char c) {
-  if (c >= '0' && c <= '9')
-    return c - '0';
-  return c - 'A' + 10;
-}
-
-int evaltree (struct treebase *b) {
+static int evaltree (struct treebase *b) {
   struct tree *t = (struct tree*)b;
   switch (b->tr_type) {
     default:
@@ -1436,13 +1431,13 @@ int evaltree (struct treebase *b) {
 }
 
 /* This is a macro to replace the original code :
-int interesting () {
+static int interesting () {
   return evaltree (decisiontree);
 }
 */
 #define interesting() ((int)evaltree(decisiontree))
 
-void setup_action () {
+static void setup_action () {
   struct action *acp;
 
   /* Initialize all actions */
@@ -1481,7 +1476,7 @@ void setup_action () {
     }
 }
 
-void action () {
+static void action () {
   struct action *acp;
   int expr, expr2, val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
 
@@ -1572,7 +1567,7 @@ void action () {
     }
 }
 
-void printhands (int boardno, deal * dealp, int player, int nhands) {
+static void printhands (int boardno, deal * dealp, int player, int nhands) {
   int i, suit, rank, cards;
 
   for (i = 0; i < nhands; i++)
@@ -1602,7 +1597,7 @@ void printhands (int boardno, deal * dealp, int player, int nhands) {
   printf ("\n");
 }
 
-void cleanup_action () {
+static void cleanup_action () {
   struct action *acp;
   int player, i;
 
@@ -1694,7 +1689,7 @@ int yywrap () {
   return 1;
 }
 
-void printew (deal d) {
+static void printew (deal d) {
   /* This function prints the east and west hands only (with west to the
      left of east), primarily intended for examples of auctions with 2
      players only.  HU.  */
