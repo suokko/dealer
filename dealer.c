@@ -337,19 +337,20 @@ static int true_dd (deal d, int l, int c) {
     FILE *f;
     int r;
     char cmd[1024];
-    char tn1[256],  tn2[256];
+    char tn1[] = "input.XXXXXX",  tn2[] = "output.XXXXXX";
     int res;
 
-    tmpnam (tn1);
-    f = fopen (tn1, "w+");
+    int fd = mkstemp (tn1);
+    if (fd < 0 ) error ("Can't create temporary file");
+    f = fdopen (fd, "w+");
     if (f == 0 ) error ("Can't open temporary file");
     fprintcompact (f, d, 1, 1);
-    fflush(stdout);
     fclose (f);
-    tmpnam (tn2);
+    fd = mkstemp (tn2);
+    if (fd < 0 ) error ("Can't create temporary file");
     sprintf (cmd, "dds %s -trumps=%c -leader=%c -sol=1 | tail -n1 > %s;", tn1, "cdhsn"[c], "eswn"[l], tn2);
     system (cmd);
-    f = fopen (tn2, "r");
+    f = fdopen (fd, "r");
     if (f == 0) error ("Can't read output of analysis");
     do {
       r = fscanf (f, " %d: ", &res);
