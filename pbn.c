@@ -83,5 +83,6 @@ int printpbn (int board, deal d) {
   printf ("[Result \"?\"]\n");
   printf ("\n");
 
+  verbose ^= 1;
   return 0;
 }
