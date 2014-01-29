@@ -1,0 +1,7 @@
+
+predeal  spades(north) == 3
+predeal  spades(south) == 3
+predeal  spades(east) == 3
+predeal  spades(west) == 3
+
+generate 1

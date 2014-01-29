@@ -6,3 +6,4 @@
 1, -s 1 -g 2 -V
 1, -s 1 -g 2 -h
 1, -s 1 -g 2 -?
+1, -s 1 SecondParam.file

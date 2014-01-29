@@ -1,4 +1,4 @@
--l0 Descr.test_library
+-s 1 -l0 Descr.test_library
 n T94.J3.76.AKQJ53
 e 762.K6.KQJT82.72
 s KQJ5.AQT72.A53.6
@@ -25,9 +25,9 @@ west spades: 1
 west notrumps: 1
 Generated 1 hands
 Produced 1 hands
-Initial random seed 1390951291
-Time needed    0.001 sec
--l1 Descr.test_library
+Initial random seed 1
+Time needed    0.000 sec
+-s 1 -l1 Descr.test_library
 n 96432.6.KQ74.J43
 e K.A8743.J852.KQ6
 s Q85.KQJT952.6.A7
@@ -54,7 +54,7 @@ west spades: 7
 west notrumps: 6
 Generated 1 hands
 Produced 1 hands
-Initial random seed 1390951291
+Initial random seed 1
 Time needed    0.000 sec
 -s 1 -l100 Descr.test_library
 n ...AKQJT98765432
@@ -84,7 +84,7 @@ west notrumps: 13
 Generated 1 hands
 Produced 1 hands
 Initial random seed 1
-Time needed    0.332 sec
+Time needed    0.214 sec
 -s 1 -l99 -g2 Descr.test_library
 n J64.AK754.A3.AQ7
 e Q82.963.Q8742.43
@@ -117,4 +117,4 @@ west notrumps: 1.5
 Generated 2 hands
 Produced 2 hands
 Initial random seed 1
-Time needed    1.519 sec
+Time needed    1.481 sec

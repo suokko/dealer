@@ -737,8 +737,9 @@ void printdeal (deal d) {
 void setup_bias (void) {
   int p, s;
   char err[256];
-  int len[4] = {0}, pretotal[4] = {0};
+  int len[4] = {0}, pretotal[4] = {0}, lenset[4] = {0};
   for (p = 0; p < 4; p++) {
+    int totset = 0;
     int tot = 0;
     for (s = 0; s < 4; s++) {
       if (biasdeal[p][s] >= 0) {
@@ -747,7 +748,9 @@ void setup_bias (void) {
           error(err);
         }
         len[s] += biasdeal[p][s];
+        lenset[s]++;
         tot += biasdeal[p][s];
+        totset++;
         /* Remove predealt cards from bias length */
         biasdeal[p][s] -= predealt[p][s];
         biastotal += biasdeal[p][s];
@@ -757,14 +760,14 @@ void setup_bias (void) {
       }
       pretotal[p] += predealt[p][s];
     }
-    if (tot > 13) {
-      sprintf(err, "%d cards predealt for %s\n", tot, player_name[p]);
+    if (tot > 13 || (totset == 4 && tot < 13)) {
+      sprintf(err, "%d cards predealt for %s in %d suits\n", tot, player_name[p], totset);
       error(err);
     }
   }
   for (s = 0; s < 4; s++) {
-    if (len[s] > 13) {
-      sprintf(err, "%d cards predealt to %s\n", len[s], suit_name[s]);
+    if (len[s] > 13 || (lenset[s] == 4 && len[s] < 13)) {
+      sprintf(err, "%d cards predealt to %s in %d hands\n", len[s], suit_name[s], lenset[s]);
       error(err);
     }
   }
@@ -802,10 +805,14 @@ int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
   return -1;
 }
 
+int biasfiltercounter;
+
 void shuffle_bias(deal d) {
   int pack[4], p, s, cards_left[4];
   if (biastotal == 0)
     return;
+
+  biasfiltercounter = 5200 * 1000;
   for (p = 0; p < 4; p++) {
     cards_left[p] = 13 - predealt[4][p];
     pack[p] = p*13;
@@ -839,6 +846,10 @@ int bias_filter(deal d, int pos, int idx) {
   const int suit1 = C_SUIT(d[idx]);
   const int player2 = idx / 13;
   const int suit2 = C_SUIT(d[pos]);
+  if (biastotal == 0)
+    return 0;
+  if (biasfiltercounter-- == 0)
+    error("Bias filter called too many time for a single dealer. Likely impossible bias compination.\n");
   return biasdeal[player1][suit1] >= 0 || biasdeal[player2][suit2] >= 0;
 }
 
