@@ -23,14 +23,14 @@ static void usage(const char *name, int exitcode, const char *msg, ...)
   va_end(ap);
   fprintf(stderr, "\nUsage: %s [-hqv] [-o|-a filename] [-g deals] [-s seed]\n"
       "\n"
-      "\t-h\tPrint this message\n"
+      "\t-h\t\tPrint this message\n"
       "\t-o <file>\tSelect output file <stdout>\n"
       "\t-a <file>\tAppend output to the file\n"
       "\t-g <number>\tSet number of deals to generate <100>\n"
-      "\t-s <number>\tSelect output file <current time>\n"
+      "\t-s <number>\tSet random the seed for random number generator <current time>\n"
       "\t-c <number>\tSet number of threads to use <a thread per core>\n"
-      "\t-q\tBe quiet\n"
-      "\t-v\tBe verbose\n",
+      "\t-q\t\tBe quiet\n"
+      "\t-v\t\tBe verbose\n",
       name);
   exit(exitcode);
 }
