@@ -352,9 +352,8 @@ static int true_dd (deal d, int l, int c) {
     system (cmd);
     f = fdopen (fd, "r");
     if (f == 0) error ("Can't read output of analysis");
-    do {
-      r = fscanf (f, " %d: ", &res);
-    } while(r != 1 && r != EOF);
+    r = fscanf (f, " %d: ", &res);
+    if (r != 1) fprintf(stderr, "Error reading number of triks from dds\n");
     fclose (f);
     remove (tn1);
     remove (tn2);
@@ -977,9 +976,16 @@ static int shuffle (deal d) {
         su = libdeal.suits[suit];
         su = ntohl (su);
         for (rank = 0; rank < 13; ++rank) {
+          int idx;
           pn = su & 0x03;
           su >>= 2;
-          d[ph[pn]++] = MAKECARD (suit, 12 - rank);
+          idx = ph[pn]++;
+          if (idx >= 52 || idx < 0) {
+            fprintf(stderr, "Deal %d is broken\n", ngen);
+            libdeal.valid = 0;
+            return 0;
+          }
+          d[idx] = MAKECARD (suit, 12 - rank);
         }
       }
       return 1;
