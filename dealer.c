@@ -659,7 +659,6 @@ static void analyze (deal d, struct handstat *hsbase) {
         }
         default: {
           /* Losers, first correct the number of losers */
-          assert (hs->hs_counts[idxWinners][s] < 4);
           assert (hs->hs_counts[idxWinners][s] >= 0);
           hs->hs_loser[s] = 3 - hs->hs_counts[idxWinners][s];
           break;
