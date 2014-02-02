@@ -164,9 +164,9 @@ else
 $$(${1}_YACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
 endif
 $$(subst .o,.cov.o,$$(${1}_YACCS)): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
-$$(subst .o,.cov.o,$$(${1}_YACCS)): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(COVFLAGS)
+$$(subst .o,.cov.o,$$(${1}_YACCS)): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(COVFLAGS) $$(INCFLAGS)
 $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))
-$$(${1}_PROFYACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $(PROFFLAGS)
+$$(${1}_PROFYACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $(PROFFLAGS) $$(INCFLAGS)
 endif
 
 $$(${1}_OBJS): $$(call CANONICAL_PATH,$$(MKFILE) $(TOP)/main.mk $(TOP)/Makefile)

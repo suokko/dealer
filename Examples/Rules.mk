@@ -28,7 +28,7 @@ $(info * lcov is optional tool but strongly encouraged to have. *)
 $(info **********************************************************)
 endif
 
-ifeq ($(filter cov,${MAKECMDGOALS}),cov)
+ifeq ($(filter testcov,${MAKECMDGOALS}),testcov)
 PROG:=${PROGRAMCOV}
 else
 ifeq ($(filter release,${MAKECMDGOALS}),release)
@@ -41,7 +41,7 @@ endif
 OUT = $(subst Descr.,Output.,${DESCR})
 
 test: distribution examples 
-cov: makehtml
+testcov: makehtml
 
 ALLTESTS := distribution examples
 
