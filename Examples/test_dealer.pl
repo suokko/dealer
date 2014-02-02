@@ -24,8 +24,9 @@ sub replaceprogname {
   my ($exe, $file) = @_;
   $cov  = $exe;
   $orig = $exe;
-  $cov  =~ s/^.*\/([^\/]*[^.][^c][^o][^v])(\.cov|)$/\1.cov/;
-  $orig =~ s/^.*\/([^\/]*[^.][^c][^o][^v])(\.cov|)$/\1/;
+  $cov  =~ s/^.*\/([^\/]*[^.][^c][^o][^vf])(\.cov|\.prof|)$/\1.cov/;
+  $orig =~ s/^.*\/([^\/]*[^.][^c].[^v])(\.cov|)$/\1/;
+ 
   open (IN, "+<$file");
   @lines = <IN>;
 

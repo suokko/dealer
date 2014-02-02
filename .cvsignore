@@ -5,8 +5,11 @@ scan.c
 *.swp
 *~
 genlib
+genlib.cov
+genlib.prof
 dealer
 dealer.cov
+dealer.prof
 dealer.tar.gz
 Examples/Output.*
 .libs

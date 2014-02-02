@@ -36,13 +36,23 @@ checked too.
 	Pauli Nieminen <suokkos@gmail.com>
 ------------------------------------------------------------------------------
 
-Notes:
+Recommended tools to build from source are
+* lcov
 
-To build on MAC OS, replace the line
+Recommended run time dependencies are
+* Bo's dds (http://privat.bahnhof.se/wb758135/)
 
-    CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -c
+To build on linux:
 
-by
+make
+make PREFIX=<you install path> install
 
-    CFLAGS= -g -DNDEBUG -DFRANCOIS -I.
+If you want to use nondefault compiler options they can be passed with EXTRACFLAGS make variable.
 
+You can also run the dealer from source directory.
+
+Notes (Old notes not tested after build system changes):
+
+To build on MAC OS
+
+    make EXTRACFLAGS = -g -O0 -no-pedantic -DFRANCOIS
