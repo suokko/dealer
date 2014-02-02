@@ -31,8 +31,7 @@ $rank_to_int{"Q"} = 12;
 $rank_to_int{"K"} = 13;
 $rank_to_int{"A"} = 14;
 
-
-while (<STDIN>) {
+while (($_ =~ /(Frequency|Generated)/) || ($_ = <STDIN>)) {
    chop;
    chop;
    if ($_ =~ "HCP") {
@@ -40,7 +39,16 @@ while (<STDIN>) {
       $player  = $player_to_int{$player};
       for ($i=0; $i<38; $i++) {
          $_ = <STDIN>;
-         ($dummy, $dummy, $freq) = (split /\s+/,  $_);
+         ($dummy, $hcpval, $freq) = (split /\s+/,  $_);
+         if ($freq !~ /\d+/) {
+            for (;$i < 38; $i++) {
+               $hcp[$i][$player] = 0;
+            }
+            break;
+         }
+         for (; $i < $hcpval; $i++) {
+            $hcp[$i][$player] = 0;
+         }
          $hcp[$i][$player] = $freq;
       }
    } elsif ($_ =~ "Frequency Card") {
@@ -61,11 +69,21 @@ while (<STDIN>) {
       $suit    = $suit_to_int{$suit};
       for ($i=0 ; $i<13; $i++) {
          $_ = <STDIN>;
-         ($dummy, $dummy, $freq) = split (/\s+/, $_);
+         ($dummy, $cards, $freq) = split (/\s+/, $_);
+         if ($freq !~ /\d+/) {
+            for (;$i < 13; $i++) {
+               $hcp[$i][$player][$suit] = 0;
+            }
+            break;
+         }
+         for (; $i < $cards; $i++) {
+            $hcp[$i][$player][$suit] = 0;
+         }
          $suit[$i][$player][$suit] = $freq;
       }
    } elsif ($_ =~ "Generated") {
       ($dummy, $constant, $dummy) = split (/\s+/, $_);
+      $_ = <stdin>
    }
 }
 

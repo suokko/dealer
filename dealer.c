@@ -1644,48 +1644,69 @@ static void cleanup_action () {
         printf ("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
         if (acp->ac_u.acu_f.acuf_uflow)
           printf ("Low\t%8ld\n", acp->ac_u.acu_f.acuf_uflow);
-        for (i = acp->ac_u.acu_f.acuf_lowbnd; i <= acp->ac_u.acu_f.acuf_highbnd; i++)
-        printf ("%5d\t%8ld\n", i, acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd]);
+        for (i = acp->ac_u.acu_f.acuf_lowbnd; i <= acp->ac_u.acu_f.acuf_highbnd; i++) {
+          if (acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd] > 0)
+            printf ("%5d\t%8ld\n", i, acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd]);
+        }
         if (acp->ac_u.acu_f.acuf_oflow)
           printf ("High\t%8ld\n", acp->ac_u.acu_f.acuf_oflow);
         break;
       case ACT_FREQUENCY2D: {
         int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow,
-          sumtot, sumcol;
+          sumtot, sumcol, *toprintcol, *toprintrow;
         printf ("Frequency %s:%s", acp->ac_str1 ? acp->ac_str1 : "", crlf);
         high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
         high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
         low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
         low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
-        printf ("        Low");
-        for (j = 1; j < (high2 - low2) + 2; j++)
-          printf (" %6d", j + low2 - 1);
-        printf ("   High    Sum%s", crlf);
+        toprintcol = (int*)mycalloc((high2 - low2 + 3), sizeof(int));
+        toprintrow = (int*)mycalloc((high1 - low1 + 3), sizeof(int));
+        for (i = 0; i < (high1 - low1) + 3; i++) {
+          for (j = 0; j < (high2 - low2) + 3; j++) {
+            toprintcol[j] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+            toprintrow[i] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+          }
+        }
+        if (toprintcol[0] != 0)
+          printf ("        Low");
+        for (j = 1; j < (high2 - low2) + 2; j++) {
+          if (toprintcol[j] != 0)
+            printf (" %6d", j + low2 - 1);
+        }
+        if (toprintcol[j] != 0)
+          printf ("   High");
+        printf ("    Sum%s", crlf);
         sumtot = 0;
         for (i = 0; i < (high1 - low1) + 3; i++) {
-        sumrow = 0;
-        if (i == 0)
-          printf ("Low ");
-        else if (i == (high1 - low1 + 2))
-          printf ("High");
-        else
-          printf ("%4d", i + low1 - 1);
-        for (j = 0; j < (high2 - low2) + 3; j++) {
-          n = acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-          sumrow += n;
-          printf (" %6d", n);
-        }
-        printf (" %6d%s", sumrow, crlf);
-        sumtot += sumrow;
+          sumrow = 0;
+          if (toprintrow[i] == 0)
+            continue;
+          if (i == 0)
+            printf ("Low ");
+          else if (i == (high1 - low1 + 2))
+            printf ("High");
+          else
+            printf ("%4d", i + low1 - 1);
+          for (j = 0; j < (high2 - low2) + 3; j++) {
+            n = acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+            sumrow += n;
+            if (toprintcol[j] != 0)
+              printf (" %6d", n);
+          }
+          printf (" %6d%s", sumrow, crlf);
+          sumtot += sumrow;
         }
         printf ("Sum ");
         for (j = 0; j < (high2 - low2) + 3; j++) {
-        sumcol = 0;
-        for (i = 0; i < (high1 - low1) + 3; i++)
-          sumcol += acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-        printf (" %6d", sumcol);
+          sumcol = 0;
+          for (i = 0; i < (high1 - low1) + 3; i++)
+            sumcol += acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+          if (toprintcol[j] != 0)
+            printf (" %6d", sumcol);
         }
         printf (" %6d%s%s", sumtot, crlf, crlf);
+        free(toprintcol);
+        free(toprintrow);
       }
     }
   }

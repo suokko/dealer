@@ -32,11 +32,6 @@ Frequency HCP N:
    30	      26
    31	       4
    32	       1
-   33	       0
-   34	       0
-   35	       0
-   36	       0
-   37	       0
 Frequency HCP E:
     0	   36338
     1	   78787
@@ -72,10 +67,6 @@ Frequency HCP E:
    31	       4
    32	       2
    33	       1
-   34	       0
-   35	       0
-   36	       0
-   37	       0
 Frequency HCP S:
     0	   36450
     1	   78476
@@ -111,10 +102,6 @@ Frequency HCP S:
    31	       3
    32	       1
    33	       1
-   34	       0
-   35	       0
-   36	       0
-   37	       0
 Frequency HCP W:
     0	   36384
     1	   79070
@@ -148,12 +135,6 @@ Frequency HCP W:
    29	      72
    30	      24
    31	       7
-   32	       0
-   33	       0
-   34	       0
-   35	       0
-   36	       0
-   37	       0
 Frequency Spades N:
     0	  127385
     1	  800736
@@ -167,8 +148,6 @@ Frequency Spades N:
     9	     899
    10	      36
    11	       1
-   12	       0
-   13	       0
 Frequency Spades E:
     0	  127601
     1	  801085
@@ -182,8 +161,6 @@ Frequency Spades E:
     9	     964
    10	      47
    11	       1
-   12	       0
-   13	       0
 Frequency Spades S:
     0	  128509
     1	  800639
@@ -196,9 +173,6 @@ Frequency Spades S:
     8	   11832
     9	     915
    10	      28
-   11	       0
-   12	       0
-   13	       0
 Frequency Spades W:
     0	  127768
     1	  800363
@@ -212,8 +186,6 @@ Frequency Spades W:
     9	     900
    10	      33
    11	       1
-   12	       0
-   13	       0
 Frequency Hearts N:
     0	  127511
     1	  801565
@@ -227,8 +199,6 @@ Frequency Hearts N:
     9	     900
    10	      38
    11	       2
-   12	       0
-   13	       0
 Frequency Hearts E:
     0	  127258
     1	  801350
@@ -242,8 +212,6 @@ Frequency Hearts E:
     9	     956
    10	      31
    11	       1
-   12	       0
-   13	       0
 Frequency Hearts S:
     0	  127675
     1	  800275
@@ -257,8 +225,6 @@ Frequency Hearts S:
     9	     965
    10	      33
    11	       1
-   12	       0
-   13	       0
 Frequency Hearts W:
     0	  127992
     1	  800354
@@ -271,9 +237,6 @@ Frequency Hearts W:
     8	   11802
     9	     902
    10	      49
-   11	       0
-   12	       0
-   13	       0
 Frequency Diamonds N:
     0	  128001
     1	  799133
@@ -287,8 +250,6 @@ Frequency Diamonds N:
     9	     972
    10	      38
    11	       2
-   12	       0
-   13	       0
 Frequency Diamonds E:
     0	  127958
     1	  799956
@@ -302,8 +263,6 @@ Frequency Diamonds E:
     9	     887
    10	      49
    11	       1
-   12	       0
-   13	       0
 Frequency Diamonds S:
     0	  128220
     1	  801152
@@ -317,8 +276,6 @@ Frequency Diamonds S:
     9	     887
    10	      45
    11	       1
-   12	       0
-   13	       0
 Frequency Diamonds W:
     0	  127785
     1	  800482
@@ -333,7 +290,6 @@ Frequency Diamonds W:
    10	      29
    11	       2
    12	       1
-   13	       0
 Frequency Clubs N:
     0	  128141
     1	  801180
@@ -347,8 +303,6 @@ Frequency Clubs N:
     9	     953
    10	      46
    11	       3
-   12	       0
-   13	       0
 Frequency Clubs E:
     0	  128218
     1	  800935
@@ -361,9 +315,6 @@ Frequency Clubs E:
     8	   11724
     9	     947
    10	      34
-   11	       0
-   12	       0
-   13	       0
 Frequency Clubs S:
     0	  127499
     1	  801102
@@ -377,8 +328,6 @@ Frequency Clubs S:
     9	     939
    10	      45
    11	       1
-   12	       0
-   13	       0
 Frequency Clubs W:
     0	  128376
     1	  800258
@@ -391,9 +340,6 @@ Frequency Clubs W:
     8	   11538
     9	     838
    10	      39
-   11	       0
-   12	       0
-   13	       0
 Frequency Card N SA:
     0	 7499848
     1	 2500152
