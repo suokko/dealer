@@ -21,13 +21,13 @@ static void usage(const char *name, int exitcode, const char *msg, ...)
   va_start(ap, msg);
   vfprintf(stderr, msg, ap);
   va_end(ap);
-  fprintf(stderr, "\nUsage: %s [-hqv] [-o|-a filename] [-g deals] [-s seed]\n"
+  fprintf(stderr, "\nUsage: %s [-hqv] [-o|-a filename] [-g deals] [-s seed1,seed2,...]\n"
       "\n"
       "\t-h\t\tPrint this message\n"
       "\t-o <file>\tSelect output file <stdout>\n"
       "\t-a <file>\tAppend output to the file\n"
       "\t-g <number>\tSet number of deals to generate <100>\n"
-      "\t-s <number>\tSet random the seed for random number generator <current time>\n"
+      "\t-s <number|number,number,...>\tSet random the seed for random number generator <current time>\n"
       "\t-c <number>\tSet number of threads to use <a thread per core>\n"
       "\t-q\t\tBe quiet\n"
       "\t-v\t\tBe verbose\n",
@@ -222,8 +222,9 @@ int main(int argc, char * const argv[])
 {
   char *output = NULL;
   char buffer[1024];
-  unsigned long gen = 100, seed;
+  unsigned long gen = 100, seed[33];
   char c;
+  int mul = 0, seedpos = 0;
   FILE *out;
   int verbosity = 1, running = 0;
   struct timespec tp;
@@ -234,7 +235,7 @@ int main(int argc, char * const argv[])
 
   clock_gettime(CLOCK_REALTIME, &tp);
 
-  seed = tp.tv_nsec + tp.tv_sec * 1000 * 1000 * 1000;
+  seed[0] = tp.tv_nsec + tp.tv_sec * 1000 * 1000 * 1000;
   while ((c = getopt(argc, argv, "hc:a:o:s:g:qv")) != -1) {
     switch (c) {
     default:
@@ -261,7 +262,28 @@ int main(int argc, char * const argv[])
       verbosity++;
       break;
     case 's':
-      seed = atoi(optarg);
+      {
+        char *startptr = optarg;
+        for (; seedpos < 33; seedpos++) {
+          char *endptr;
+          unsigned long s;
+          errno = 0;
+          s = strtol(startptr, &endptr, 10);
+          if (endptr == startptr) {
+            break;
+          }
+          if (errno != 0) {
+            perror("sttrol");
+            return errno;
+          }
+          startptr = endptr + 1;
+          seed[seedpos] = s;
+          if (*endptr == '\0') {
+            seedpos++;
+            break;
+          }
+        }
+      }
       break;
     case 'a':
       mode[0] = 'a';
@@ -276,24 +298,34 @@ int main(int argc, char * const argv[])
   process = alloca(sizeof(process[0])*cores);
   memset(process, 0, sizeof(process[0])*cores);
 
-  if (gen >= cores * 8 && cores > 1)
-    blocksize = gen / (cores * 4);
-  else if (gen >= cores * 2 && cores > 1)
-    blocksize = gen / (cores * 2);
-  else if (gen >= cores && cores > 1)
-    blocksize = gen / cores;
-  else
-    blocksize = gen;
+  blocksize = gen;
+  for (mul = 20; mul > 0; mul--) {
+    long high = 1 << mul;
 
-  if (blocksize >= 40)
-    blocksize = 40;
+    if (gen >= cores*high) {
+      blocksize = gen / (cores * mul);
+      break;
+    }
+  }
 
-  seed ^= seed >> 31;
-  seed &= (uint32_t)~0;
+  if (blocksize >= (1 << 20)/20)
+    blocksize = (1 << 20)/20;
+
+  if (seedpos < 2) {
+    srandom(seed[0]);
+    sprintf(buffer, "%lu", seed[0]);
+  } else {
+    int i, pos = 0;
+    initstate(seed[0], (char*)&seed[1], (seedpos - 1)*(sizeof(seed[0])/sizeof(char)));
+    pos = sprintf(buffer, "%lu", seed[0]);
+    for (i = 1; i < seedpos; i++)
+      pos += sprintf(&buffer[pos], ",%lu", seed[i]);
+  }
+
 
   if (verbosity >= 1)
-    fprintf(stderr, "Generating %ld deals with %ld seed. Each subprocess does %ld deals.\n",
-        gen, seed, blocksize);
+    fprintf(stderr, "Generating %ld deals with %s seed. Each subprocess does %ld deals.\n",
+        gen, buffer, blocksize);
 
   out = output ? fopen(output, mode) : stdout;
 
@@ -317,7 +349,7 @@ int main(int argc, char * const argv[])
       if (b == 0)
         break;
 
-      if ((fd = makeprocess(&process[c], b, seed++, verbosity)) < 0)
+      if ((fd = makeprocess(&process[c], b, random(), verbosity)) < 0)
         return 20;
       running++;
 
@@ -351,7 +383,7 @@ int main(int argc, char * const argv[])
               unsigned long b = gen - scheduled > blocksize ?
                 blocksize : gen - scheduled;
 
-              if ((fd = makeprocess(&process[p], b, seed++, verbosity)) < 0)
+              if ((fd = makeprocess(&process[p], b, random(), verbosity)) < 0)
                 return 20;
 
               running++;
