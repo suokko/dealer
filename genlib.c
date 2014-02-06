@@ -419,7 +419,9 @@ int main(int argc, char * const argv[])
       int p = 0;
       rfds = fds;
       /* Wait for any input */
-      active = select(maxfd + 1, &rfds, NULL, NULL, NULL);
+      do {
+        active = select(maxfd + 1, &rfds, NULL, NULL, NULL);
+      } while (active == -1 && errno == EINTR);
 
       if (active <= 0) {
         perror("select");
@@ -454,7 +456,8 @@ int main(int argc, char * const argv[])
             }
             continue;
           }
-          if (errno != EWOULDBLOCK) {
+          /* EWOULDBLOCK and EINTR can happen during normal operation */
+          if (errno != EWOULDBLOCK && errno != EINTR) {
             perror("fgets");
             return 50;
           }
