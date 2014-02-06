@@ -9,6 +9,7 @@ ARFLAGS  := rcs
 MKDIR    := mkdir -p
 
 EXTRACFLAGS ?=
+DESTDIR     ?=
 
 RELEASEFLAGS := -DNDEBUG
 OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model -march=native $(EXTRACFLAGS)

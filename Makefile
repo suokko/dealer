@@ -31,12 +31,13 @@ $$(${1}_PATH): $${${1}_OBJS}
 install: install_${1}
 
 install_${1}: $$(${1}_PATH)
-	/usr/bin/install -m 0755 $$(${1}_PATH) $$(BINPREFIX)/$$(notdir $$(${1}_PATH))
+	@[ -z "$(DESTDIR)" ] || mkdir -p $(DESTDIR)$(BINPREFIX)
+	/usr/bin/install -m 0755 $$(${1}_PATH) $(DESTDIR)$(BINPREFIX)/$$(notdir $$(${1}_PATH))
 
 uninstall: uninstall_${1}
 
 uninstall_${1}:
-	$${SRM} $$(BINPREFIX)/$$(notdir $$(${1}_PATH))
+	$${SRM} $(DESTDIR)$(BINPREFIX)/$$(notdir $$(${1}_PATH))
 
 $$(${1}_COVPATH): $${${1}_COVOBJS}
 	@mkdir -p $(dir $$@)
