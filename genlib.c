@@ -27,11 +27,13 @@ static void usage(const char *name, int exitcode, const char *msg, ...)
       "\t-o <file>\tSelect output file <stdout>\n"
       "\t-a <file>\tAppend output to the file\n"
       "\t-g <number>\tSet number of deals to generate <100>\n"
-      "\t-s <number|number,number,...>\tSet random the seed for random number generator <current time>\n"
+      "\t-s <nr|nr,nr,>\tSet random the seed for random number generator. <current time>\n"
+      "\t\t\t%ld <= nr <= %ld or \"dev\" for /dev/urandom.\n"
+      "\t\t\tThe useful number of numbers is 1,2,5,9,17,33.\n"
       "\t-c <number>\tSet number of threads to use <a thread per core>\n"
       "\t-q\t\tBe quiet\n"
       "\t-v\t\tBe verbose\n",
-      name);
+      name, LONG_MIN, LONG_MAX);
   exit(exitcode);
 }
 
