@@ -8,11 +8,11 @@ RMDIR	 ?= rmdir
 ARFLAGS  := rcs
 MKDIR    := mkdir -p
 
-EXTRACFLAGS ?=
+EXTRACFLAGS ?= -march=native 
 DESTDIR     ?=
 
 RELEASEFLAGS := -DNDEBUG
-OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model -march=native $(EXTRACFLAGS)
+OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model $(EXTRACFLAGS)
 PROFFLAGS := -fprofile-generate
 PUSEFLAGS := -fprofile-use -flto
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
