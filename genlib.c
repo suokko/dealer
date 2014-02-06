@@ -49,6 +49,12 @@ static int linefeed = 0;
 
 static char ucrep[14] = "23456789TJQKA";
 
+/**
+ * Parse a deal line that contains cards and trcik results for all contracts.
+ *
+ * 1 A64.8732.543.Q98 T8.96.AKT.A76432 Q2.AQJT54.Q82.JT KJ9753.K.J976.K5:6666BBBA5555A9A99999
+ * <deal number> <west> <north <east> <south>:<result>
+ */
 static void parsedeal(struct tagLibdeal *d,
                       const char *north,
                       const char *east,
@@ -63,11 +69,13 @@ static void parsedeal(struct tagLibdeal *d,
   const int leader_to_player[] = {2, 1, 0, 3};
   const int contract_to_suit[] = {0, 4, 3, 2, 1};
 
+  /* Setup ordered look up table for cards */
   player[0] = north;
   player[1] = east;
   player[2] = south;
   player[3] = west;
 
+  /* Parse number of tricks for all contracts. No support for unknown trick numbers. */
   for (cont = 0; cont < 5; cont++) {
     for (p = 0; p < 4; p++) {
       char val[] = "1";
@@ -85,6 +93,7 @@ static void parsedeal(struct tagLibdeal *d,
     }
   }
 
+  /* Parse cards for each player */
   for (p = 1; p < 4; p++) {
     int c;
     int suit = 0, rank;
@@ -102,12 +111,15 @@ static void parsedeal(struct tagLibdeal *d,
     }
   }
 
+  /* library.dat is defined to be in network byte order. That means big
+   * endian and byte swapping for little machines. */
   for (p = 0; p < 4; p++)
     d->suits[p] = htonl(d->suits[p]);
   for (p = 0; p < 5; p++)
     d->tricks[p] = htons(d->tricks[p]);
 }
 
+/* Looks if the input line has a deal or other junk that dds prints out */
 static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long gen, int verbosity)
 {
   const char * const filenamestart = "output written to file ";
@@ -116,12 +128,19 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
   char north[17], east[17], south[17], west[17], results[21];
   long deal;
 
+  /* Check if we only have a partial line. That is very likely to happen
+   * because underlying fd is set to nonblocking mode preventing stdio from
+   * blocking waiting for more input.
+   */
   if (!strchr(buffer, '\n')) {
     assert(p->partial == NULL);
     p->partial = strdup(buffer);
     return;
   }
 
+  /* Previous call had partial line stored that requires us to prepend content
+   * from the previous call
+   */
   if (p->partial) {
     char *end = memchr(p->partial, '\0', 256);
     long len = end - p->partial;
@@ -131,8 +150,10 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
     p->partial = NULL;
   }
 
+  /*   deal=1 leader=W 5H nodes=13,311 elapsed=0.01 */
   if (strncmp(buffer, skipdeals, strlen(skipdeals)) == 0)
     return;
+  /*output written to file gen-0-1-52-20.txt*/
   if (strncmp(buffer, filenamestart, strlen(filenamestart)) == 0) {
     const char * const outfile = buffer + strlen(filenamestart);
     strchr(outfile, '\n')[0] = '\0';
@@ -140,14 +161,20 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
       fprintf(stderr, "%sRemoving '%s'\n", (linefeed ? "\n": ""), outfile);
       linefeed = 0;
     }
+    /* Remove the giblib file created by dds */
     remove(outfile);
     return;
   }
+  /* Match the giblib line from the input */
   if (sscanf(buffer, "%ld %16s %16s %16s %16s:%20s",
         &deal, west, north, east, south, results) == 6) {
     struct tagLibdeal libdeal = {{0}};
     parsedeal(&libdeal, north, east, south, west, results, verbosity);
 
+    /* Store dds result in 26 bytes. Actual libdeal struct has extra "valid"
+     * field. That should be probably separated to a child struct to make it
+     * clear it isn't in the file.
+     */
     if (fwrite(&libdeal, 26, 1, out) <= 0) {
       fprintf(stderr, "%sFailed to write libdeal entry %ld\n", (linefeed ? "\n": ""), deal);
       exit(30);
@@ -166,6 +193,7 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
   }
 }
 
+/* Open subprocess and set underlying fd to nonblocking state */
 static FILE *nonblockpopen(const char *cmd, const char *mode)
 {
   int fd;
@@ -183,6 +211,7 @@ static FILE *nonblockpopen(const char *cmd, const char *mode)
   return r;
 }
 
+/* Setup command line and store state information for the sub process */
 static int makeprocess(struct process *p, unsigned long gen, unsigned long seed, int verbosity)
 {
   char ddscmd[256];
@@ -211,6 +240,7 @@ static int makeprocess(struct process *p, unsigned long gen, unsigned long seed,
   return p->fd;
 }
 
+/* Clean up state after subprocess has exited */
 static void closeprocess(struct process *p)
 {
   pclose(p->f);
@@ -321,6 +351,7 @@ int main(int argc, char * const argv[])
   process = alloca(sizeof(process[0])*cores);
   memset(process, 0, sizeof(process[0])*cores);
 
+  /* Calculate reasonable block sizes for the cpu configuration */
   blocksize = gen;
   for (mul = 20; mul > 0; mul--) {
     long high = 1 << mul;
@@ -382,26 +413,31 @@ int main(int argc, char * const argv[])
       FD_SET(fd, &fds);
     }
 
+    /* Loop as long as we have subprocess active */
     while (running > 0) {
       int active;
       int p = 0;
       rfds = fds;
+      /* Wait for any input */
       active = select(maxfd + 1, &rfds, NULL, NULL, NULL);
 
       if (active <= 0) {
         perror("select");
         return 60;
       }
+      /* Check which subprocess provided the input */
       for (; p < cores; p++) {
         if (FD_ISSET(process[p].fd, &rfds)) {
           errno = 0;
           while (fgets(buffer, sizeof buffer, process[p].f))
             parseLine(buffer, out, &process[p], gen, verbosity);
 
+          /* Has the process exited? */
           if (feof(process[p].f)) {
             FD_CLR(process[p].fd, &fds);
             closeprocess(&process[p]);
             running--;
+            /* Is there more blocks to shedule? */
             if (scheduled < gen) {
               unsigned long b = gen - scheduled > blocksize ?
                 blocksize : gen - scheduled;
