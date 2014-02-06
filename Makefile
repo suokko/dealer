@@ -124,8 +124,7 @@ ${1}_PROFYACCS := $$(subst .o,.prof.o,$$(${1}_YACCS))
 ${1}_PROFFLEXS := $$(subst .c,.prof.c,$$(${1}_FLEXS))
 
 # Check if we need CXX compiler
-# TODO use all c++ extensions supported
-ifeq "$$(filter %.cpp,$$(${1}_SRC))" ""
+ifeq "$$(filter $(CXX_EXTS),$$(${1}_SRC))" ""
 ${1}_HASCXX := 1
 else
 ${1}_HASCXX := 0
