@@ -224,7 +224,8 @@ int main(int argc, char * const argv[])
 {
   char *output = NULL;
   char buffer[1024];
-  unsigned long gen = 100, seed[33];
+  unsigned long gen = 100;
+  long seed[33];
   char c;
   int mul = 0, seedpos = 0;
   FILE *out;
@@ -266,6 +267,26 @@ int main(int argc, char * const argv[])
     case 's':
       {
         char *startptr = optarg;
+        /* Read seed from /dev/urandom */
+        if (strcmp("dev", optarg) == 0) {
+          FILE *dev = fopen("/dev/urandom", "r");
+          int r;
+          if (!dev) {
+            perror("opening /dev/urandom");
+            return 12;
+          }
+          do {
+            r = fread(seed, sizeof seed[0], sizeof seed/sizeof seed[0], dev);
+          } while (r != sizeof seed/sizeof seed[0] && errno == EINTR);
+
+          if (r != sizeof seed/sizeof seed[0]) {
+            perror("fread /dev/random");
+            return 13;
+          }
+          seedpos = sizeof seed/sizeof seed[0];
+          fclose(dev);
+          break;
+        }
         for (; seedpos < 33; seedpos++) {
           char *endptr;
           unsigned long s;
@@ -315,13 +336,13 @@ int main(int argc, char * const argv[])
 
   if (seedpos < 2) {
     srandom(seed[0]);
-    sprintf(buffer, "%lu", seed[0]);
+    sprintf(buffer, "%ld", seed[0]);
   } else {
     int i, pos = 0;
     initstate(seed[0], (char*)&seed[1], (seedpos - 1)*(sizeof(seed[0])/sizeof(char)));
-    pos = sprintf(buffer, "%lu", seed[0]);
+    pos = sprintf(buffer, "%ld", seed[0]);
     for (i = 1; i < seedpos; i++)
-      pos += sprintf(&buffer[pos], ",%lu", seed[i]);
+      pos += sprintf(&buffer[pos], ",%ld", seed[i]);
   }
 
 
