@@ -44,8 +44,9 @@ Recommended run time dependencies are
 
 To build on linux:
 
+./configure
 make
-make PREFIX=<you install path> install
+make install
 
 If you want to use nondefault compiler options they can be passed with EXTRACFLAGS make variable.
 
@@ -55,4 +56,4 @@ Notes (Old notes not tested after build system changes):
 
 To build on MAC OS
 
-    make EXTRACFLAGS = -g -O0 -no-pedantic -DFRANCOIS
+    make CFLAGS = -g -O0 -no-pedantic -DFRANCOIS

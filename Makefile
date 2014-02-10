@@ -23,10 +23,10 @@ LIB_DIR = $(call CANONICAL_PATH,${TOP}/${BUILDDIR})
 TARGET_DIR := $(call CANONICAL_PATH,${TOP})
 ALL_TARGETS :=
 # Helper variables to handle silent compilation
-LINK.c = $(SCC) $(CFLAGS) -o $@ $^
-LINK.cxx = $(SCXX) $(CFLAGS) $(CXXFLAGS) -o $@ $^
-COMPILE.c = $(SCC) -c $(CFLAGS) -o $@ $<
-COMPILE.cxx = $(SCXX) -c $(CFLAGS) $(CXXFLAGS) -o $@ $<
+LINK.c = +$(SCC) $(DCFLAGS) $(DLDFLAGS) -o $@ $^
+LINK.cxx = +$(SCXX) $(DCFLAGS) $(DCXXFLAGS) $(DLDFLAGS) -o $@ $^
+COMPILE.c = $(SCC) -c $(DCFLAGS) -o $@ $<
+COMPILE.cxx = $(SCXX) -c $(DCFLAGS) $(DCXXFLAGS) -o $@ $<
 STATICLIB = $(SAR) ${ARFLAGS} $@ $?
 
 # Creates all make rules required to build and install a target
@@ -40,13 +40,13 @@ $$(${1}_PATH): $${${1}_OBJS}
 install: install_${1}
 
 install_${1}: $$(${1}_PATH)
-	@[ -z "$(DESTDIR)" ] || mkdir -p $(DESTDIR)$(BINPREFIX)
-	/usr/bin/install -m 0755 $$(${1}_PATH) $(DESTDIR)$(BINPREFIX)/$$(notdir $$(${1}_PATH))
+	@[ -z "$(DESTDIR)" ] || mkdir -p $(DESTDIR)$(binprefix)
+	/usr/bin/install -m 0755 $$(${1}_PATH) $(DESTDIR)$(binprefix)/$$(notdir $$(${1}_PATH))
 
 uninstall: uninstall_${1}
 
 uninstall_${1}:
-	$${SRM} $(DESTDIR)$(BINPREFIX)/$$(notdir $$(${1}_PATH))
+	$${SRM} $(DESTDIR)$(binprefix)/$$(notdir $$(${1}_PATH))
 
 $$(${1}_COVPATH): $${${1}_COVOBJS}
 	@mkdir -p $(dir $$@)
@@ -150,25 +150,25 @@ endif
 
 #Target variables
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$$(${1}_OBJS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS) $$(INCFLAGS)
+$$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS) $$(INCFLAGS)
 else
-$$(${1}_OBJS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $$(INCFLAGS)
+$$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $$(INCFLAGS)
 endif
-$$(${1}_OBJS): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
-$$(${1}_COVOBJS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS) $$(INCFLAGS)
-$$(${1}_COVOBJS): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
-$$(${1}_PROFOBJS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS) $$(INCFLAGS)
-$$(${1}_PROFOBJS): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_OBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_COVOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS) $$(INCFLAGS)
+$$(${1}_COVOBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_PROFOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS) $$(INCFLAGS)
+$$(${1}_PROFOBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$${${1}_PATH}: CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS)
+$${${1}_PATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS)
 else
-$${${1}_PATH}: CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS)
+$${${1}_PATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS)
 endif
-$$(${1}_PATH): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
-$${${1}_PROFPATH}: CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS)
-$$(${1}_PROFPATH): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
-$${${1}_COVPATH}: CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS)
-$$(${1}_COVPATH): CXXFLAGS := $(CXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_PATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$${${1}_PROFPATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS)
+$$(${1}_PROFPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$${${1}_COVPATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS)
+$$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 
 # Libary dependencies
 # TODO check for c++ static libraries
@@ -181,21 +181,26 @@ $${${1}_PROFPATH}: $$(addprefix $$(LIB_DIR)/,$$(subst .a,.prof.a,$$(${1}_LIBS)))
 ifneq "$$(${1}_YACCS)" ""
 $$(${1}_YACCS): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$$(${1}_YACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(PUSEFLAGS) $$(INCFLAGS)
+$$(${1}_YACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(PUSEFLAGS) $$(INCFLAGS)
 else
-$$(${1}_YACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
+$$(${1}_YACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
 endif
 $$(subst .o,.cov.o,$$(${1}_YACCS)): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
-$$(subst .o,.cov.o,$$(${1}_YACCS)): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(COVFLAGS) $$(INCFLAGS)
+$$(subst .o,.cov.o,$$(${1}_YACCS)): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(COVFLAGS) $$(INCFLAGS)
 $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))
-$$(${1}_PROFYACCS): CFLAGS := $(CFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $(PROFFLAGS) $$(INCFLAGS)
+$$(${1}_PROFYACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $(PROFFLAGS) $$(INCFLAGS)
 endif
 
 ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS}
 GENFILES := $$(subst .o,.c,$$(${1}_YACCS)) $$(subst .o,.c,$$(${1}_PROFYACCS)) $$(${1}_PROFFLEXS) $$(${1}_FLEXS)
 
+BUILDMKDEP :=
+ifneq (,$(wildcard $(TOP)/build.mk))
+BUILDMKDEP += $(TOP)/build.mk
+endif
+
 # All objets should depend on makefile changes that affect their rules
-$$(ALLOBJS) $$(GENFILES): $$(call CANONICAL_PATH,$$(MKFILE) $(TOP)/main.mk $(TOP)/Makefile)
+$$(ALLOBJS) $$(GENFILES): $$(call CANONICAL_PATH,$$(MKFILE) $(TOP)/main.mk $(TOP)/Makefile $$(BUILDMKDEP))
 
 # Include all automatically generated dependencies
 -include $$(subst .o,.d,$$(ALLOBJS))
@@ -338,7 +343,10 @@ C_EXTS := %.c
 FLEX_EXTS := %.l
 YACC_EXTS := %.y
 CXX_EXTS := %.cpp %.cxx
-
+# Allow depending to build.mk even it doesn't exists
+$(call CANONICAL_PATH,$(TOP)/build.mk):
+# Don't require configuration but use variables if defined
+-include $(call CANONICAL_PATH,$(TOP)/build.mk)
 $(eval $(call INCLUDE_SUBDIR,$(call CANONICAL_PATH,$(TOP)/main.mk)))
 $(eval $(call INCLUDE_SUBDIR,$(call CANONICAL_PATH,$(TOP)/Rules.mk)))
 

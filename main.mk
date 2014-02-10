@@ -6,13 +6,16 @@ YACC	 ?= yacc
 RM	 ?= rm -f
 RMDIR	 ?= rmdir
 ARFLAGS  := rcs
-MKDIR    := mkdir -p
+MKDIR    ?= mkdir -p
 
-EXTRACFLAGS ?= -march=native 
-DESTDIR     ?=
+CFLAGS   ?= -march=native 
+CXXFLAGS ?=
+LDFLAGS  ?=
+DESTDIR  ?=
+
 
 RELEASEFLAGS := -DNDEBUG
-OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model $(EXTRACFLAGS)
+OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model $(CFLAGS)
 PROFFLAGS := -fprofile-generate
 PUSEFLAGS := -fprofile-use -flto
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
@@ -21,16 +24,17 @@ endif
 
 #Disable inlining for coverage reports
 COVFLAGS := -fno-inline-small-functions -fno-indirect-inlining -fno-partial-inlining --coverage
-CFLAGS   := -MP -MD -Wall -pedantic -g
-CXXFLAGS := -std=c++11
+DCFLAGS   := -MP -MD -Wall -pedantic -g
+DCXXFLAGS := -std=c++11 $(CXXFLAGS)
+DLDFLAGS  := $(LDFLAGS)
 
-PREFIX   ?=/usr/local
-BINPREFIX ?=$(PREFIX)/bin
+prefix	?=/usr/local
+bindir	?=$(prefix)/bin
+docdir  ?=$(prefix)/share/doc/dealer
 
 BUILDDIR = .libs
 PROGRAM  = dealer
 PROGRAMCOV = ${PROGRAM}.cov
-GENLIB = dealerlibrarygenerator
 
 ifeq ($V, 1)
 SCC    = $(CC)
