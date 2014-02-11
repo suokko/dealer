@@ -16,3 +16,4 @@ Examples/Output.*
 .test
 tags
 etags
+build.mk

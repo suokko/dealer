@@ -6,6 +6,11 @@ define CANONICAL_PATH
 $(subst $(CURDIR),.,$(patsubst $(CURDIR)/%,%,$(abspath $(1))))
 endef
 
+# Concat a path to list of files
+define CONCAT
+$(if ${1},$(call CANONICAL_PATH,$(addprefix ${1}/,${2})),$(call CANONICAL_PATH,${2}))
+endef
+
 # Find main.mk in the directory tree
 # This supports make on any subdirectory with symlinked Makefile
 ifndef TOP
@@ -18,10 +23,11 @@ TOP := $(shell \
 endif
 
 # All libraries should go to the top level build directory
-LIB_DIR = $(call CANONICAL_PATH,${TOP}/${BUILDDIR})
+LIB_DIR = $(call CONCAT,${TOP},${BUILDDIR})
 # The target binary is excepted to appear in the top build directory
 TARGET_DIR := $(call CANONICAL_PATH,${TOP})
 ALL_TARGETS :=
+ALL_DOCS :=
 # Helper variables to handle silent compilation
 LINK.c = +$(SCC) $(DCFLAGS) $(DLDFLAGS) -o $@ $^
 LINK.cxx = +$(SCXX) $(DCFLAGS) $(DCXXFLAGS) $(DLDFLAGS) -o $@ $^
@@ -39,14 +45,16 @@ $$(${1}_PATH): $${${1}_OBJS}
 
 install: install_${1}
 
-install_${1}: $$(${1}_PATH)
-	@[ -z "$(DESTDIR)" ] || mkdir -p $(DESTDIR)$(binprefix)
-	/usr/bin/install -m 0755 $$(${1}_PATH) $(DESTDIR)$(binprefix)/$$(notdir $$(${1}_PATH))
+install_${1}: $(DESTDIR)$(bindir)/$$(notdir $$(${1}_PATH))
+
+$(DESTDIR)$(bindir)/$$(notdir $$(${1}_PATH): )$$(${1}_PATH)
+	@[ -z "$(DESTDIR)" ] || mkdir -p $(DESTDIR)$(bindir)
+	$$(SINSTALL) -m 0755 $$(${1}_PATH) $(DESTDIR)$(bindir)/$$(notdir $$(${1}_PATH))
 
 uninstall: uninstall_${1}
 
 uninstall_${1}:
-	$${SRM} $(DESTDIR)$(binprefix)/$$(notdir $$(${1}_PATH))
+	$${SRM} $(DESTDIR)$(bindir)/$$(notdir $$(${1}_PATH))
 
 $$(${1}_COVPATH): $${${1}_COVOBJS}
 	@mkdir -p $(dir $$@)
@@ -74,6 +82,42 @@ endif
 endif
 endef
 
+# 1: list of files
+# 2: submake directory
+# 3: extra directory to append to install path
+# 4: install path
+# 5: type
+# 6: permissions
+define MAKE_INST
+ifneq (,${1})
+DST_${5}_${2} := $(if ${3},$$(call CONCAT,$(DESTDIR)${4},${3}),$(DESTDIR)${4})
+IDOCS_${5}_${2} := $$(call CONCAT,$$(DST_${5}_${2}),$(if ${2},$(subst ${2}/,,${1}),${1}))
+$$(IDOCS_${5}_${2}): $$(call CONCAT,$$(DST_${5}_${2}),%): $(call CONCAT,$(DIR),%)
+	@[ -z "$(DESTDIR)" ] || mkdir -p $$(DST_${5}_${2})
+	$${SINSTALL} -m ${6} $$< $$@
+
+install: $$(IDOCS_${5}_${2})
+
+uninstall_${5}_${2}:
+	$${SRM} $$(IDOCS_${5}_${2})
+
+uninstall: uninstall_${5}_${2}
+
+endif
+endef
+
+define MAKE_DOC_INSTALL
+$(call MAKE_INST,${1},${2},${3},$(docdir),doc,0644)
+endef
+
+define MAKE_BIN_INSTALL
+$(call MAKE_INST,${1},${2},${3},$(bindir),bin,0755)
+endef
+
+define MAKE_PERLLIB_INSTALL
+$(call MAKE_INST,${1},${2},${3},$(call CONCAT,$(datarootdir),perl5),perl,0644)
+endef
+
 # Generate clean rule for a target
 define CREAT_CLEAN_RULE
 ifneq ($(abspath $(${1}_BUILDDIR)),$(${1}_BUILDDIR))
@@ -88,13 +132,9 @@ endef
 # Setup dependencies for each target so all sources are build into the target
 define MAKE_TARGET
 # Basic path and target type variable setup
-ifneq "$${DIR}" ""
-${1}_BUILDDIR := $$(call CANONICAL_PATH,$${DIR}/${BUILDDIR})
-INCFLAGS := $$(addprefix -I,$$(addprefix $${DIR}/,$$(${1}_INCDIR)))
-else
-${1}_BUILDDIR := $$(call CANONICAL_PATH,${BUILDDIR})
-INCFLAGS := $$(addprefix -I,$$(${1}_INCDIR))
-endif
+${1}_BUILDDIR := $$(call CONCAT,$${DIR},${BUILDDIR})
+INCFLAGS := $$(addprefix -I,$$(call CONCAT,$${DIR},$$(${1}_INCDIR)))
+
 ifeq "$(filter %.a,${1})" ""
 TDIR := $${TARGET_DIR}
 ${1}_TYPE=prog
@@ -102,20 +142,18 @@ else
 TDIR := $${LIB_DIR}
 ${1}_TYPE=static
 endif
-ifneq "$${TDIR}" ""
+
+
 # Figure correct path for the target
-${1}_PATH := $$(call CANONICAL_PATH,$$(addprefix $${TDIR}/,${1}))
-else
-${1}_PATH := $$(call CANONICAL_PATH,${1})
-endif
+${1}_PATH := $$(call CONCAT,$${TDIR},${1})
 # fugure out what should be build from the source file extension
-${1}_OBJS := $$(call CANONICAL_PATH,$$(addprefix $$(${1}_BUILDDIR)/,\
+${1}_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 	$$(filter-out %.l,$$(subst .cpp,.o,$$(subst .y,.o,\
-	$$(subst .c,.o,$${${1}_SRC}))))))
-${1}_FLEXS := $$(call CANONICAL_PATH,$$(addprefix $$(${1}_BUILDDIR)/,\
-	$$(subst .l,.c,$$(filter %.l,$${${1}_SRC}))))
-${1}_YACCS := $$(call CANONICAL_PATH,$$(addprefix $$(${1}_BUILDDIR)/,\
-	$$(subst .y,.o,$$(filter %.y,$${${1}_SRC}))))
+	$$(subst .c,.o,$${${1}_SRC})))))
+${1}_FLEXS := $$(call CONCAT,$$(${1}_BUILDDIR),\
+	$$(subst .l,.c,$$(filter %.l,$${${1}_SRC})))
+${1}_YACCS := $$(call CONCAT,$$(${1}_BUILDDIR),\
+	$$(subst .y,.o,$$(filter %.y,$${${1}_SRC})))
 
 # Setup shadow objects for coverage and profile targets with different flags
 ${1}_COVOBJS := $$(subst .o,.cov.o,$$(${1}_OBJS))
@@ -173,9 +211,9 @@ $$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 # Libary dependencies
 # TODO check for c++ static libraries
 # TODO support shared libraries
-$${${1}_PATH}: $$(addprefix $$(LIB_DIR)/,$$(${1}_LIBS))
-$${${1}_COVPATH}: $$(addprefix $$(LIB_DIR)/,$$(subst .a,.cov.a,$$(${1}_LIBS)))
-$${${1}_PROFPATH}: $$(addprefix $$(LIB_DIR)/,$$(subst .a,.prof.a,$$(${1}_LIBS)))
+$${${1}_PATH}: $$(call CONCAT,$$(LIB_DIR),$$(${1}_LIBS))
+$${${1}_COVPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.cov.a,$$(${1}_LIBS)))
+$${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS)))
 
 # Setup flex and yacc dependencies
 ifneq "$$(${1}_YACCS)" ""
@@ -195,12 +233,12 @@ ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS}
 GENFILES := $$(subst .o,.c,$$(${1}_YACCS)) $$(subst .o,.c,$$(${1}_PROFYACCS)) $$(${1}_PROFFLEXS) $$(${1}_FLEXS)
 
 BUILDMKDEP :=
-ifneq (,$(wildcard $(TOP)/build.mk))
-BUILDMKDEP += $(TOP)/build.mk
+ifneq (,$(wildcard $(call CONCAT,$(TOP),build.mk)))
+BUILDMKDEP += $(call CONCAT,$(TOP),build.mk)
 endif
 
 # All objets should depend on makefile changes that affect their rules
-$$(ALLOBJS) $$(GENFILES): $$(call CANONICAL_PATH,$$(MKFILE) $(TOP)/main.mk $(TOP)/Makefile $$(BUILDMKDEP))
+$$(ALLOBJS) $$(GENFILES): $$(call CANONICAL_PATH,$$(MKFILE) $(call CONCAT,$(TOP),main.mk Makefile) $$(BUILDMKDEP))
 
 # Include all automatically generated dependencies
 -include $$(subst .o,.d,$$(ALLOBJS))
@@ -217,6 +255,11 @@ define INCLUDE_SUBDIR
 TARGETS :=
 SUBDIRS :=
 MKFILE  := $(1)
+DOCS	:=
+DOCS_INSTALL_PATH :=
+BININST :=
+PERLLIBINST :=
+PERLIBNAME :=
 
 # Keep track of current subdiretory processing
 DIR := $(call CANONICAL_PATH,$(dir $(1)))
@@ -230,14 +273,17 @@ $$(foreach TARGET, $${TARGETS},\
 $$(eval $$(call MAKE_TARGET,$${TARGET}))\
 )
 
+BININST := $$(call CONCAT,$$(DIR),$$(BININST))
+$$(eval $$(call MAKE_BIN_INSTALL,$$(wildcard $$(BININST)),$$(DIR),))
+PERLLIBINST := $$(call CONCAT,$$(DIR),$$(PERLLIBINST))
+$$(eval $$(call MAKE_PERLLIB_INSTALL,$$(wildcard $$(PERLLIBINST)),$$(DIR),$$(PERLIBNAME)))
+DOCS := $$(call CONCAT,$$(DIR),$$(DOCS))
+$$(eval $$(call MAKE_DOC_INSTALL,$$(wildcard $$(DOCS)),$$(DIR),$$(DOCS_INSTALL_PATH)))
+
 # Include subdiretories of subdiretories
-ifneq "$$(DIR)" ""
-$$(foreach SUB, $$(SUBDIRS),\
-$$(eval $$(call INCLUDE_SUBDIR,$$(addprefix $$(DIR)/,$${SUB}))))
-else
+SUBDIRS := $$(wildcard $$(call CONCAT,$$(DIR),$$(SUBDIRS)))
 $$(foreach SUB, $$(SUBDIRS),\
 $$(eval $$(call INCLUDE_SUBDIR,$${SUB})))
-endif
 
 # Time to pop back the diretory state for the parent directory
 DIR_STACK := $$(call POP,$$(DIR_STACK))
@@ -279,7 +325,7 @@ $$(subst .o,.c,$$(${1}_PROFYACCS)): clean_gcda
 clean_gcda: clean_${1}_gcda
 
 clean_${1}_gcda:
-	$${SRM} $$(${1}_BUILDDIR)/*.gcda $$(${1}_BUILDDIR)/*.gcno
+	$${SRM} $$(call CONCAT,$$(${1}_BUILDDIR),*.gcda *.gcno)
 endef
 
 # Basic build
@@ -301,10 +347,10 @@ prof:
 # Helper to create rules between sources and resutls. It generates rules for 
 # auto generated sources also.
 define CREAT_OBJECT_RULE
-${1}/${2}: $(call CANONICAL_PATH,${1}/../${3})
+$(call CONCAT,${1},${2}): $(call CONCAT,$(call CONCAT,${1},..),${3})
 	${4}
 
-${1}/${2}: ${1}/${3}
+$(call CONCAT,${1},${2}): $(call CONCAT,${1},${3})
 	${4}
 endef
 
@@ -343,12 +389,10 @@ C_EXTS := %.c
 FLEX_EXTS := %.l
 YACC_EXTS := %.y
 CXX_EXTS := %.cpp %.cxx
-# Allow depending to build.mk even it doesn't exists
-$(call CANONICAL_PATH,$(TOP)/build.mk):
 # Don't require configuration but use variables if defined
--include $(call CANONICAL_PATH,$(TOP)/build.mk)
-$(eval $(call INCLUDE_SUBDIR,$(call CANONICAL_PATH,$(TOP)/main.mk)))
-$(eval $(call INCLUDE_SUBDIR,$(call CANONICAL_PATH,$(TOP)/Rules.mk)))
+-include $(call CONCAT,$(TOP),build.mk)
+$(eval $(call INCLUDE_SUBDIR,$(call CONCAT,$(TOP),main.mk)))
+$(eval $(call INCLUDE_SUBDIR,$(call CONCAT,$(TOP),Rules.mk)))
 
 # Rename profile results to be used by object build
 profiletest: ${ALLTESTS}

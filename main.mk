@@ -7,6 +7,7 @@ RM	 ?= rm -f
 RMDIR	 ?= rmdir
 ARFLAGS  := rcs
 MKDIR    ?= mkdir -p
+INSTALL	 ?= install
 
 CFLAGS   ?= -march=native 
 CXXFLAGS ?=
@@ -30,7 +31,8 @@ DLDFLAGS  := $(LDFLAGS)
 
 prefix	?=/usr/local
 bindir	?=$(prefix)/bin
-docdir  ?=$(prefix)/share/doc/dealer
+datarootdir ?=$(prefix)/share
+docdir  ?=$(datarootdir)/doc/dealer
 
 BUILDDIR = .libs
 PROGRAM  = dealer
@@ -45,6 +47,7 @@ SYACC  = $(YACC)
 SMKDIR = $(MKDIR)
 SRM    = $(RM)
 SRMDIR = $(RMDIR)
+SINSTALL = $(INSTALL)
 else
 SCC    = @echo "  CC    " ${notdir $@} && $(CC)
 SAR    = @echo "  AR    " ${notdir $@} && $(AR)
@@ -54,5 +57,6 @@ SYACC  = @echo "  YACC  " ${notdir $@} && $(YACC)
 SMKDIR = @echo "  MKDIR " ${notdir $@} && $(MKDIR)
 SRM    = @echo "  RM    " $@ && $(RM)
 SRMDIR = @echo "  RMDIR " $@ && $(RMDIR)
+SINSTALL = @echo "  INST  " ${notdir $@} && $(INSTALL)
 endif
 

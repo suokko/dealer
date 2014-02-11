@@ -6,6 +6,10 @@
 # 30 minutes to run.
 #
 
+DOCS := Descr.*
+
+DOCS_INSTALL_PATH := Examples
+
 SRCDIR := ${CURDIR}/Examples
 
 SHELL=/bin/sh

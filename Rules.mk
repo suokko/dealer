@@ -13,4 +13,4 @@ dealer_INCDIR := .
 
 dealergenlib_SRC := genlib.c
 
-SUBDIRS := Random/Rules.mk Examples/Rules.mk
+SUBDIRS := */Rules.mk
