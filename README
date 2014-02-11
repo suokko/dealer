@@ -36,24 +36,31 @@ checked too.
 	Pauli Nieminen <suokkos@gmail.com>
 ------------------------------------------------------------------------------
 
+1. Dependencies
+
 Recommended tools to build from source are
 * lcov
 
 Recommended run time dependencies are
 * Bo's dds (http://privat.bahnhof.se/wb758135/)
 
-To build on linux:
+2.  Build on linux:
 
-./configure
-make
-make install
 
-If you want to use nondefault compiler options they can be passed with EXTRACFLAGS make variable.
+ ./configure
+ make
+ make install
+
+Running configure is not required but it is helpful if you want to customize
+install paths or use custom compiler or flags.
+
+If you want to use nondefault compiler options they can be passed with CFLAGS
+make variable.
 
 You can also run the dealer from source directory.
 
-Notes (Old notes not tested after build system changes):
+3. Build on MAC OS
 
-To build on MAC OS
+Notes (Old notes not tested after build system changes):
 
     make CFLAGS = -g -O0 -no-pedantic -DFRANCOIS
