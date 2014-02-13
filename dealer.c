@@ -9,18 +9,19 @@ long seed = 0;
 static int quiet = 0;
 char* input_file = 0;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__WIN32) || defined(WIN32)
   /* with VC++6, winsock2 declares ntohs and struct timeval */
   #pragma warning (disable : 4115)
   #include <winsock2.h>
+  #include <fcntl.h>
   #pragma warning (default : 4115)
 #else
   /* else we assume we can get ntohs/ntohl from netinet */
   #include <netinet/in.h>
 #endif /* _MSC_VER */
 
-#ifdef WIN32
-  #ifndef _MSC_VER
+#if defined(WIN32) || defined(win32)
+  #ifdef _MSC_VER
   struct timeval {
     long tv_sec;            /* seconds */
     long tv_usec;            /* and microseconds */
@@ -296,6 +297,14 @@ static int get_tricks (int pn, int dn) {
   resu = (pn ? (tk >> (4 * pn)) : tk) & 0x0F;
   return resu;
 }
+
+#if defined(WIN32) || defined(__WIN32)
+static int mkstemp(char *temp)
+{
+  mktemp(temp);
+  return open(temp, O_RDWR | O_CREAT);
+}
+#endif
 
 static int true_dd (deal d, int l, int c) {
   if (loading && libdeal.valid) {

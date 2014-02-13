@@ -6,13 +6,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#if defined(WIN32) || defined(__WIN32)
+#include <winsock2.h>
+#define initstate __initstate
+#define srandom __srandom
+#define random __random
+#else
 #include <arpa/inet.h>
+#include <sys/select.h>
+#endif
 #include <limits.h>
 #include <fcntl.h>
 
 #include <assert.h>
 
-#include <sys/select.h>
 #include <errno.h>
 
 static void usage(const char *name, int exitcode, const char *msg, ...)
@@ -202,11 +209,13 @@ static FILE *nonblockpopen(const char *cmd, const char *mode)
   if (!r)
     return r;
 
+#if !defined(WIN32) && !defined(WIN32)
   fd = fileno(r);
 
   flags = fcntl(fd, F_GETFL, 0);
   flags |= O_NONBLOCK;
   fcntl(fd, F_SETFL, flags);
+#endif
 
   return r;
 }
@@ -262,7 +271,12 @@ int main(int argc, char * const argv[])
   int verbosity = 1, running = 0;
   struct timespec tp;
   char mode[] = "w";
-  int cores = sysconf (_SC_NPROCESSORS_CONF);
+  int cores =
+#if defined(WIN32) || defined(__WIN32)
+    1;
+#else
+    sysconf (_SC_NPROCESSORS_CONF);
+#endif
   unsigned long blocksize;
   struct process *process;
 

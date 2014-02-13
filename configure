@@ -28,8 +28,12 @@ localedir='${datarootdir}/locale'
 localedir_help='Locale depend data'
 mandir='${datarootdir}/man'
 mandir_help='man documentation'
+host='${build}'
+host_help='Cross-compiler prefix for target system'
+build=''
+build_help='Host system compiler prefix'
 
-pathlist="prefix exec_prefix bindir datarootdir datadir sysconfdir includedir docdir libdir libexecdir localedir mandir"
+pathlist="prefix exec_prefix bindir datarootdir datadir sysconfdir includedir docdir libdir libexecdir localedir mandir host build"
 varlist="CC CXX CFLAGS CXXFLAGS LDFLAGS"
 
 print_help () {
@@ -38,7 +42,7 @@ print_help () {
 Usage: $0 [OPTION]... [VAR=VALUE]...
 
 Configure:
-\t--help\t\t\tdispaly this help and exit
+\t--help\t\t\tdisplay this help and exit
 
 Installation directories:"
 	for var_name in $pathlist; do
@@ -115,6 +119,10 @@ for var_name in $pathlist; do
 	eval var_val=\$${var_name}
 	eval $var_name=\"$var_val\"
 done
+
+# check if compiler prefix is missing dash
+[ -n "$host" ] && lchr=`expr substr $host ${#host} 1` && [ "$lchr" != "-" ] && host="$host-"
+[ -n "$build" ] && lchr=`expr substr $host ${#host} 1` && [ "$lchr" != "-" ] && build="$build-"
 
 varlist="$pathlist $varlist"
 

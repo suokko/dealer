@@ -41,7 +41,7 @@ define CREAT_TARGET_RULE
 ifeq ($$(${1}_TYPE),prog)
 $$(${1}_PATH): $${${1}_OBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c)
+	$$(LINK.c) $$(${1}_SYSLIBS)
 
 install: install_${1}
 
@@ -58,11 +58,11 @@ uninstall_${1}:
 
 $$(${1}_COVPATH): $${${1}_COVOBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c)
+	$$(LINK.c) $$(${1}_SYSLIBS)
 
 $$(${1}_PROFPATH): $${${1}_PROFOBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c)
+	$$(LINK.c) $$(${1}_SYSLIBS)
 else
 ifeq "$(${1}_TYPE)" "static"
 $$(${1}_PATH): $${${1}_OBJS}
@@ -211,6 +211,8 @@ $$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 # Libary dependencies
 # TODO check for c++ static libraries
 # TODO support shared libraries
+${1}_SYSLIBS := $$(filter -l%,$$(${1}_LIBS))
+${1}_LIBS := $$(filter-out -l%,$$(${1}_LIBS))
 $${${1}_PATH}: $$(call CONCAT,$$(LIB_DIR),$$(${1}_LIBS))
 $${${1}_COVPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.cov.a,$$(${1}_LIBS)))
 $${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS)))

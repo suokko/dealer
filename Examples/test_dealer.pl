@@ -74,11 +74,11 @@ foreach $input (`ls $file`) {
   }
 
   if (-e $refer) {
-    $diff = `diff $output $refer`;
+    $diff = `diff -Z $output $refer`;
     $diff =~ s/^(.*Time needed.*|.*\[Date ".*|[^<>].*)\R//mg;
     if (-e "$refer.err" || -e "$output.err") {
       if (-e "$refer.err" && -e "$output.err") {
-        $err = `diff $output.err $refer.err`;
+        $err = `diff -Z $output.err $refer.err`;
       } else { if (-e "$output.err") {
           print "$refer.err missing\n";
           $err = `cat "$output.err"`;

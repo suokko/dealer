@@ -33,15 +33,17 @@ prefix	?=/usr/local
 bindir	?=$(prefix)/bin
 datarootdir ?=$(prefix)/share
 docdir  ?=$(datarootdir)/doc/dealer
+build	?=
+host	?= $(build)
 
 BUILDDIR = .libs
 PROGRAM  = dealer
 PROGRAMCOV = ${PROGRAM}.cov
 
 ifeq ($V, 1)
-SCC    = $(CC)
-SAR    = $(AR)
-SCXX   = $(CXX)
+SCC    = $(host)$(CC)
+SAR    = $(host)$(AR)
+SCXX   = $(host)$(CXX)
 SFLEX  = $(FLEX)
 SYACC  = $(YACC)
 SMKDIR = $(MKDIR)
@@ -49,9 +51,9 @@ SRM    = $(RM)
 SRMDIR = $(RMDIR)
 SINSTALL = $(INSTALL)
 else
-SCC    = @echo "  CC    " ${notdir $@} && $(CC)
-SAR    = @echo "  AR    " ${notdir $@} && $(AR)
-SCXX   = @echo "  CXX   " ${notdir $@} && $(CXX)
+SCC    = @echo "  CC    " ${notdir $@} && $(host)$(CC)
+SAR    = @echo "  AR    " ${notdir $@} && $(host)$(AR)
+SCXX   = @echo "  CXX   " ${notdir $@} && $(host)$(CXX)
 SFLEX  = @echo "  FLEX  " ${notdir $@} && $(FLEX)
 SYACC  = @echo "  YACC  " ${notdir $@} && $(YACC)
 SMKDIR = @echo "  MKDIR " ${notdir $@} && $(MKDIR)
