@@ -8,6 +8,7 @@ RMDIR	 ?= rmdir
 ARFLAGS  := rcs
 MKDIR    ?= mkdir -p
 INSTALL	 ?= install
+POD2MAN  ?= pod2man
 
 CFLAGS   ?= -march=native 
 CXXFLAGS ?=
@@ -33,6 +34,7 @@ prefix	?=/usr/local
 bindir	?=$(prefix)/bin
 datarootdir ?=$(prefix)/share
 docdir  ?=$(datarootdir)/doc/dealer
+mandir  ?=$(datarootdir)/man
 build	?=
 host	?= $(build)
 
@@ -50,6 +52,7 @@ SMKDIR = $(MKDIR)
 SRM    = $(RM)
 SRMDIR = $(RMDIR)
 SINSTALL = $(INSTALL)
+SPOD2MAN = $(POD2MAN)
 else
 SCC    = @echo "  CC    " ${notdir $@} && $(host)$(CC)
 SAR    = @echo "  AR    " ${notdir $@} && $(host)$(AR)
@@ -60,5 +63,6 @@ SMKDIR = @echo "  MKDIR " ${notdir $@} && $(MKDIR)
 SRM    = @echo "  RM    " $@ && $(RM)
 SRMDIR = @echo "  RMDIR " $@ && $(RMDIR)
 SINSTALL = @echo "  INST  " ${notdir $@} && $(INSTALL)
+SPOD2MAN = @echo "  P2M   " ${notdir $@} && $(POD2MAN)
 endif
 

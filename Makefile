@@ -92,7 +92,7 @@ define MAKE_INST
 ifneq (,${1})
 DST_${5}_${2} := $(if ${3},$$(call CONCAT,$(DESTDIR)${4},${3}),$(DESTDIR)${4})
 IDOCS_${5}_${2} := $$(call CONCAT,$$(DST_${5}_${2}),$(if ${2},$(subst ${2}/,,${1}),${1}))
-$$(IDOCS_${5}_${2}): $$(call CONCAT,$$(DST_${5}_${2}),%): $(call CONCAT,$(DIR),%)
+$$(IDOCS_${5}_${2}): $$(call CONCAT,$$(DST_${5}_${2}),%): $(call CONCAT,${2},%)
 	@[ -z "$(DESTDIR)" ] || mkdir -p $$(DST_${5}_${2})
 	$${SINSTALL} -m ${6} $$< $$@
 
@@ -104,6 +104,10 @@ uninstall_${5}_${2}:
 uninstall: uninstall_${5}_${2}
 
 endif
+endef
+
+define MAKE_MAN_INSTALL
+$(call MAKE_INST,${1},${2},${3},$(mandir),man,0644)
 endef
 
 define MAKE_DOC_INSTALL
@@ -262,6 +266,7 @@ DOCS_INSTALL_PATH :=
 BININST :=
 PERLLIBINST :=
 PERLIBNAME :=
+MAN_SECTION := 6
 
 # Keep track of current subdiretory processing
 DIR := $(call CANONICAL_PATH,$(dir $(1)))
@@ -275,12 +280,35 @@ $$(foreach TARGET, $${TARGETS},\
 $$(eval $$(call MAKE_TARGET,$${TARGET}))\
 )
 
+MANS := $$(subst $$(DIR),,$$(wildcard $$(call CONCAT,$$(DIR),$$(filter %.pod,$$(DOCS)))))
+MANS := $$(call CONCAT,$$(call CONCAT,$$(DIR),$(BUILDDIR)),$$(subst .pod,.$$(MAN_SECTION),$$(MANS)))
+
+$$(call CONCAT,$$(DIR),$(BUILDDIR))/%.$$(MAN_SECTION): $$(call CONCAT,$$(DIR),%.pod)
+	@mkdir -p $$(dir $$@)
+	$$(SPOD2MAN) --section=6 --release="$(PROGRAM)" --center="User Documentation" $$< > $$@
+
+ifneq ($$(abspath $$(DIR)),$$(DIR))
+ifneq ($$(MANS),)
+all: $$(MANS)
+
+clean: clean_man_$$(DIR)
+
+clean_man_$$(DIR): MANS := $$(MANS)
+clean_man_$$(DIR): DIR := $$(DIR)
+
+clean_man_$$(DIR):
+	$$(SRM) $$(MANS)
+	-$$(SRMDIR) $(call CONCAT,$$(DIR),$(BUILDDIR))
+endif
+endif
+
 BININST := $$(call CONCAT,$$(DIR),$$(BININST))
 $$(eval $$(call MAKE_BIN_INSTALL,$$(wildcard $$(BININST)),$$(DIR),))
 PERLLIBINST := $$(call CONCAT,$$(DIR),$$(PERLLIBINST))
 $$(eval $$(call MAKE_PERLLIB_INSTALL,$$(wildcard $$(PERLLIBINST)),$$(DIR),$$(PERLIBNAME)))
-DOCS := $$(call CONCAT,$$(DIR),$$(DOCS))
+DOCS := $$(call CONCAT,$$(DIR),$$(filter-out %.pod,$$(DOCS))) 
 $$(eval $$(call MAKE_DOC_INSTALL,$$(wildcard $$(DOCS)),$$(DIR),$$(DOCS_INSTALL_PATH)))
+$$(eval $$(call MAKE_MAN_INSTALL,$$(MANS),$$(call CONCAT,$$(DIR),$$(BUILDDIR)),))
 
 # Include subdiretories of subdiretories
 SUBDIRS := $$(wildcard $$(call CONCAT,$$(DIR),$$(SUBDIRS)))
