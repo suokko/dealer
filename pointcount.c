@@ -1,4 +1,7 @@
 #include "pointcount.h"
+#include "card.h"
+
+#include <malloc.h>
 
 int tblPointcount [idxEnd][13] =
 {
@@ -17,4 +20,29 @@ int tblPointcount [idxEnd][13] =
 	{  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 4, 6}  /* c13 */
 } ;
 
+struct pccheck check[idxEnd*14] = {{0}};
+
+void initpc()
+{
+	int i, pc;
+	card curc = 1ULL << club_shift |
+		1ULL << diamond_shift |
+		1ULL << heart_shift |
+		1ULL << spade_shift;
+	for (i = 0; i < 13; i++) {
+		for (pc = 0; pc < idxEnd; pc++) {
+			int c = 0;
+			if (tblPointcount[pc][i] == 0)
+				continue;
+
+			while (checkidx(pc, c)->value != 0 &&
+				checkidx(pc, c)->value != tblPointcount[pc][i])
+				c++;
+
+			checkidx(pc, c)->value = tblPointcount[pc][i];
+			checkidx(pc, c)->mask |= curc;
+		}
+		curc <<= 1;
+	}
+}
 

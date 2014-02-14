@@ -570,8 +570,7 @@ static void analyze (struct board *d, struct handstat *hsbase) {
   /* Analyze a hand.  Modified by HU to count controls and losers. */
   /* Further mod by AM to count several alternate pointcounts too  */
 
-  int player, c, r, s, t;
-  card curcard;
+  int player, s;
   struct handstat *hs;
 
   /* for each player */
@@ -622,44 +621,17 @@ static void analyze (struct board *d, struct handstat *hsbase) {
        through the deck, because we skip those players who are not part of the
        analysis */
     hand h = d->hands[player];
-    for (c = 0; c < 13; c++) {
-      curcard = hand_extract_card(h);
-      h = hand_remove_card(h, curcard);
-      s = C_SUIT (curcard);
-      r = C_RANK (curcard);
-
-      /* Enable this #if to dump a visual look at the hands as they are 
-         analysed.  Best bet is to use test.all, or something else that
-         generates only one hand, lest you quickly run out of screen
-         realestate */
-#if 0
-#ifdef _DEBUG
-#define VIEWCOUNT
-#endif /* _DEBUG_ */
-#endif /* 0 */
-
-#ifdef VIEWCOUNT
-      printf ("%c%c", "CDHS"[s], "23456789TJQKA"[r]);
-#endif /* VIEWCOUNT */
-      hs->hs_length[s]++;
-      for (t = idxHcp; t < idxEnd; ++t) {
-#ifdef VIEWCOUNT
-        printf (" %d ", tblPointcount[t][r]);
-#endif /* VIEWCOUNT */
-        hs->hs_counts[t][s] += tblPointcount[t][r];
-      }
-#ifdef VIEWCOUNT
-      printf ("\n");
-#endif /* VIEWCOUNT */
-    }
-#ifdef VIEWCOUNT
-    printf ("---\n");
-#undef VIEWCOUNT
-#endif /* VIEWCOUNT */
+    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++)
+      hs->hs_length[s] = hand_count_cards(h & suit_masks[s]);
 
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
       assert (hs->hs_length[s] < 14);
       assert (hs->hs_length[s] >= 0);
+      /* Now, using the values calculated already, load those pointcount
+         values which are common enough to warrant a non array lookup */
+      hs->hs_points[s] = getpc(idxHcp, h & suit_masks[s]);
+      hs->hs_control[s] = getpc(idxControls, h & suit_masks[s]);
+
       switch (hs->hs_length[s]) {
         case 0: {
           /* A void is 0 losers */
@@ -670,41 +642,29 @@ static void analyze (struct board *d, struct handstat *hsbase) {
           /* Singleton A 0 losers, K or Q 1 loser */
           int losers[] = {1, 1, 0};
           assert (hs->hs_control[s] < 3);
-          hs->hs_loser[s] = losers[hs->hs_counts[idxControls][s]];
+          hs->hs_loser[s] = losers[hs->hs_control[s]];
           break;
         }
         case 2: {
           /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
           int losers[] = {2, 1, 1, 0};
           assert (hs->hs_control[s] <= 3);
-          hs->hs_loser[s] = losers[hs->hs_counts[idxControls][s]];
+          hs->hs_loser[s] = losers[hs->hs_control[s]];
           break;
         }
         default: {
           /* Losers, first correct the number of losers */
-          assert (hs->hs_counts[idxWinners][s] >= 0);
-          hs->hs_loser[s] = 3 - hs->hs_counts[idxWinners][s];
+          hs->hs_loser[s] = 3 - getpc(idxWinners, h & suit_masks[s]);
           break;
         }
       }
 
       /* Now add the losers to the total. */
       hs->hs_totalloser += hs->hs_loser[s];
-
-      /* total up the other flavors of points */
-      for (t = idxHcp; t < idxEnd; ++t) {
-        hs->hs_totalcounts[t] += hs->hs_counts[t][s];
-      }
-
-      /* Now, using the values calculated already, load those pointcount
-         values which are common enough to warrant a non array lookup */
-      hs->hs_points[s] = hs->hs_counts[idxHcp][s];
-      hs->hs_control[s] = hs->hs_counts[idxControls][s];
+      hs->hs_totalpoints += hs->hs_points[s];
+      hs->hs_totalcontrol += hs->hs_control[s];
 
     } /* end for each suit */
-
-    hs->hs_totalpoints = hs->hs_totalcounts[idxHcp];
-    hs->hs_totalcontrol = hs->hs_totalcounts[idxControls];
 
     hs->hs_bits = distrbitmaps[hs->hs_length[SUIT_CLUB]]
       [hs->hs_length[SUIT_DIAMOND]]
@@ -885,6 +845,9 @@ static void initprogram () {
   int i = 0, p, j = 0;
 
   struct pack temp;
+
+  initpc();
+
   newpack(&temp);
 
   setup_bias();
@@ -1309,79 +1272,34 @@ static int evaltree (struct treebase *b) {
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       return hs[t->tr_int1].hs_totalpoints;
     case TRT_PT0TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxTens];
     case TRT_PT1TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxJacks];
     case TRT_PT2TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxQueens];
     case TRT_PT3TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxKings];
     case TRT_PT4TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxAces];
     case TRT_PT5TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxTop2];
     case TRT_PT6TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxTop3];
     case TRT_PT7TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxTop4];
     case TRT_PT8TOTAL:      /* compass */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxTop5];
     case TRT_PT9TOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcounts[idxC13];
+      return getpc(idxTens + (b->tr_type - TRT_PT0TOTAL) / 2, curdeal->hands[t->tr_int1]);
     case TRT_HCP:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
       return hs[t->tr_int1].hs_points[t->tr_int2];
     case TRT_PT0:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxTens][t->tr_int2];
     case TRT_PT1:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxJacks][t->tr_int2];
     case TRT_PT2:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxQueens][t->tr_int2];
     case TRT_PT3:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxKings][t->tr_int2];
     case TRT_PT4:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxAces][t->tr_int2];
     case TRT_PT5:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxTop2][t->tr_int2];
     case TRT_PT6:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxTop3][t->tr_int2];
     case TRT_PT7:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxTop4][t->tr_int2];
     case TRT_PT8:      /* compass, suit */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxTop5][t->tr_int2];
     case TRT_PT9:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_counts[idxC13][t->tr_int2];
+      return getpc(idxTens + (b->tr_type - TRT_PT0) / 2, curdeal->hands[t->tr_int1] & suit_masks[t->tr_int2]);
     case TRT_SHAPE:      /* compass, shapemask */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       /* assert (t->tr_int2 >= 0 && t->tr_int2 < MAXDISTR); */

@@ -39,8 +39,6 @@ struct handstat {
     int hs_totalloser;          /* Losers in the hand */
     int hs_control[NSUITS];     /* Controls in a suit */
     int hs_totalcontrol;        /* Controls in the hand */
-    int hs_counts[idxEnd][NSUITS];  /* other auxiliary counts */
-    int hs_totalcounts[idxEnd];         /* totals of the above */
 } ;
 
 struct handstat hs[4] ;
