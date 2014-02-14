@@ -27,7 +27,7 @@ LIB_DIR = $(call CONCAT,${TOP},${BUILDDIR})
 # The target binary is excepted to appear in the top build directory
 TARGET_DIR := $(call CANONICAL_PATH,${TOP})
 ALL_TARGETS :=
-ALL_DOCS :=
+ALL_BUILDDIRS :=
 # Helper variables to handle silent compilation
 LINK.c = +$(SCC) $(DCFLAGS) $(DLDFLAGS) -o $@ $^
 LINK.cxx = +$(SCXX) $(DCFLAGS) $(DCXXFLAGS) $(DLDFLAGS) -o $@ $^
@@ -124,14 +124,23 @@ endef
 
 # Generate clean rule for a target
 define CREAT_CLEAN_RULE
-ifneq ($(abspath $(${1}_BUILDDIR)),$(${1}_BUILDDIR))
-clean: clean_${1}
-endif
+
+clean_dir_$$(${1}_BUILDDIR): clean_${1}
 
 clean_${1}:
 	$$(SRM) $$(${1}_CLEAN)
-	-$$(SRMDIR) $$(${1}_BUILDDIR)
 endef
+
+define CREAT_CLEAN_DIR_RULE
+ifneq ($(abspath ${1}),${1})
+clean: clean_dir_${1}
+endif
+
+clean_dir_${1}:
+	$$(SRMDIR) ${1}
+
+endef
+
 
 # Setup dependencies for each target so all sources are build into the target
 define MAKE_TARGET
@@ -272,6 +281,8 @@ MAN_SECTION := 6
 DIR := $(call CANONICAL_PATH,$(dir $(1)))
 DIR_STACK := $$(call PUSH,$$(DIR_STACK),$$(DIR))
 
+ALL_BUILDDIRS += $$(call CONCAT,$$(DIR),$(BUILDDIR))
+
 # Time to process the makefile
 include $(1)
 
@@ -291,14 +302,13 @@ ifneq ($$(abspath $$(DIR)),$$(DIR))
 ifneq ($$(MANS),)
 all: $$(MANS)
 
-clean: clean_man_$$(DIR)
+clean_dir_$$(call CONCAT,$$(DIR),$(BUILDDIR)): clean_man_$$(DIR)
 
 clean_man_$$(DIR): MANS := $$(MANS)
 clean_man_$$(DIR): DIR := $$(DIR)
 
 clean_man_$$(DIR):
 	$$(SRM) $$(MANS)
-	-$$(SRMDIR) $(call CONCAT,$$(DIR),$(BUILDDIR))
 endif
 endif
 
@@ -487,3 +497,6 @@ $(foreach TARGET,${ALL_TARGETS},\
 $(foreach TARGET,${ALL_TARGETS},\
 	$(eval $(call CREAT_CLEAN_RULE,${TARGET})))
 
+# Only add build dirs that exists
+$(foreach DIR,$(wildcard $(ALL_BUILDDIRS)),\
+	$(eval $(call CREAT_CLEAN_DIR_RULE,$(DIR))))
