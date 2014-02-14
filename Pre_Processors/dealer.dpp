@@ -1,6 +1,6 @@
-#!/usr/bin/perl -I.
+#!/usr/bin/perl
 
-use Dist;
+use Dealer::Dist;
 use strict;
 use Carp;
 
