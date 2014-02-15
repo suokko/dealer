@@ -126,6 +126,9 @@ endef
 define CREAT_CLEAN_RULE
 
 clean_dir_$$(${1}_BUILDDIR): clean_${1}
+ifeq "$(${1}_TYPE)" "static"
+clean_dir_$(LIB_DIR): clean_${1}
+endif
 
 clean_${1}:
 	$$(SRM) $$(${1}_CLEAN)
