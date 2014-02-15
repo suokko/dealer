@@ -66,7 +66,7 @@ void yyerror (char *);
 enum { STAT_MODE, EXHAUST_MODE };
 static int computing_mode = DEFAULT_MODE;
 
-static char ucrep[14] = "23456789TJQKA";
+static const char ucrep[14] = "23456789TJQKA";
 
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
@@ -75,7 +75,7 @@ static int predealt[5][4] = { {0, 0, 0, 0}, {0, 0, 0, 0},
                        {0, 0, 0, 0}, {0, 0, 0, 0},
                        {0, 0, 0, 0}};
 
-static int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
+static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
                  1990, 2240, 2490, 2990, 3490, 3990};
 
