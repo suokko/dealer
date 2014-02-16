@@ -1692,7 +1692,7 @@ Q 6 3               J T 9               A 8 7               K 5 4 2
 Generated 200 hands
 Produced 200 hands
 Initial random seed 1
-Time needed    0.004 sec
+Time needed    0.003 sec
 -s 1 -g 2 Descr.test_defaults
    1.
 A K Q T 3           6 5 2               J 7 4               9 8 
@@ -1736,4 +1736,3 @@ $Author: henk $
 -s 1 -g 2 -? Descr.test_defaults
 -s 1 SecondParam.file Descr.test_defaults
 -e Descr.test_defaults
-Exhaust mode not included in this executable

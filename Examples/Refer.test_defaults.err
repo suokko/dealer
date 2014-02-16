@@ -2,3 +2,4 @@ Calculating...  0% completeCalculating...  2% completeCalculating...  5% compl
 ../dealer.cov: invalid option -- '?'
 Usage: ../dealer.cov [-emv] [-s seed] [-p num] [-v num] [inputfile]
 SecondParam.file: No such file or directory
+Exhaust-mode error: more than 2 unknown hands...

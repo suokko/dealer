@@ -1,0 +1,6 @@
+predeal
+	north SAK65, HJ54, DK653, CQ4
+	west SQ3, HK9832, DQ, CAK653
+
+action
+	average "south spades" spades(south),
