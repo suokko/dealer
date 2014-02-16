@@ -5,7 +5,11 @@
 
 enum idxPointcount
 {
-	idxHcp = 0 ,
+	/* Internal controls and winners for loser calculation */
+	idxControlsInt = 0,
+	idxWinnersInt ,
+	idxHcp ,
+	idxBase = idxHcp ,
 	idxControls ,
 	idxTens ,
 	idxJacks ,

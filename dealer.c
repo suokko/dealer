@@ -412,12 +412,14 @@ static void zerocount (int points[13]) {
 
 void clearpointcount () {
   zerocount (tblPointcount[idxHcp]);
-  countindex = -1;
+  countindex = idxHcp;
 }
 
 void clearpointcount_alt (int cin) {
-  zerocount (tblPointcount[cin]);
-  countindex = cin;
+  if (cin + idxBase >= idxEnd || cin < 0)
+    yyerror("Alternative point count out of range");
+  zerocount (tblPointcount[cin + idxBase]);
+  countindex = cin + idxBase;
 }
 
 void pointcount (int index, int value) {
@@ -425,10 +427,7 @@ void pointcount (int index, int value) {
   if (index < 0) {
       yyerror ("too many pointcount values");
   }
-  if (countindex < 0)
-    tblPointcount[idxHcp][index] = value;
-  else
-    tblPointcount[countindex][index] = value;
+  tblPointcount[countindex][index] = value;
 }
 
 char * mycalloc (unsigned nel, unsigned siz) {
@@ -630,6 +629,7 @@ static void analyze (struct board *d, struct handstat *hsbase) {
       /* Now, using the values calculated already, load those pointcount
          values which are common enough to warrant a non array lookup */
       hs->hs_points[s] = getpc(idxHcp, h & suit_masks[s]);
+      int ctrl = getpc(idxControlsInt, h & suit_masks[s]);
       hs->hs_control[s] = getpc(idxControls, h & suit_masks[s]);
 
       switch (hs->hs_length[s]) {
@@ -641,20 +641,20 @@ static void analyze (struct board *d, struct handstat *hsbase) {
         case 1: {
           /* Singleton A 0 losers, K or Q 1 loser */
           int losers[] = {1, 1, 0};
-          assert (hs->hs_control[s] < 3);
-          hs->hs_loser[s] = losers[hs->hs_control[s]];
+          assert (ctrl < 3);
+          hs->hs_loser[s] = losers[ctrl];
           break;
         }
         case 2: {
           /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
           int losers[] = {2, 1, 1, 0};
-          assert (hs->hs_control[s] <= 3);
-          hs->hs_loser[s] = losers[hs->hs_control[s]];
+          assert (ctrl <= 3);
+          hs->hs_loser[s] = losers[ctrl];
           break;
         }
         default: {
           /* Losers, first correct the number of losers */
-          hs->hs_loser[s] = 3 - getpc(idxWinners, h & suit_masks[s]);
+          hs->hs_loser[s] = 3 - getpc(idxWinnersInt, h & suit_masks[s]);
           break;
         }
       }
