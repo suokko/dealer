@@ -237,14 +237,14 @@ $${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS))
 ifneq "$$(${1}_YACCS)" ""
 $$(${1}_YACCS): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$$(${1}_YACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(PUSEFLAGS) $$(INCFLAGS)
+$$(${1}_YACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $$(PUSEFLAGS) $$(INCFLAGS)
 else
-$$(${1}_YACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
+$$(${1}_YACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
 endif
 $$(subst .o,.cov.o,$$(${1}_YACCS)): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
-$$(subst .o,.cov.o,$$(${1}_YACCS)): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $(COVFLAGS) $$(INCFLAGS)
+$$(subst .o,.cov.o,$$(${1}_YACCS)): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $$(COVFLAGS) $$(INCFLAGS)
 $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))
-$$(${1}_PROFYACCS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $(PROFFLAGS) $$(INCFLAGS)
+$$(${1}_PROFYACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(PROFFLAGS) $$(INCFLAGS)
 endif
 
 ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS}
