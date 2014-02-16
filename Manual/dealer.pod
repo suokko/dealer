@@ -35,7 +35,9 @@ be used for a playing program.
 
 =item B<-e>
 
-Exhaust mode (alpha version).
+Exhaust mode generates all possible combinations for two unknown hands. The
+generation is very fast because no random numbers are involved. It possible
+to generate all 10 400 600 hands in less than 10 seconds on any modern computer.
 
 =item B<-g> I<number>
 
