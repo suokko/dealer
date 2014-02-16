@@ -1585,6 +1585,11 @@ int main (int argc, char **argv) {
 
   struct timeval tvstart, tvstop;
 
+  assert(0xfe80 == bitpermutate(0xff00));
+  assert(0xfd80 == bitpermutate(0xfe01));
+  assert(0xfb80 == bitpermutate(0xfc03));
+  assert(0x0000 == bitpermutate(0x00ff));
+
   verbose = 1;
 
   gettimeofday (&tvstart, (void *) 0);
