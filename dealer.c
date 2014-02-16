@@ -1126,7 +1126,7 @@ static int bitpermutate(int vector)
   vector = nextvector;
   nextvector = vector & shadow;
   shadow = vector & ~shadow;
-  move_back_count = __builtin_popcountl(bits_to_move_back);
+  move_back_count = __builtin_popcount(bits_to_move_back);
   /* Figure out how much to shift the move back bits */
   int positiontomove = __builtin_ctzl(shadow >> 1) - move_back_count;
   nextvector |= (shadow >> 1) | (bits_to_move_back << positiontomove);
