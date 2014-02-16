@@ -122,10 +122,10 @@ static void printew (deal d);
 void yyparse ();
 static int true_dd (deal d, int l, int c); /* prototype */
 
-#ifdef FRANCOIS
   /* Special variables for exhaustive mode 
      Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
   int vectordeal;
+  int exh_vect_length;
   /* a vectordeal is a binary *word* of at most 26 bits: there are at most
      26 cards to deal between two players.  Each card to deal will be
      affected to a given position in the vector.  Example : we need to deal
@@ -142,48 +142,10 @@ static int true_dd (deal d, int l, int c); /* prototype */
      For computing those vectors, we use a straightforward
      meet in the middle approach.  */
   int exh_predealt_vector = 0;
-  char exh_card_map[256];
-  /* exh_card_map[card] is the coordinate of the card in the vector */
   card exh_card_at_bit[26];
   /* exh_card_at_bit[i] is the card pointed by the bit #i */
   unsigned char exh_player[2];
   /* the two players that have unknown cards */
-  unsigned char exh_empty_slots[2];
-  /* the number of empty slots of those players */
-  unsigned char exh_suit_length_at_map[NSUITS][26];
-  /* exh_suit_length_at_map[SUIT][POS] = 1 if the card at 
-     position POS is from the suit SUIT */
-  unsigned char exh_suit_points_at_map[NSUITS][26];
-  /* same as above with the hcp-value instead of 1 */
-  unsigned char exh_msb_suit_length[NSUITS][TWO_TO_THE_13];
-  /* we split the the vector deal into 2 sub-vectors of length 13. Example for
-     the previous vector: 1100110000000 and 11111111110000
-                          msb               lsb
-     exh_msb_suit_length[SUIT][MSB_VECTOR] represents the msb-contribution of
-     the MSB_VECTOR for the length of the hand for suit SUIT, and for player 0. 
-     In the trivial above example, we have: exh_msb_suit_length[SUIT][MSBs] = 0
-     unless SUIT == DIAMOND, = the number of 0 in MSB, otherwise.*/
-  unsigned char exh_lsb_suit_length[NSUITS][TWO_TO_THE_13];
-   /* same as above for the lsb-sub-vector */
-  unsigned char exh_msb_suit_points[NSUITS][TWO_TO_THE_13];
-   /* same as above for the hcp's in the suits */
-  unsigned char exh_lsb_suit_points[NSUITS][TWO_TO_THE_13];
-   /* same as above for the lsb-sub-vector */
-  unsigned char exh_msb_totalpoints[TWO_TO_THE_13];
-   /* the total of the points of the cards represented by the
-      13 most significant bits in the vector deal */
-  unsigned char exh_lsb_totalpoints[TWO_TO_THE_13];
-   /* same as above for the lsb */
-  unsigned char exh_total_cards_in_suit[NSUITS];
-   /* the total of cards remaining to be dealt in each suit */
-  unsigned char exh_total_points_in_suit[NSUITS];
-   /* the total of hcps  remaining to be dealt in each suit */
-  unsigned char exh_total_points;
-   /* the total of hcps  remaining to be dealt */
-  int *HAM_T[14], Tsize[14];
-   /* Hamming-related tables.  See explanation below... */
-  int completely_known_hand[4] = {0, 0, 0, 0};
-#endif /* FRANCOIS */
 
 static int uniform_random(int max) {
   unsigned rnd;
@@ -491,26 +453,8 @@ static void newpack (struct pack *d) {
       d->c[place++] = MAKECARD (suit, rank);
 }
 
-#ifdef FRANCOIS
-int hascard (deal d, int player, card onecard, int vectordeal){
-  int i;
-  int who;
-  switch (computing_mode) {
-    case STAT_MODE:
-      for (i = player * 13; i < (player + 1) * 13; i++)
-        if (d[i] == onecard) return 1;
-      return 0;
-      break;
-    case EXHAUST_MODE:
-      if (exh_card_map[onecard] == -1) return 0;
-      who = 1 & (vectordeal >> exh_card_map[onecard]);
-      return (exh_player[who] == player);
-  }
-  return 0;
-#else
 card hascard (const struct board *d, int player, card onecard) {
   return hand_has_card(d->hands[player], onecard);
-#endif /* FRANCOIS */
 }
 
 card make_card (char rankchar, char suitchar) {
@@ -1032,23 +976,13 @@ retry_read:
   return 1;
 }
 
-#ifdef FRANCOIS
 /* Specific routines for EXHAUST_MODE */
 
-void exh_get2players (void) {
+static void exh_get2players (void) {
   /* Just finds who are the 2 players for whom we make exhaustive dealing */
   int player, player_bit;
   for (player = COMPASS_NORTH, player_bit = 0; player<=COMPASS_WEST; player++) {
-    if (completely_known_hand[player]) {
-      if (use_compass[player]) {
-        /* We refuse to compute anything for a player who has already his (her)
-           13 cards */
-        fprintf (stderr, 
-         "Exhaust-mode error: cannot compute anything for %s (known hand)%s",
-         player_name[player],crlf);
-        exit (-1); /*NOTREACHED */
-      }
-    } else {
+    if (hand_count_cards(predealt.hands[player]) != 13) {
       if (player_bit == 2) {
         /* Exhaust mode only if *exactly* 2 hands have unknown cards */
         fprintf (stderr,
@@ -1065,57 +999,37 @@ void exh_get2players (void) {
   }
 }
 
-void exh_set_bit_values (int bit_pos, card onecard) {
-  /* only sets up some tables (see table definitions above) */
-  int suit, rank;
-  int suitloop;
-  suit = C_SUIT (onecard);
-  rank = C_RANK (onecard);
-  for (suitloop = SUIT_CLUB; suitloop <= SUIT_SPADE; suitloop++) {
-    exh_suit_points_at_map[suitloop][bit_pos] = (suit == suitloop ? 
-          tblPointcount[0][rank] :0);
-    exh_suit_length_at_map[suitloop][bit_pos] = (suit == suitloop ? 1 : 0);
-  }
-  exh_card_map[onecard] = bit_pos;
+static void exh_set_bit_values (int bit_pos, card onecard) {
   exh_card_at_bit[bit_pos] = onecard;
 }
 
-void exh_setup_card_map (void) {
+static void exh_map_cards (void) {
   int i;
-  for (i = 0; i < 256; i++) {
-    exh_card_map[i] = -1; /* undefined */
-  }
-}
-
-void exh_map_cards (void) {
-  register int i, i_player;
   int bit_pos;
+  hand predeal = 0;
 
+  for (i = 0; i < 4; i++)
+    predeal |= predealt.hands[i];
+
+  /* Fill in all cards not predealt */
   for (i = 0, bit_pos = 0; i < 52; i++) {
-    if (fullpack[i] != NO_CARD) {
-      exh_set_bit_values (bit_pos, fullpack[i]);
+    card c = hand_has_card(~predeal, curpack.c[i]);
+    if (c) {
+      exh_set_bit_values (bit_pos, c);
       bit_pos++;
     }
   }
-  /* Some cards may also have been predealt for the exh-players. In that case,
-     those cards are "put" in the msb positions of the vectordeal. The value
-     of the exh_predealt_vector is the constant part of the vector deal. */
-  for (i_player = 0; i_player < 2; i_player++) {
-    int player = exh_player[i_player];
-    exh_empty_slots[i_player] = 0;
-    for (i = 13 * player; i < 13 * (player + 1); i++) {
-      if (stacked_pack[i] == NO_CARD) {
-        exh_empty_slots[i_player]++;
-      } else {
-        exh_set_bit_values (bit_pos, stacked_pack[i]);
-        exh_predealt_vector |= (i_player << bit_pos);
-        bit_pos++;
-      }
-    }
+
+  int p1cnt = 13 - hand_count_cards(predealt.hands[exh_player[1]]);
+
+  exh_vect_length = bit_pos;
+  /* Set N upper bits that will be moved to low bits */
+  for (i = 0; i < p1cnt; i++) {
+    vectordeal |= 1 << (bit_pos - i - 1);
   }
 }
 
-void exh_print_stats (struct handstat *hs) {
+static inline void exh_print_stats (struct handstat *hs) {
   int s;
   for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
     printf ("  Suit %d: ", s);
@@ -1124,13 +1038,13 @@ void exh_print_stats (struct handstat *hs) {
   printf ("  Totalpoints: %2d\n", hs->hs_totalpoints);
 }
 
-void exh_print_vector (struct handstat *hs) {
+static inline void exh_print_vector (struct handstat *hs) {
   int i, s, r;
   int onecard;
   struct handstat *hsp;
 
   printf ("Player %d: ", exh_player[0]);
-  for (i = 0; i < 26; i++) {
+  for (i = 0; i < exh_vect_length; i++) {
     if (!(1 & (vectordeal >> i))) {
       onecard = exh_card_at_bit[i];
       s = C_SUIT (onecard);
@@ -1142,7 +1056,7 @@ void exh_print_vector (struct handstat *hs) {
   hsp = hs + exh_player[0];
   exh_print_stats (hsp);
   printf ("Player %d: ", exh_player[1]);
-  for (i = 0; i < 26; i++) {
+  for (i = 0; i < exh_vect_length; i++) {
     if ((1 & (vectordeal >> i))) {
       onecard = exh_card_at_bit[i];
       s = C_SUIT (onecard);
@@ -1155,85 +1069,53 @@ void exh_print_vector (struct handstat *hs) {
   exh_print_stats (hsp);
 }
 
-void exh_precompute_analyse_tables (void) {
-  /* This routine precomputes the values of the tables exh_lsb_... and
-     exh_msb_... These tables will allow very fast computation of
-     hand-primitives given the value of the vector deal.
-     Example: the number of hcp in diamonds of the player 0 will be :
-            exh_lsb_suit_length[vectordeal & (TWO_TO_THE_13-1)]
-          + exh_msb_suit_length[vectordeal >> 13];
-     The way those table are precomputed may seem a little bit ridiculous.
-     This may be the reminiscence of Z80-programming ;-) FD-0499
-  */
-  int vec_13;
-  int i_bit;
-  int suit;
-  unsigned char *elsp, *emsp, *elt, *emt, *elsl, *emsl;
-  unsigned char *mespam, *meslam;
-  unsigned char *lespam, *leslam;
+static void exh_shuffle (int vector, struct board *b) {
+  int p, bit;
 
-  for (vec_13 = 0; vec_13 < TWO_TO_THE_13; vec_13++) {
-    elt = exh_lsb_totalpoints + vec_13;
-    emt = exh_msb_totalpoints + vec_13;
-    *elt = *emt = 0;
-    for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++) {
-      elsp = exh_lsb_suit_points[suit] + vec_13;
-      emsp = exh_msb_suit_points[suit] + vec_13;
-      elsl = exh_lsb_suit_length[suit] + vec_13;
-      emsl = exh_msb_suit_length[suit] + vec_13;
-      lespam = exh_suit_points_at_map[suit] + 12;
-      leslam = exh_suit_length_at_map[suit] + 12;
-      mespam = exh_suit_points_at_map[suit] + 25;
-      meslam = exh_suit_length_at_map[suit] + 25;
-      *elsp = *emsp = *elsl = *emsl = 0;
-      for (i_bit = 13; i_bit--; lespam--, leslam--, mespam--, meslam--) {
-        if (!(1 & (vec_13 >> i_bit))) {
-          *(elsp) += *lespam;
-          *(emsp) += *mespam;
-          *(elt)  += *lespam;
-          *(emt)  += *mespam;
-          *(elsl) += *leslam;
-          *(emsl) += *meslam;
-        }
-      }
-    }
+  for (p = 0; p < 4; p++)
+    b->hands[p] = predealt.hands[p];
+
+  for (bit = 1, p = 0; p < exh_vect_length; bit <<= 1, p++) {
+    if (bit & vector)
+      b->hands[exh_player[1]] |= exh_card_at_bit[p];
+    else
+      b->hands[exh_player[0]] |= exh_card_at_bit[p];
   }
-  for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++) {
-    exh_total_points_in_suit[suit] = exh_lsb_suit_points[suit][0] + exh_msb_suit_points[suit][0];
-    exh_total_cards_in_suit[suit] = exh_lsb_suit_length[suit][0] + exh_msb_suit_length[suit][0];
-  }
-  exh_total_points = exh_lsb_totalpoints[0] + exh_msb_totalpoints[0];
+  for (p = 0; p < 4; p++)
+    assert(hand_count_cards(b->hands[p]) == 13);
 }
 
-void exh_analyze_vec (int high_vec, int low_vec, struct handstat *hs) {
-  /* analyse the 2 remaining hands with the vectordeal data-structure.
-     This is VERY fast !!!  */
-  int s;
-  struct handstat *hs0;
-  struct handstat *hs1;
-  hs0 = hs + exh_player[0];
-  hs1 = hs + exh_player[1];
-  hs0->hs_totalpoints = hs1->hs_totalpoints = 0;
-  for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-    hs0->hs_length[s] = exh_lsb_suit_length[s][low_vec] + exh_msb_suit_length[s][high_vec];
-    hs0->hs_points[s] = exh_lsb_suit_points[s][low_vec] + exh_msb_suit_points[s][high_vec];
-    hs1->hs_length[s] = exh_total_cards_in_suit[s] - hs0->hs_length[s];
-    hs1->hs_points[s] = exh_total_points_in_suit[s] - hs0->hs_points[s];
+static int bitpermutate(int vector)
+{
+  int low = 1;
+  int bits_to_move_back = 0, move_back_count = 0;
+  /* Find the lowest set bit that have zeros before it */
+  int shadow = vector - 1;
+  int nextvector;
+  nextvector = vector & shadow;
+  shadow = vector & ~shadow;
+  while (shadow == low) {
+    /* if all bits are at bottom so we have done all permutations */
+    if (nextvector == 0)
+      return 0;
+    /* Store low bit to list of bits to move back */
+    bits_to_move_back |= low;
+    low <<= 1;
+    move_back_count++;
+    /* find next lowest bit */
+    shadow = nextvector - 1;
+    vector = nextvector;
+    nextvector = vector & shadow;
+    shadow = vector & ~shadow;
   }
-  hs0->hs_totalpoints = exh_lsb_totalpoints[low_vec] + exh_msb_totalpoints[high_vec];
-  hs1->hs_totalpoints = exh_total_points - hs0->hs_totalpoints;
-  hs0->hs_bits = distrbitmaps
-    [hs0->hs_length[SUIT_CLUB]]
-    [hs0->hs_length[SUIT_DIAMOND]]
-    [hs0->hs_length[SUIT_HEART]];
-  hs1->hs_bits = distrbitmaps
-    [hs1->hs_length[SUIT_CLUB]]
-    [hs1->hs_length[SUIT_DIAMOND]]
-    [hs1->hs_length[SUIT_HEART]];
+  /* Figure out how much to shift the move back bits */
+  int positiontomove = 30 - __builtin_clzl(shadow) - move_back_count;
+  vector = nextvector;
+  nextvector |= (shadow >> 1) | (bits_to_move_back << positiontomove);
+  return nextvector;
 }
 
 /* End of Specific routines for EXHAUST_MODE */
-#endif /* FRANCOIS */
 
 static int evaltree (struct treebase *b) {
   struct tree *t = (struct tree*)b;
@@ -1323,11 +1205,7 @@ static int evaltree (struct treebase *b) {
       {
         struct treehascard *hc = (struct treehascard *)t;
         assert (hc->compass >= COMPASS_NORTH && hc->compass <= COMPASS_WEST);
-#ifdef FRANCOIS
-        return hascard (curdeal, hc->compass, hc->c, vectordeal) > 0;
-#else
         return hascard (curdeal, hc->compass, hc->c) > 0;
-#endif /* FRANCOIS */
       }
     case TRT_LOSERTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
@@ -1719,14 +1597,8 @@ int main (int argc, char **argv) {
         swapping = c - '0';
         break;
       case 'e':
-#ifdef FRANCOIS
         computing_mode = EXHAUST_MODE;
         break;
-#else
-        /* Break if code not included in executable */
-        printf ("Exhaust mode not included in this executable\n");
-        return 1;
-#endif /* FRANCOIS */
       case 'l':
         loading = 1;
         loadindex = atoi (optarg);
@@ -1815,53 +1687,21 @@ int main (int argc, char **argv) {
         }
       }
       break;
-#ifdef FRANCOIS
-    case EXHAUST_MODE: {
-      int i, j, half, ham13, c_tsize[14], highvec, *lowvec_ptr;
-      int emptyslots;
+    case EXHAUST_MODE:
 
       exh_get2players ();
-      exh_setup_card_map ();
       exh_map_cards ();
-      exh_precompute_analyse_tables ();
-      emptyslots = exh_empty_slots[0] + exh_empty_slots[1];
-      /* building the T table :
-         o HAM_T[ham13] will contain all the 13-bits vector that have a hamming weight 'ham13'
-         o Tsize[ham13] will contain the number of such possible vectors: 13/(ham13!(13-ham13)!)
-         o Tsize will be mirrored into c_tsize
-       */
-      for (c_tsize[i = 13] = Tsize[i = 13] = 1, HAM_T[13] = (int *) malloc (sizeof (int)); i--;)
-        HAM_T[i] = (int *) malloc (sizeof (int) * (c_tsize[i] = Tsize[i] = Tsize[i + 1] * (i + 1) / (13 - i)));
-      /*
-         one generate the 2^13 possible half-vectors and :
-         o compute its hamming weight;
-         o store it into the table T
-       */
-      for (half = 1 << 13; half--;) {
-        for (ham13 = 0, i = 13; i--;)
-          ham13 += (half >> i) & 1;
-        HAM_T[ham13][--c_tsize[ham13]] = half;
-      }
-
-      for (ham13 = 14; ham13--;)
-        for (i = Tsize[ham13]; i--;) {
-          highvec = HAM_T[ham13][i];
-          if (!(((highvec << 13) ^ exh_predealt_vector) >> emptyslots)) {
-            for (lowvec_ptr = HAM_T[13 - ham13], j = Tsize[ham13]; j--; lowvec_ptr++) {
-              ngen++;
-              vectordeal = (highvec << 13) | *lowvec_ptr;
-              exh_analyze_vec (highvec, *lowvec_ptr, hs);
-              if (interesting ()) {
-                /*  exh_print_vector(hs); */
-                action ();
-                nprod++;
-              }
-            }
-          }
+      for (; vectordeal; vectordeal = bitpermutate(vectordeal)) {
+        ngen++;
+        exh_shuffle (vectordeal, curdeal);
+        analyze(curdeal, hs);
+        if (interesting ()) {
+          /*  exh_print_vector(hs); */
+          action ();
+          nprod++;
         }
       }
       break;
-#endif /* FRANCOIS */
     default:
       fprintf (stderr, "Unrecognized computation mode...\n");
       exit (-1); /*NOTREACHED */

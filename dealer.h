@@ -54,12 +54,7 @@ extern struct board *curdeal;
 #define printcompact(d) (fprintcompact(stdout, d, 0, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1, 0))
 
-#ifdef FRANCOIS
-  int hascard (deal, int, card, int);
-  #define HAS_CARD(d,p,c) hascard(d,p,c,0)
-#else
-  card hascard (const struct board *, int, card);
-  #define HAS_CARD(d,p,c) hascard(d,p,c)
-#endif
+card hascard (const struct board *, int, card);
+ #define HAS_CARD(d,p,c) hascard(d,p,c)
 
 #endif /* DEALER_H */
