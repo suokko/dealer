@@ -1003,13 +1003,17 @@ static void exh_set_bit_values (int bit_pos, card onecard) {
   exh_card_at_bit[bit_pos] = onecard;
 }
 
-static void exh_map_cards (void) {
+static void exh_map_cards (struct board *b) {
   int i;
   int bit_pos;
   hand predeal = 0;
+  hand p1 = 0;
+  hand p0 = 0;
 
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++) {
     predeal |= predealt.hands[i];
+    b->hands[i] = predealt.hands[i];
+  }
 
   /* Fill in all cards not predealt */
   for (i = 0, bit_pos = 0; i < 52; i++) {
@@ -1026,7 +1030,20 @@ static void exh_map_cards (void) {
   /* Set N upper bits that will be moved to low bits */
   for (i = 0; i < p1cnt; i++) {
     vectordeal |= 1 << (bit_pos - i - 1);
+    p1 |= exh_card_at_bit[bit_pos - i - 1];
   }
+  for (i = 1; i < bit_pos - p1cnt; i++)
+    p0 |= exh_card_at_bit[i];
+  /* Lowest bit goes to wrong hand so first shuffle can flip it. */
+  if (bit_pos - p1cnt > 0)
+    p1 |= exh_card_at_bit[0];
+  else
+    p0 |= exh_card_at_bit[0];
+
+  assert(hand_count_cards((p1 | b->hands[exh_player[1]]) ^ exh_card_at_bit[0]) == 13);
+  assert(hand_count_cards((p0 | b->hands[exh_player[0]]) ^ exh_card_at_bit[0]) == 13);
+  b->hands[exh_player[0]] |= p0;
+  b->hands[exh_player[1]] |= p1;
 }
 
 static inline void exh_print_stats (struct handstat *hs) {
@@ -1069,18 +1086,21 @@ static inline void exh_print_vector (struct handstat *hs) {
   exh_print_stats (hsp);
 }
 
-static void exh_shuffle (int vector, struct board *b) {
-  int p, bit;
+static void exh_shuffle (int vector, int prevvect, struct board *b) {
+  int p;
+  hand bitstoflip = 0;
 
-  for (p = 0; p < 4; p++)
-    b->hands[p] = predealt.hands[p];
+  int changed = vector ^ prevvect;
 
-  for (bit = 1, p = 0; p < exh_vect_length; bit <<= 1, p++) {
-    if (bit & vector)
-      b->hands[exh_player[1]] |= exh_card_at_bit[p];
-    else
-      b->hands[exh_player[0]] |= exh_card_at_bit[p];
-  }
+  do {
+    int last = __builtin_ctz(changed);
+    bitstoflip |= exh_card_at_bit[last];
+    changed &= changed - 1;
+  } while (changed);
+
+  b->hands[exh_player[0]] ^= bitstoflip;
+  b->hands[exh_player[1]] ^= bitstoflip;
+
   for (p = 0; p < 4; p++)
     assert(hand_count_cards(b->hands[p]) == 13);
 }
@@ -1691,17 +1711,21 @@ int main (int argc, char **argv) {
       }
       break;
     case EXHAUST_MODE:
+      {
 
-      exh_get2players ();
-      exh_map_cards ();
-      for (; vectordeal; vectordeal = bitpermutate(vectordeal)) {
-        ngen++;
-        exh_shuffle (vectordeal, curdeal);
-        analyze(curdeal, hs);
-        if (interesting ()) {
-          /*  exh_print_vector(hs); */
-          action ();
-          nprod++;
+        exh_get2players ();
+        exh_map_cards (curdeal);
+        int prevvect = vectordeal ^ 1;
+        for (; vectordeal; vectordeal = bitpermutate(vectordeal)) {
+          ngen++;
+          exh_shuffle (vectordeal, prevvect, curdeal);
+          prevvect = vectordeal;
+          analyze(curdeal, hs);
+          if (interesting ()) {
+            /*  exh_print_vector(hs); */
+            action ();
+            nprod++;
+          }
         }
       }
       break;
