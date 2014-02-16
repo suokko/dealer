@@ -811,14 +811,14 @@ static void shuffle_bias(struct board *d) {
 }
 
 static int bias_filter(const struct pack *d, int pos, int idx, const int postoplayer[52]) {
-  const int player1 = postoplayer[pos];
-  const int suit1 = C_SUIT(d->c[idx]);
-  const int player2 = postoplayer[idx];
-  const int suit2 = C_SUIT(d->c[pos]);
   if (biastotal == 0)
     return 0;
   if (biasfiltercounter-- == 0)
     error("Bias filter called too many time for a single dealer. Likely impossible bias compination.\n");
+  const int player1 = postoplayer[pos];
+  const int suit1 = C_SUIT(d->c[idx]);
+  const int player2 = postoplayer[idx];
+  const int suit2 = C_SUIT(d->c[pos]);
   return biasdeal[player1][suit1] >= 0 || biasdeal[player2][suit2] >= 0;
 }
 
@@ -981,9 +981,9 @@ retry_read:
     shuffle_bias(d);
     int dealtcnt = hand_count_cards(dealtcardsmask);
     const int predealtcnt = dealtcnt;
-    int postoplayer[52];
     int p, i = predealtcnt;
     if (biastotal > 0) {
+      int postoplayer[52];
       for (p = 0; p < 4; p++) {
         int playercnt = 13 - hand_count_cards(d->hands[p]) + i;
         for (;i < playercnt; i++) {
@@ -991,24 +991,36 @@ retry_read:
         }
       }
       assert(i == 52);
-    }
-    /* shuffle remaining cards */
-    for (i = predealtcnt; i < 52; i++) {
-      int pos;
-      do {
+
+      for (i = predealtcnt; i < 52; i++) {
+        int pos;
+        do {
+          pos = uniform_random_table() + predealtcnt;
+        } while (bias_filter(&curpack, pos, i, postoplayer));
+        card t = curpack.c[pos];
+        curpack.c[pos] = curpack.c[i];
+        curpack.c[i] = t;
+      }
+
+    } else {
+      /* shuffle remaining cards */
+      for (i = predealtcnt; i < 52; i++) {
+        int pos;
         pos = uniform_random_table() + predealtcnt;
-      } while (bias_filter(&curpack, pos, i, postoplayer));
-      card t = curpack.c[pos];
-      curpack.c[pos] = curpack.c[i];
-      curpack.c[i] = t;
+        card t = curpack.c[pos];
+        curpack.c[pos] = curpack.c[i];
+        curpack.c[i] = t;
+      }
     }
     /* Assign remaining cards to a player */
     for (p = 0; p < 4; p++) {
       int playercnt = 13 - hand_count_cards(d->hands[p]);
+      hand temp = d->hands[p];
       for (i = dealtcnt; i < playercnt + dealtcnt; i++) {
         card t = curpack.c[i];
-        d->hands[p] = hand_add_card(d->hands[p], t);
+        temp = hand_add_card(temp, t);
       }
+      d->hands[p] = temp;
       dealtcnt += playercnt;
     }
   }
