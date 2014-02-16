@@ -1,9 +1,7 @@
 #ifndef DEALER_H
 #define DEALER_H
 
-typedef unsigned char card;
-
-typedef card deal[52];
+#include "card.h"
 
 extern const char * const player_name[4];
 
@@ -11,7 +9,7 @@ int verbose;
 
 /* Changes for cccc and quality */
 struct context {
-  deal *pd ; /* pointer to current deal */
+  struct board *pd;
   struct handstat *ps ; /* Pointer to stats of current deal */
 } c;
 
@@ -47,12 +45,13 @@ struct handstat {
 
 struct handstat hs[4] ;
 
-deal curdeal;
-
 int maxgenerate;
 int maxdealer;
 int maxvuln;
 int will_print;
+
+#include "card.h"
+extern struct board *curdeal;
 
 #define printcompact(d) (fprintcompact(stdout, d, 0, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1, 0))
@@ -61,7 +60,7 @@ int will_print;
   int hascard (deal, int, card, int);
   #define HAS_CARD(d,p,c) hascard(d,p,c,0)
 #else
-  int hascard (deal, int, card);
+  card hascard (const struct board *, int, card);
   #define HAS_CARD(d,p,c) hascard(d,p,c)
 #endif
 

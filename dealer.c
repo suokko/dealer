@@ -47,6 +47,8 @@ char* input_file = 0;
 #include "pbn.h"
 #include "genlib.h"
 
+#include "card.h"
+
 void yyerror (char *);
 
 #define TWO_TO_THE_13 (1<<13)
@@ -71,9 +73,7 @@ static const char ucrep[14] = "23456789TJQKA";
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
                        {-1, -1, -1, -1}, {-1, -1, -1, -1}};
-static int predealt[5][4] = { {0, 0, 0, 0}, {0, 0, 0, 0},
-                       {0, 0, 0, 0}, {0, 0, 0, 0},
-                       {0, 0, 0, 0}};
+static struct board predealt = {{0}};
 
 static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
@@ -81,8 +81,11 @@ static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  3
 
 static const char * const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 const char * const player_name[] = { "North", "East", "South", "West" };
-static deal fullpack;
-static deal stacked_pack;
+static struct pack curpack = {{0}};
+static struct board curboard = {{club_mask, diamond_mask, heart_mask, spade_mask}};
+struct board *curdeal = &curboard;
+static hand dealtcardsmask;
+typedef const struct board * deal;
 
 static int swapping = 0;
 static int swapindex = 0;
@@ -110,7 +113,7 @@ struct treebase *decisiontree = &defaulttree.base;
 static struct action defaultaction = {(struct action *) 0, ACT_PRINTALL};
 struct action *actionlist = &defaultaction;
 static unsigned char zero52[NRANDVALS];
-static deal *deallist;
+static struct stored_board *deallist;
 
 /* Function definitions */
 static void fprintcompact (FILE *, deal, int, int);
@@ -197,6 +200,20 @@ static int uniform_random(int max) {
   return (int)rnd;
 }
 
+static int uniform_random_table() {
+  unsigned rnd;
+  do {
+    rnd = RANDOM ();
+#ifdef STD_RAND
+    rnd = rnd & (NRANDMASK);
+#else
+    rnd = rnd >> (31 - RANDBITS);
+#endif
+    rnd = zero52[rnd & NRANDMASK];
+  } while (rnd == 0xFF);
+  return rnd;
+}
+
 static void initevalcontract () {
   int i, j, k;
   for (i = 0; i < 2; i++)
@@ -217,7 +234,7 @@ static int score (int vuln, int suit, int level, int tricks) {
   int total = 0;
 
   /* going down */
-  if (tricks < 6 + level) return -50 * (1 + vuln) * (6 + level - tricks);  
+  if (tricks < 6 + level) return -50 * (1 + vuln) * (6 + level - tricks);
 
   /* Tricks */
   total = total + ((suit >= SUIT_HEART) ? 30 : 20) * (tricks - 6);
@@ -269,7 +286,7 @@ static void showevalcontract (int nh) {
   }
 }
 
-static int dd (deal d, int l, int c) {
+static int dd (const struct board *d, int l, int c) {
   /* results-cached version of dd() */
   /* the dd cache, and the ngen it refers to */
   static int cached_ngen = -1;
@@ -306,7 +323,7 @@ static int mkstemp(char *temp)
 }
 #endif
 
-static int true_dd (deal d, int l, int c) {
+static int true_dd (const struct board *d, int l, int c) {
   if (loading && libdeal.valid) {
     int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
     /* This will get the number of tricks EW can get.  If the user wanted NS, 
@@ -466,13 +483,13 @@ static int checkshape (int nr, struct shape *s)
   return r;
 }
 
-static void newpack (deal d) {
+static void newpack (struct pack *d) {
   int suit, rank, place;
 
   place = 0;
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
     for (rank = 0; rank < 13; rank++)
-      d[place++] = MAKECARD (suit, rank);
+      d->c[place++] = MAKECARD (suit, rank);
 }
 
 #ifdef FRANCOIS
@@ -492,12 +509,8 @@ int hascard (deal d, int player, card onecard, int vectordeal){
   }
   return 0;
 #else
-int hascard (deal d, int player, card onecard){
-  int i;
-
-  for (i = player * 13; i < (player + 1) * 13; i++)
-    if (d[i] == onecard) return 1;
-  return 0;
+card hascard (const struct board *d, int player, card onecard) {
+  return hand_has_card(d->hands[player], onecard);
 #endif /* FRANCOIS */
 }
 
@@ -552,12 +565,12 @@ int make_contract (char suitchar, char trickchar) {
   return MAKECONTRACT (suit, trick);
 }
 
-static void analyze (deal d, struct handstat *hsbase) {
+static void analyze (struct board *d, struct handstat *hsbase) {
 
   /* Analyze a hand.  Modified by HU to count controls and losers. */
   /* Further mod by AM to count several alternate pointcounts too  */
 
-  int player, next, c, r, s, t;
+  int player, c, r, s, t;
   card curcard;
   struct handstat *hs;
 
@@ -608,9 +621,10 @@ static void analyze (deal d, struct handstat *hsbase) {
        use the player offset to jump to the first card.  Can't just increment
        through the deck, because we skip those players who are not part of the
        analysis */
-    next = 13 * player;
+    hand h = d->hands[player];
     for (c = 0; c < 13; c++) {
-      curcard = d[next++];
+      curcard = hand_extract_card(h);
+      h = hand_remove_card(h, curcard);
       s = C_SUIT (curcard);
       r = C_RANK (curcard);
 
@@ -746,13 +760,14 @@ static void printdeal (deal d) {
 static void setup_bias (void) {
   int p, s;
   char err[256];
-  int len[4] = {0}, pretotal[4] = {0}, lenset[4] = {0};
+  int len[4] = {0}, lenset[4] = {0};
   for (p = 0; p < 4; p++) {
     int totset = 0;
     int tot = 0;
     for (s = 0; s < 4; s++) {
+      const int predealcnt = hand_count_cards(predealt.hands[p] & suit_masks[s]);
       if (biasdeal[p][s] >= 0) {
-        if (predealt[p][s] > biasdeal[p][s]) {
+        if (predealcnt > biasdeal[p][s]) {
           sprintf(err, "More predeal cards than bias allows for %s in %s\n", player_name[p], suit_name[s]);
           error(err);
         }
@@ -760,14 +775,12 @@ static void setup_bias (void) {
         lenset[s]++;
         tot += biasdeal[p][s];
         totset++;
+        biastotal += biasdeal[p][s] - predealcnt;
         /* Remove predealt cards from bias length */
-        biasdeal[p][s] -= predealt[p][s];
-        biastotal += biasdeal[p][s];
       } else {
-        len[s] += predealt[p][s];
-        tot += predealt[p][s];
+        len[s] += predealcnt;
+        tot += predealcnt;
       }
-      pretotal[p] += predealt[p][s];
     }
     if (tot > 13 || (totset == 4 && tot < 13)) {
       sprintf(err, "%d cards predealt for %s in %d suits\n", tot, player_name[p], totset);
@@ -780,81 +793,68 @@ static void setup_bias (void) {
       error(err);
     }
   }
-
-  if (biastotal == 0)
-    return;
-
-  /* Fill in suit reservations to stacked_pack */
-  for (p = 0; p < 4; p++) {
-    for (s = 0; s < 4; s++) {
-      int b;
-      predealt[4][s] += predealt[p][s];
-      if (biasdeal[p][s] <= 0)
-        continue;
-      for (b = 0; b < biasdeal[p][s]; b++) {
-        stacked_pack[p*13 + pretotal[p]] = CARD_C + s;
-        pretotal[p]++;
-      }
-    }
-  }
 }
 
-static int bias_pickcard(deal d, int player, int suit, int pos, int pack[4])
-{
-  int p, c;
-  for (p = 0; p < 4; p++) {
-    for (c = pack[p]; c < 13*(p+1); c++) {
-      if (C_SUIT(d[c]) != suit)
-        continue;
+static card bias_pickcard(struct board *d, int start, int pos, hand mask) {
+  int i;
+  card temp = curpack.c[start];
+  for (i = start; i < CARDS_IN_SUIT*NSUITS; i++) {
+    if (hand_has_card(mask, curpack.c[i])) {
       if (pos-- == 0)
-        return c;
+        break;
     }
   }
-  error("No card found for bias dealing\n");
-  return -1;
+  assert(i < CARDS_IN_SUIT*NSUITS);
+  curpack.c[start]  = curpack.c[i];
+  curpack.c[i] = temp;
+  return curpack.c[start];
 }
 
 static int biasfiltercounter;
 
-static void shuffle_bias(deal d) {
-  int pack[4], p, s, cards_left[4];
+static void shuffle_bias(struct board *d) {
+  /* Set predealt cards */
+  int p, s;
+  *d = predealt;
+  dealtcardsmask = 0;
+  for (p = 0; p < 4; p++)
+    dealtcardsmask |= predealt.hands[p];
   if (biastotal == 0)
     return;
+  int totsuit[4] = {0}, totplayer[4] = {0};
 
   biasfiltercounter = 5200 * 1000;
+
+  /* For each player and suit deal length bias cards */
+  int predealcnt = hand_count_cards(dealtcardsmask);
   for (p = 0; p < 4; p++) {
-    cards_left[p] = 13 - predealt[4][p];
-    pack[p] = p*13;
-    while (stacked_pack[pack[p]] < CARD_C) pack[p]++;
-  }
-  for (p = 0; p < 4; p++) {
-    for (s = 0; s < 4; s++) {
-      int bias = biasdeal[p][s], b, check;
+    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
+      const int dealt = hand_count_cards(predealt.hands[p] & suit_masks[s]);
+      int bias = biasdeal[p][s], b, left;
+      bias -= dealt;
       if (bias <= 0)
         continue;
-      check = CARD_C + s;
-      (void)check;
 
-      for (b = 0; b < biasdeal[p][s]; b++) {
-        int pos;
-        card t;
-        assert (stacked_pack[pack[p]] == check);
-        pos = uniform_random(cards_left[s]--);
-        pos = bias_pickcard(d, p, s, pos, pack);
-        t = d[pos];
-        d[pos] = d[pack[p]];
-        d[pack[p]] = t;
-        pack[p]++;
+      totsuit[s] += bias;
+      totplayer[p] += bias;
+
+      hand suit = suit_masks[s] & ~dealtcardsmask;
+      left = hand_count_cards(suit);
+      for (b = 0; b < bias; b++) {
+        int pos = uniform_random(left--);
+        card c = bias_pickcard(d, predealcnt++, pos, suit);
+        dealtcardsmask |= c;
+        curdeal->hands[p] |= c;
       }
     }
   }
 }
 
-static int bias_filter(deal d, int pos, int idx) {
-  const int player1 = pos / 13;
-  const int suit1 = C_SUIT(d[idx]);
-  const int player2 = idx / 13;
-  const int suit2 = C_SUIT(d[pos]);
+static int bias_filter(const struct pack *d, int pos, int idx, const int postoplayer[52]) {
+  const int player1 = postoplayer[pos];
+  const int suit1 = C_SUIT(d->c[idx]);
+  const int player2 = postoplayer[idx];
+  const int suit2 = C_SUIT(d->c[pos]);
   if (biastotal == 0)
     return 0;
   if (biasfiltercounter-- == 0)
@@ -862,84 +862,76 @@ static int bias_filter(deal d, int pos, int idx) {
   return biasdeal[player1][suit1] >= 0 || biasdeal[player2][suit2] >= 0;
 }
 
-static void setup_deal () {
-  register int i, j;
 
-  j = 0;
-  for (i = 0; i < 52; i++) {
-    if (stacked_pack[i] < CARD_C) {
-      curdeal[i] = stacked_pack[i];
-    } else {
-      while (fullpack[j] == NO_CARD)
-        j++;
-      curdeal[i] = fullpack[j++];
-      assert (j <= 52);
-    }
-  }
+static void setup_deal () {
 }
 
-void predeal (int player, card onecard) {
-  int i, j;
 
-  for (i = 0; i < 52; i++) {
-    if (fullpack[i] == onecard) {
-      fullpack[i] = NO_CARD;
-      for (j = player * 13; j < (player + 1) * 13; j++)
-        if (stacked_pack[j] == NO_CARD) {
-        stacked_pack[j] = onecard;
-        predealt[player][C_SUIT(onecard)]++;
-        return;
-        }
-      yyerror ("More than 13 cards for one player");
-    }
+void predeal (int player, card onecard) {
+
+  int i;
+  card c = 0;
+  for (i = 0; i < 4; i++) {
+    c = hand_has_card(predealt.hands[i], onecard);
+    if (c == onecard)
+      yyerror ("Card predealt twice");
   }
-  yyerror ("Card predealt twice");
+  predealt.hands[player] = hand_add_card(predealt.hands[player], onecard);
+  if (hand_count_cards(predealt.hands[player]) > 13)
+    yyerror("More than 13 cards for one player");
 }
 
 static void initprogram () {
-  int i, i_cycle;
-  int val;
+  int i = 0, p, j = 0;
+
+  struct pack temp;
+  newpack(&temp);
 
   setup_bias();
 
+  /* Move predealtcards to begin of pack */
+  hand predeal = 0;
+  for (p = 0; p < 4; p++)
+    predeal |= predealt.hands[p];
+
+  const int predealcnt = hand_count_cards(predeal);
+  /* Move all matching cards to begin */
+  for (; i < 52; i++) {
+    if (hand_has_card(predeal, temp.c[i])) {
+      curpack.c[i-j] = temp.c[i];
+    } else {
+      curpack.c[predealcnt + j] = temp.c[i];
+      j++;
+    }
+  }
+
   /* Now initialize array zero52 with numbers 0..51 repeatedly. This whole
      charade is just to prevent having to do divisions. */
-  val = 0;
-  for (i = 0, i_cycle = 0; i < NRANDVALS; i++) {
-    while (stacked_pack[val] != NO_CARD) {
-      /* this slot is predealt, do not use it */
-      val++;
-      if (val == 52) {
-        val = 0;
-        i_cycle = i;
-      }
-    }
-    zero52[i] = val++;
-    if (val == 52) {
-      val = 0;
-      i_cycle = i + 1;
-    }
-  }
+  j = 52 - biastotal - predealcnt;
+  /* Are all cards are bias randomized? */
+  if (j == 0)
+    return;
+  for (i = 0; i < j; i++)
+    zero52[i] = i;
+
+  for (; i + i < NRANDVALS; i += i)
+    memcpy(&zero52[i], &zero52[0], i);
+
+  /* Fill last chunk up to last full block */
+  int end = NRANDVALS - (NRANDVALS % j);
+  memcpy(&zero52[i], &zero52[0], end - i);
   /* Fill the last part of the array with 0xFF, just to prevent
      that 0 occurs more than 51. This is probably just for hack value */
-  while (i > i_cycle) {
-    zero52[i - 1] = 0xFF;
-    i--;
-  }
+  memset(&zero52[end], 0xFF, NRANDVALS - end);
 }
 
-static void swap2 (deal d, int p1, int p2) {
+static void swap2 (struct board *d, int p1, int p2) {
   /* functions to assist "simulated" shuffling with player
      swapping or loading from Ginsberg's library.dat -- AM990423 */
-  card t;
-  int i;
-  p1 *= 13;
-  p2 *= 13;
-  for (i = 0; i < 13; ++i) {
-    t = d[p1 + i];
-    d[p1 + i] = d[p2 + i];
-    d[p2 + i] = t;
-  }
+  hand h;
+  h = d->hands[p1];
+  d->hands[p1] = d->hands[p2];
+  d->hands[p2] = h;
 }
 
 static FILE * find_library (const char *basename, const char *openopt) {
@@ -957,9 +949,7 @@ static FILE * find_library (const char *basename, const char *openopt) {
   return result;
 }
 
-static int shuffle (deal d) {
-  int i, j, k;
-  card t;
+static int shuffle (struct board *d) {
 
   if (loading) {
     static FILE *lib = 0;
@@ -971,12 +961,12 @@ static int shuffle (deal d) {
       }
       fseek (lib, 26 * loadindex, SEEK_SET);
     }
+retry_read:
     if (fread (&libdeal, 26, 1, lib)) {
-      int ph[4], i, suit, rank, pn;
+      int i, suit, rank, pn;
       unsigned long su;
       libdeal.valid = 1;
-      for (i = 0; i < 4; ++i)
-        ph[i] = 13 * i;
+      memset(d->hands,0,sizeof(d->hands));
       for (i = 0; i <= 4; ++i) {
         libdeal.tricks[i] = ntohs (libdeal.tricks[i]);
       }
@@ -984,16 +974,16 @@ static int shuffle (deal d) {
         su = libdeal.suits[suit];
         su = ntohl (su);
         for (rank = 0; rank < 13; ++rank) {
-          int idx;
           pn = su & 0x03;
           su >>= 2;
-          idx = ph[pn]++;
-          if (idx >= 52 || idx < 0) {
+          d->hands[pn] = hand_add_card(d->hands[pn], MAKECARD(suit, 12 - rank));
+          if (hand_count_cards(d->hands[pn]) > 13) {
             fprintf(stderr, "Deal %d is broken\n", ngen);
+            fprintcompact(stderr, d, 1, 0);
             libdeal.valid = 0;
-            return 0;
+            ngen++;
+            goto retry_read;
           }
-          d[idx] = MAKECARD (suit, 12 - rank);
         }
       }
       return 1;
@@ -1026,25 +1016,37 @@ static int shuffle (deal d) {
        other card. This is supposed to be the perfect shuffle algorithm. 
        It only depends on a valid random number generator.  */
     shuffle_bias(d);
-    for (i = 0; i < 52; i++) {
-      if (stacked_pack[i] == NO_CARD) { 
-        /* Thorvald Aagaard 14.08.1999 don't switch a predealt card */
-        do {
-          do {
-#ifdef STD_RAND
-             k = RANDOM ();
-#else
-             /* Upper bits most random */
-             k = (RANDOM () >> (31 - RANDBITS));
-#endif /* STD_RAND */
-             j = zero52[k & NRANDMASK];
-           } while (j == 0xFF || bias_filter(d, i, j));
-        } while (stacked_pack[j] != NO_CARD);
-
-        t = d[j];
-        d[j] = d[i];
-        d[i] = t;
+    int dealtcnt = hand_count_cards(dealtcardsmask);
+    const int predealtcnt = dealtcnt;
+    int postoplayer[52];
+    int p, i = predealtcnt;
+    if (biastotal > 0) {
+      for (p = 0; p < 4; p++) {
+        int playercnt = 13 - hand_count_cards(d->hands[p]) + i;
+        for (;i < playercnt; i++) {
+          postoplayer[i] = p;
+        }
       }
+      assert(i == 52);
+    }
+    /* shuffle remaining cards */
+    for (i = predealtcnt; i < 52; i++) {
+      int pos;
+      do {
+        pos = uniform_random_table() + predealtcnt;
+      } while (bias_filter(&curpack, pos, i, postoplayer));
+      card t = curpack.c[pos];
+      curpack.c[pos] = curpack.c[i];
+      curpack.c[i] = t;
+    }
+    /* Assign remaining cards to a player */
+    for (p = 0; p < 4; p++) {
+      int playercnt = 13 - hand_count_cards(d->hands[p]);
+      for (i = dealtcnt; i < playercnt + dealtcnt; i++) {
+        card t = curpack.c[i];
+        d->hands[p] = hand_add_card(d->hands[p], t);
+      }
+      dealtcnt += playercnt;
     }
   }
   if (swapping) {
@@ -1388,12 +1390,15 @@ static int evaltree (struct treebase *b) {
         return (checkshape(hs[s->compass].hs_bits, &s->shape));
       }
     case TRT_HASCARD:      /* compass, card */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
+      {
+        struct treehascard *hc = (struct treehascard *)t;
+        assert (hc->compass >= COMPASS_NORTH && hc->compass <= COMPASS_WEST);
 #ifdef FRANCOIS
-      return hascard (curdeal, t->tr_int1, (card)t->tr_int2, vectordeal);
+        return hascard (curdeal, hc->compass, hc->c, vectordeal) > 0;
 #else
-      return hascard (curdeal, t->tr_int1, (card)t->tr_int2);
+        return hascard (curdeal, hc->compass, hc->c) > 0;
 #endif /* FRANCOIS */
+      }
     case TRT_LOSERTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       return hs[t->tr_int1].hs_totalloser;
@@ -1471,7 +1476,7 @@ static void setup_action () {
       case ACT_PRINTES:
         break;
       case ACT_PRINT:
-        deallist = (deal *) mycalloc (maxproduce, sizeof (deal));
+        deallist = (struct stored_board *) mycalloc (maxproduce, sizeof (deallist[0]));
         break;
       case ACT_AVERAGE:
         break;
@@ -1542,7 +1547,7 @@ static void action () {
           printpbn (nprod, curdeal);
         break;
       case ACT_PRINT:
-        memcpy (deallist[nprod], curdeal, sizeof (deal));
+        board_to_stored(&deallist[nprod], curdeal);
         break;
       case ACT_AVERAGE:
         acp->ac_int1 += evaltree (acp->ac_expr1);
@@ -1582,7 +1587,7 @@ static void action () {
     }
 }
 
-static void printhands (int boardno, deal * dealp, int player, int nhands) {
+static void printhands (int boardno, deal dealp, int player, int nhands) {
   int i, suit, rank, cards;
 
   for (i = 0; i < nhands; i++)
@@ -1597,7 +1602,7 @@ static void printhands (int boardno, deal * dealp, int player, int nhands) {
       }
       cards = 0;
       for (rank = 12; rank >= 0; rank--) {
-        if (HAS_CARD (dealp[i], player, MAKECARD (suit, rank))) {
+        if (HAS_CARD (&dealp[i], player, MAKECARD (suit, rank))) {
           printf ("%c ", ucrep[rank]);
           cards++;
         }
@@ -1633,11 +1638,16 @@ static void cleanup_action () {
       case ACT_PRINT:
         for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
           if (!(acp->ac_int1 & (1 << player)))
-          continue;
+            continue;
           printf ("\n\n%s hands:\n\n\n\n", player_name[player]);
-          for (i = 0; i < nprod; i += 4)
-          printhands (i, deallist + i, player, nprod - i > 4 ? 4 : nprod - i);
-            printf ("\f");
+          for (i = 0; i < nprod; i += 4) {
+            struct board b[4];
+            int j;
+            for (j = 0; j < 4 && j < nprod - i; j++)
+              board_from_stored(&b[j], &deallist[i + j]);
+            printhands (i, b, player, nprod - i > 4 ? 4 : nprod - i);
+          }
+          printf ("\f");
         }
         break;
       case ACT_AVERAGE:
@@ -1764,7 +1774,6 @@ int main (int argc, char **argv) {
   char c;
   int errflg = 0;
   int progressmeter = 0;
-  int i=0;
 
   struct timeval tvstart, tvstop;
 
@@ -1836,9 +1845,6 @@ int main (int argc, char **argv) {
     perror (argv[optind]);
     exit (-1);
   }
-  newpack (fullpack);
-  /* Empty pack */
-  for (i = 0; i < 52; i++) stacked_pack[i] = NO_CARD;
   initdistr ();
   maxdealer = -1;
   maxvuln = -1;

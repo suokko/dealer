@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include "card.h"
 
 struct treebase {
         int tr_type;
@@ -30,6 +31,12 @@ struct treeshape {
         struct shape    shape;
 };
 
+struct treehascard {
+        struct treebase base;
+        int compass;
+        card c;
+};
+
 struct expr {
         struct treebase*    ex_tr;
         char*               ex_ch;
@@ -38,23 +45,8 @@ struct expr {
 
 #define NIL     ((struct treebase *) 0)
 
-#define SUIT_CLUB       0
-#define SUIT_DIAMOND    1
-#define SUIT_HEART      2
-#define SUIT_SPADE      3
-#define SUIT_NT         4
-#define NSUITS          4
-
-#define MAKECARD(suit, rank)    ((card)(((suit)<<6)|(rank)))
 
 #define MAKECONTRACT(suit, tricks) (tricks*5+suit)
-#define C_SUIT(c)               ((c)>>6)
-#define C_RANK(c)               ((c)&0x3F)
-#define NO_CARD                 0xFF
-#define CARD_S                  0xFE
-#define CARD_H                  0xFD
-#define CARD_D                  0xFC
-#define CARD_C                  0xFB
 
 #define COMPASS_NORTH   0
 #define COMPASS_EAST    1

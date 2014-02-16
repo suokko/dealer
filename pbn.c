@@ -8,11 +8,12 @@
 #include "tree.h"
 #include "dealer.h"
 #include "pbn.h"
+#include "card.h"
 
 extern long seed;
 extern char* input_file;
 
-int printpbn (int board, deal d) {
+int printpbn (int board, const struct board *d) {
 
   /* Symbols for the cards */
   char representation[] = "23456789TJQKA";

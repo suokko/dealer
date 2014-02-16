@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#define HAS_CARD2(s,r) HAS_CARD(curdeal, seat, (card) MAKECARD(s,r))
+#define HAS_CARD2(s,r) (HAS_CARD(curdeal, seat, (card) MAKECARD(s,r)) > 0)
 
 #ifdef __cplusplus
 } /* -- extern "C" */

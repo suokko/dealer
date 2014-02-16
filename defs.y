@@ -32,6 +32,7 @@ static int pointcount_index;    /* global variable for pointcount communication 
 static struct treebase *var_lookup(char *s, int mustbethere) ;
 static struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
 static struct treebase *newtree (int, struct treebase*, struct treebase*, int, int);
+static struct treebase *newhascardtree (int, int, card);
 static struct expr  *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1);
 static void bias_deal(int suit, int compass, int length) ;
 static void predeal_holding(int compass, char *holding) ;
@@ -44,6 +45,7 @@ static void new_var(char *s, struct treebase *t) ;
 
 %union {
         int     y_int;
+        card     y_card;
         char    *y_str;
         struct treebase *y_treebase;
         struct shape  y_shape;
@@ -78,7 +80,7 @@ static void new_var(char *s, struct treebase *t) ;
 %token <y_int> VULNERABLE
 %token <y_int> VULN
 %token <y_int> SUIT
-%token <y_int> CARD
+%token <y_card> CARD
 %token <y_int> CONTRACT
 %token <y_distr> DISTR DISTR_OR_NUMBER
 
@@ -277,7 +279,7 @@ expr
 		  $$ = newshapetree($3, &$5);
 		}
         | HASCARD '(' COMPASS ',' CARD ')'
-                { $$ = newtree(TRT_HASCARD, NIL, NIL, $3, $5); }
+                { $$ = newhascardtree(TRT_HASCARD, $3, $5); }
     | TRICKS '(' compass ',' SUIT ')'
                 { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, $5); }
     | TRICKS '(' compass ',' NOTRUMPS ')'
@@ -566,6 +568,17 @@ int i1,i2;
         return &p->base;
 }
 
+struct treebase *newhascardtree(int type, int compass, card c)
+{
+        struct treehascard *p;
+
+        p = mycalloc(1, sizeof(*p));
+        p->base.tr_type = type;
+        p->compass = compass;
+        p->c = c;
+        return &p->base;
+}
+
 struct action *newaction(type, p1, s1, i1, p2)
 int type;
 struct treebase *p1;
@@ -616,6 +629,7 @@ char *s;
 }
 
 void predeal_holding(compass, holding)
+int compass;
 char *holding;
 {
         char suit;
