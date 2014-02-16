@@ -1087,27 +1087,26 @@ static void exh_shuffle (int vector, struct board *b) {
 
 static int bitpermutate(int vector)
 {
-  int low = 1;
+  int nextvector, shadow;
   int bits_to_move_back = 0, move_back_count = 0;
-  /* Find the lowest set bit that have zeros before it */
-  int shadow = vector - 1;
-  int nextvector;
-  nextvector = vector & shadow;
-  shadow = vector & ~shadow;
-  while (shadow == low) {
-    /* if all bits are at bottom so we have done all permutations */
-    if (nextvector == 0)
-      return 0;
-    /* Store low bit to list of bits to move back */
-    bits_to_move_back |= low;
-    low <<= 1;
-    move_back_count++;
-    /* find next lowest bit */
-    shadow = nextvector - 1;
-    vector = nextvector;
+  /* Find the lowest set bit that have zeros lower to it */
+  if ((vector & 1) == 0) {
+    shadow = vector - 1;
     nextvector = vector & shadow;
     shadow = vector & ~shadow;
+    return nextvector | (shadow >> 1);
   }
+  /* Find all set bits in lower most bits */
+  shadow = vector + 1;
+  nextvector = vector & shadow;
+  if (nextvector == 0)
+    return 0;
+  bits_to_move_back = vector & ~shadow;
+  shadow = nextvector - 1;
+  vector = nextvector;
+  nextvector = vector & shadow;
+  shadow = vector & ~shadow;
+  move_back_count = __builtin_popcountl(bits_to_move_back);
   /* Figure out how much to shift the move back bits */
   int positiontomove = 30 - __builtin_clzl(shadow) - move_back_count;
   vector = nextvector;
