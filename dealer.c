@@ -108,9 +108,9 @@ static int nprod;
 int maxproduce;
 static int ngen;
 
-static struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0};
+static struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0, 0};
 struct treebase *decisiontree = &defaulttree.base;
-static struct action defaultaction = {(struct action *) 0, ACT_PRINTALL};
+static struct action defaultaction = {(struct action *) 0, ACT_PRINTALL, NULL, NULL, 0, 0, {{0}}};
 struct action *actionlist = &defaultaction;
 static unsigned char zero52[NRANDVALS];
 static struct stored_board *deallist;
@@ -699,7 +699,7 @@ static void setup_bias (void) {
   }
 }
 
-static card bias_pickcard(struct board *d, int start, int pos, hand mask) {
+static card bias_pickcard(int start, int pos, hand mask) {
   int i;
   card temp = curpack.c[start];
   for (i = start; i < CARDS_IN_SUIT*NSUITS; i++) {
@@ -746,7 +746,7 @@ static void shuffle_bias(struct board *d) {
       left = hand_count_cards(suit);
       for (b = 0; b < bias; b++) {
         int pos = uniform_random(left--);
-        card c = bias_pickcard(d, predealcnt++, pos, suit);
+        card c = bias_pickcard(predealcnt++, pos, suit);
         dealtcardsmask |= c;
         curdeal->hands[p] |= c;
       }
@@ -1597,7 +1597,7 @@ int main (int argc, char **argv) {
   int seed_provided = 0;
   extern int optind;
   extern char *optarg;
-  char c;
+  int c;
   int errflg = 0;
   int progressmeter = 0;
 

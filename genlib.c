@@ -175,7 +175,7 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
   /* Match the giblib line from the input */
   if (sscanf(buffer, "%ld %16s %16s %16s %16s:%20s",
         &deal, west, north, east, south, results) == 6) {
-    struct tagLibdeal libdeal = {{0}};
+    struct tagLibdeal libdeal = {{0},{0},0};
     parsedeal(&libdeal, north, east, south, west, results, verbosity);
 
     /* Store dds result in 26 bytes. Actual libdeal struct has extra "valid"
@@ -370,7 +370,7 @@ int main(int argc, char * const argv[])
   for (mul = 20; mul > 0; mul--) {
     long high = 1 << mul;
 
-    if (gen >= cores*high) {
+    if (gen >= (unsigned)(cores*high)) {
       blocksize = gen / (cores * mul);
       break;
     }
