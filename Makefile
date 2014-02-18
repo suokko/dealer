@@ -145,6 +145,71 @@ clean_dir_${1}:
 
 endef
 
+define MAKE_VERSIONED
+#Remove dependecy tracking
+CPPFLAG := $$(filter-out -M%,$$(DCPPFLAGS))
+#If version doesn't define any -m options it is assumed to use compiler
+#defaults with some define set to differentiate the code
+ifeq ($$(subst -m,,$$(${1}_MV_${2})),$$(${1}_MV_${2}))
+CPPFLAG := $$(CPPFLAG)
+FLAGSWORK :=
+else
+CPPFLAG := $$(filter-out -m%,$$(CPPFLAG)) $$(filter -m32,$$(CPPFLAG)) $$(filter -m64,$$(CPPFLAG))
+# Cache flag tests result for quicker recompiles
+CACHE := $$(LIB_DIR)/__flagtest.o.${1}_${2}.cache
+# Check -m flags passed in are accepted by compiler
+FLAGSWORK := $$(shell [ -e $$(CACHE) ] || ($(MKDIR) $$(LIB_DIR) && $(CC) -E $$(OPTFLAGS) $$(CPPFLAG) $$(DCFLAGS) $$(${1}_CFLAGS) $$(${1}_MV_${2}) $$(call CONCAT,$(TOP),flagstest.c) -o /dev/null 2> $$(CACHE)); cat $$(CACHE))
+
+FLAGS_CLEAN += $$(CACHE)
+endif
+
+MV_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
+	$$(patsubst %.cpp,%_${2}.o,\
+	$$(patsubst %.c,%_${2}.o,$${${1}_MV_SRC})))
+
+ifeq ($$(FLAGSWORK),)
+
+ifneq ($(filter release,$(MAKECMDGOALS)),)
+$$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(PUSEFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
+else
+$$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
+endif
+$$(MV_OBJS):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(MV_OBJS):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
+$$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCPPFLAGS := $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(OFLAG) $$(COVFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
+$$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCPPFLAGS := $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(OFLAG) $$(PROFFLAGS) $(${1}_MV_${2}) $$(INCPPFLAGS)
+$$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
+$$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
+
+$$(foreach EXT,$$(C_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.o,$${EXT},$${C_RULE})))
+$$(foreach EXT,$$(CXX_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.o,$${EXT},$${CXX_RULE})))
+$$(foreach EXT,$$(C_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.cov.o,$${EXT},$${C_RULE})))
+$$(foreach EXT,$$(CXX_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.cov.o,$${EXT},$${CXX_RULE})))
+$$(foreach EXT,$$(C_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.prof.o,$${EXT},$${C_RULE})))
+$$(foreach EXT,$$(CXX_EXTS),\
+	$$(eval $$(call CREAT_OBJECT_RULE,$$(${1}_BUILDDIR),%_${2}.prof.o,$${EXT},$${CXX_RULE})))
+
+$$(${1}_PATH): $$(MV_OBJS)
+$$(${1}_COVPATH): $$(patsubst %.o,%.cov.o,$$(MV_OBJS))
+$$(${1}_PROFPATH): $$(patsubst %.o,%.prof.o,$$(MV_OBJS))
+
+else
+ifeq ($$(V),1)
+$$(info "Skipping ${1}_MV_${2}")
+$$(info $$(FLAGSWORK))
+endif
+endif
+
+${1}_MV_OBJS += $$(MV_OBJS) $$(patsubst %.o,%.cov.o,$$(MV_OBJS)) $$(patsubst %.o,%.prof.o,$$(MV_OBJS))
+
+endef
 
 # Setup dependencies for each target so all sources are build into the target
 define MAKE_TARGET
@@ -160,6 +225,9 @@ TDIR := $${LIB_DIR}
 ${1}_TYPE=static
 endif
 
+${1}_SRC := $$(subst $$(DIR)/,,$$(wildcard $$(call CONCAT,$$(DIR),$${${1}_SRC})))
+${1}_MV_SRC := $$(subst $$(DIR)/,,$$(wildcard $$(call CONCAT,$$(DIR),$${${1}_MV_SRC})))
+${1}_SRC := $$(filter-out $$(${1}_MV_SRC),$$(${1}_SRC))
 
 # Figure correct path for the target
 ${1}_PATH := $$(call CONCAT,$${TDIR},${1})
@@ -171,6 +239,8 @@ ${1}_FLEXS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 	$$(patsubst %.l,%.c,$$(filter %.l,$${${1}_SRC})))
 ${1}_YACCS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 	$$(patsubst %.y,%.o,$$(filter %.y,$${${1}_SRC})))
+
+${1}_MV_OBJS :=
 
 # Setup shadow objects for coverage and profile targets with different flags
 ${1}_COVOBJS := $$(patsubst %.o,%.cov.o,$$(${1}_OBJS))
@@ -195,6 +265,9 @@ else
 ${1}_COVPATH := $$(subst .a,.cov.a,$$(${1}_PATH))
 ${1}_PROFPATH := $$(subst .a,.prof.a,$$(${1}_PATH))
 endif
+
+$$(foreach CFG,$$(${1}_MV_CFG),\
+	$$(eval $$(call MAKE_VERSIONED,${1},$${CFG})))
 
 #Main target dependencies only if it is current directory or subdirectory
 ifeq ($$(filter-out $(CURDIR)%,$$(abspath $$(DIR))),)
@@ -259,7 +332,7 @@ $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))
 $$(${1}_PROFYACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(PROFFLAGS) $$(INCFLAGS)
 endif
 
-ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS}
+ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS} $$(${1}_MV_OBJS)
 GENFILES := $$(subst .o,.c,$$(${1}_YACCS)) $$(subst .o,.c,$$(${1}_PROFYACCS)) $$(${1}_PROFFLEXS) $$(${1}_FLEXS)
 
 BUILDMKDEP :=
@@ -444,11 +517,25 @@ C_EXTS := %.c
 FLEX_EXTS := %.l
 YACC_EXTS := %.y
 CXX_EXTS := %.cpp %.cxx
+
 # Don't require configuration but use variables if defined
 -include $(call CONCAT,$(TOP),build.mk)
 $(eval $(call INCLUDE_SUBDIR,$(call CONCAT,$(TOP),main.mk)))
+
+FLAGS_CLEAN := $(LIB_DIR)/__flagstest.o $(LIB_DIR)/__flagstest.d
+
 $(eval $(call INCLUDE_SUBDIR,$(call CONCAT,$(TOP),Rules.mk)))
 
+clean_dir_$(LIB_DIR): clean_flagstest
+clean_flagstest:
+	$(SRM) $(FLAGS_CLEAN)
+
+# Always clean flagstest in-depend of subdirectory where clean was called
+# because there is no idea what subdirectory these belong to
+# Probably should use subdirectory build directory instead
+clean: clean_flagstest
+
+# Setup compilation for a versioned file
 # Rename profile results to be used by object build
 profiletest: ${ALLTESTS}
 	@find -name "*.gcda" | sed 's/^\(.*\).prof\(.*\)$$/mv \0 \1\2/' | $(SHELL)
