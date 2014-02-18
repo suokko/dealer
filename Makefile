@@ -153,7 +153,7 @@ ${1}_BUILDDIR := $$(call CONCAT,$${DIR},${BUILDDIR})
 INCFLAGS := $$(addprefix -I,$$(call CONCAT,$${DIR},$$(${1}_INCDIR)))
 
 ifeq "$(filter %.a,${1})" ""
-TDIR := $${TARGET_DIR}
+TDIR := $${DIR}
 ${1}_TYPE=prog
 else
 TDIR := $${LIB_DIR}
