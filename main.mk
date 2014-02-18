@@ -10,14 +10,15 @@ MKDIR    ?= mkdir -p
 INSTALL	 ?= install
 POD2MAN  ?= pod2man
 
-CFLAGS   ?= -march=native 
+CFLAGS   ?=
+CPPFLAGS ?= -march=native 
 CXXFLAGS ?=
 LDFLAGS  ?=
 DESTDIR  ?=
 
 
 RELEASEFLAGS := -DNDEBUG
-OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model $(CFLAGS)
+OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model
 PROFFLAGS := -fprofile-generate
 PUSEFLAGS := -fprofile-use -flto
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
@@ -26,7 +27,8 @@ endif
 
 #Disable inlining for coverage reports
 COVFLAGS := -fno-inline-small-functions -fno-indirect-inlining -fno-partial-inlining --coverage
-DCFLAGS   := -MP -MD -Wall -pedantic -std=gnu11 -g
+DCFLAGS   := -std=gnu11 $(CFLAGS)
+DCPPFLAGS := -MP -MD -Wall -Wextra -g $(CPPFLAGS) 
 DCXXFLAGS := -std=c++11 $(CXXFLAGS)
 DLDFLAGS  := $(LDFLAGS)
 

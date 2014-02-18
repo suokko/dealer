@@ -29,16 +29,17 @@ TARGET_DIR := $(call CANONICAL_PATH,${TOP})
 ALL_TARGETS :=
 ALL_BUILDDIRS :=
 # Helper variables to handle silent compilation
-LINK.c = +$(SCC) $(DCFLAGS) $(DLDFLAGS) -o $@ $^
-LINK.cxx = +$(SCXX) $(DCFLAGS) $(DCXXFLAGS) $(DLDFLAGS) -o $@ $^
-COMPILE.c = $(SCC) -c $(DCFLAGS) -o $@ $<
-COMPILE.cxx = $(SCXX) -c $(DCFLAGS) $(DCXXFLAGS) -o $@ $<
+LINK.c = +$(SCC) $(DCPPFLAGS) $(DCFLAGS) $(DLDFLAGS) -o $@ $^
+LINK.cxx = +$(SCXX) $(DCPPFLAGS) $(DCXXFLAGS) $(DLDFLAGS) -o $@ $^
+COMPILE.c = $(SCC) -c $(DCPPFLAGS) $(DCFLAGS) -o $@ $<
+COMPILE.cxx = $(SCXX) -c $(DCPPFLAGS) $(DCXXFLAGS) -o $@ $<
 STATICLIB = $(SAR) ${ARFLAGS} $@ $?
 
 # Creates all make rules required to build and install a target
 # It should also include rules to install other depending files. 
 define CREAT_TARGET_RULE
 ifeq ($$(${1}_TYPE),prog)
+
 $$(${1}_PATH): $${${1}_OBJS}
 	@mkdir -p $(dir $$@)
 	$$(LINK.$$(${1}_HASCXX)) $$(${1}_SYSLIBS)
@@ -204,25 +205,31 @@ endif
 
 #Target variables
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS) $$(INCFLAGS)
+$$(${1}_OBJS): DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(PUSEFLAGS) $$(INCPPFLAGS)
 else
-$$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $$(INCFLAGS)
+$$(${1}_OBJS): DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $$(INCPPFLAGS)
 endif
 $$(${1}_OBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
-$$(${1}_COVOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS) $$(INCFLAGS)
+$$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
+$$(${1}_COVOBJS): DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(COVFLAGS) $$(INCPPFLAGS)
 $$(${1}_COVOBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
-$$(${1}_PROFOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS) $$(INCFLAGS)
+$$(${1}_COVOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
+$$(${1}_PROFOBJS): DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(PROFFLAGS) $$(INCPPFLAGS)
 $$(${1}_PROFOBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_PROFOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 ifneq ($(filter release,$(MAKECMDGOALS)),)
-$${${1}_PATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PUSEFLAGS)
+$${${1}_PATH}: DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(PUSEFLAGS)
 else
-$${${1}_PATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS)
+$${${1}_PATH}: DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS)
 endif
 $$(${1}_PATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
-$${${1}_PROFPATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(PROFFLAGS)
+$$(${1}_PATH): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
+$${${1}_PROFPATH}: DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(PROFFLAGS)
 $$(${1}_PROFPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
-$${${1}_COVPATH}: DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS) $(OPTFLAGS) $(COVFLAGS)
+$$(${1}_PROFPATH): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
+$${${1}_COVPATH}: DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS) $(COVFLAGS)
 $$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
+$$(${1}_COVPATH): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 
 # Libary dependencies
 # TODO check for c++ static libraries

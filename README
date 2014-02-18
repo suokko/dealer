@@ -54,8 +54,8 @@ Recommended run time dependencies are
 Running configure is not required but it is helpful if you want to customize
 install paths or use custom compiler or flags.
 
-If you want to use nondefault compiler options they can be passed with CFLAGS
-make variable.
+If you want to use nondefault compiler options they can be passed with CPPFLAGS
+make variable. CFLAGS or CXXFLAGS works too but that won't override -march=native.
 
 You can also run the dealer from source directory.
 
@@ -63,4 +63,4 @@ You can also run the dealer from source directory.
 
 Notes (Old notes not tested after build system changes):
 
-    make CFLAGS = -g -O0 -no-pedantic -DFRANCOIS
+    make CPPFLAGS = -g -O0 -no-pedantic -DFRANCOIS

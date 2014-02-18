@@ -34,7 +34,7 @@ build=''
 build_help='Host system compiler prefix'
 
 pathlist="prefix exec_prefix bindir datarootdir datadir sysconfdir includedir docdir libdir libexecdir localedir mandir host build"
-varlist="CC CXX CFLAGS CXXFLAGS LDFLAGS"
+varlist="CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS"
 
 print_help () {
 	echo "Configure ${PACKAGE_NAME} to build in your system

@@ -68,19 +68,10 @@ and it would be time to start debugging.
 <h2>Problems when compiling</H2>
 
 <UL>
- <LI> Not all versions of make support the -C flag.  If this happens on your
-      system, edit the Makefile and replace all lines:
-  <BLOCKQUOTE>
-  ${MAKE} -C <i>directory</i> <i>action</i>
-  </BLOCKQUOTE>
-  by
-  <BLOCKQUOTE>
-  cd <i>directory</i> ; make <i>action</i>
-  </BLOCKQUOTE>
  <LI> Mike Zimmermann  <zimmy@nc.rr.com> reported that on MAC OS X (aka Darwin), the
-      line CFLAGS has to be:
+      line CPPFLAGS has to be:
       <ul>
-       <li> CFLAGS= -g -DNDEBUG -DFRANCOIS -I.
+       <li> CPPFLAGS= -g -DNDEBUG -DFRANCOIS -I.
       </ul>
 
 </UL>
