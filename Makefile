@@ -41,7 +41,7 @@ define CREAT_TARGET_RULE
 ifeq ($$(${1}_TYPE),prog)
 $$(${1}_PATH): $${${1}_OBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c) $$(${1}_SYSLIBS)
+	$$(LINK.$$(${1}_HASCXX)) $$(${1}_SYSLIBS)
 
 install: install_${1}
 
@@ -58,11 +58,11 @@ uninstall_${1}:
 
 $$(${1}_COVPATH): $${${1}_COVOBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c) $$(${1}_SYSLIBS)
+	$$(LINK.$$(${1}_HASCXX)) $$(${1}_SYSLIBS)
 
 $$(${1}_PROFPATH): $${${1}_PROFOBJS}
 	@mkdir -p $(dir $$@)
-	$$(LINK.c) $$(${1}_SYSLIBS)
+	$$(LINK.$$(${1}_HASCXX)) $$(${1}_SYSLIBS)
 else
 ifeq "$(${1}_TYPE)" "static"
 $$(${1}_PATH): $${${1}_OBJS}
@@ -178,10 +178,10 @@ ${1}_PROFYACCS := $$(subst .o,.prof.o,$$(${1}_YACCS))
 ${1}_PROFFLEXS := $$(subst .c,.prof.c,$$(${1}_FLEXS))
 
 # Check if we need CXX compiler
-ifeq "$$(filter $(CXX_EXTS),$$(${1}_SRC))" ""
-${1}_HASCXX := 1
+ifeq "$$(filter $$(CXX_EXTS),$$(${1}_SRC))" ""
+${1}_HASCXX := c
 else
-${1}_HASCXX := 0
+${1}_HASCXX := cxx
 endif
 
 ALL_TARGETS += ${1}
@@ -229,6 +229,11 @@ $$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 # TODO support shared libraries
 ${1}_SYSLIBS := $$(filter -l%,$$(${1}_LIBS))
 ${1}_LIBS := $$(filter-out -l%,$$(${1}_LIBS))
+ifeq ($$(${1}_HASCXX),c)
+$$(foreach LIB,$$(${1}_LIBS),\
+	$$(if $$(filter cxx,$$($${LIB}_HASCXX)),${1}_HASCXX:=cxx,))
+# TODO needs to push cxx detection down the dependency chain
+endif
 $${${1}_PATH}: $$(call CONCAT,$$(LIB_DIR),$$(${1}_LIBS))
 $${${1}_COVPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.cov.a,$$(${1}_LIBS)))
 $${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS)))
@@ -406,7 +411,7 @@ endef
 # Generate actual rule body for C++ sources
 define CXX_RULE
 	@mkdir -p $$(dir $$@)
-	$${COMPILE.c}
+	$${COMPILE.cxx}
 endef
 
 # Generate actual rule body for yacc sources
