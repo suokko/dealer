@@ -28,13 +28,8 @@ struct context {
 struct handstat {
     int hs_length[NSUITS];      /* distribution */
     int hs_points[NSUITS];      /* 4321 HCP per suit */
-    int hs_fl[NSUITS];          /* FL per suit */
-    int hs_fv[NSUITS];          /* FV per suit */
-    int hs_together[NSUITS];    /* Length together with partner */
     int hs_totalpoints;         /* Sum of above four */
-    int hs_totalfl;             /* Sum of above four */
-    int hs_totalfv;             /* Sum of above four */
-    int hs_bits;                /* Bitmap to check distribution */
+    int hs_bits;                /* Distribution bit position */
     int hs_loser[NSUITS];       /* Losers in a suit */
     int hs_totalloser;          /* Losers in the hand */
     int hs_control[NSUITS];     /* Controls in a suit */

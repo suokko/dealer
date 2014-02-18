@@ -534,9 +534,6 @@ static void analyze (struct board *d, struct handstat *hsbase) {
     /* where are the handstats for this player? */
     hs = hsbase + player;
 
-    /* Initialize the handstat structure */
-    memset (hs, 0x00, sizeof (struct handstat));
-
 #ifdef _DEBUG
     /* To debug, blast it with garbage.... */
     memset (hs, 0xDF, sizeof (struct handstat));
@@ -558,6 +555,11 @@ static void analyze (struct board *d, struct handstat *hsbase) {
     /* clear the total losers */
     hs->hs_totalloser = 0;
 #endif /* _DEBUG_ */
+
+    /* Initialize values summed */
+    hs->hs_totalloser = 0;
+    hs->hs_totalpoints = 0;
+    hs->hs_totalcontrol = 0;
 
     /* start from the first card for this player, and walk through them all -
        use the player offset to jump to the first card.  Can't just increment
