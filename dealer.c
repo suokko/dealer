@@ -1122,13 +1122,15 @@ static int bitpermutate(int vector)
   if (nextvector == 0)
     return 0;
   bits_to_move_back = vector & ~shadow;
+  /* find the lowest set bit from reminding bits */
   shadow = nextvector - 1;
   vector = nextvector;
   nextvector = vector & shadow;
   shadow = vector & ~shadow;
-  move_back_count = __builtin_popcount(bits_to_move_back);
+  /* Figure out position where to but bits back in the vector */
+  move_back_count = __builtin_ctz(~bits_to_move_back);
   /* Figure out how much to shift the move back bits */
-  int positiontomove = __builtin_ctzl(shadow >> 1) - move_back_count;
+  int positiontomove = __builtin_ctz(shadow >> 1) - move_back_count;
   nextvector |= (shadow >> 1) | (bits_to_move_back << positiontomove);
   return nextvector;
 }
