@@ -165,18 +165,18 @@ endif
 ${1}_PATH := $$(call CONCAT,$${TDIR},${1})
 # fugure out what should be build from the source file extension
 ${1}_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
-	$$(filter-out %.l,$$(subst .cpp,.o,$$(subst .y,.o,\
-	$$(subst .c,.o,$${${1}_SRC})))))
+	$$(filter-out %.l,$$(patsubst %.cpp,%.o,$$(patsubst %.y,%.o,\
+	$$(patsubst %.c,%.o,$${${1}_SRC})))))
 ${1}_FLEXS := $$(call CONCAT,$$(${1}_BUILDDIR),\
-	$$(subst .l,.c,$$(filter %.l,$${${1}_SRC})))
+	$$(patsubst %.l,%.c,$$(filter %.l,$${${1}_SRC})))
 ${1}_YACCS := $$(call CONCAT,$$(${1}_BUILDDIR),\
-	$$(subst .y,.o,$$(filter %.y,$${${1}_SRC})))
+	$$(patsubst %.y,%.o,$$(filter %.y,$${${1}_SRC})))
 
 # Setup shadow objects for coverage and profile targets with different flags
-${1}_COVOBJS := $$(subst .o,.cov.o,$$(${1}_OBJS))
-${1}_PROFOBJS := $$(subst .o,.prof.o,$$(${1}_OBJS))
-${1}_PROFYACCS := $$(subst .o,.prof.o,$$(${1}_YACCS))
-${1}_PROFFLEXS := $$(subst .c,.prof.c,$$(${1}_FLEXS))
+${1}_COVOBJS := $$(patsubst %.o,%.cov.o,$$(${1}_OBJS))
+${1}_PROFOBJS := $$(patsubst %.o,%.prof.o,$$(${1}_OBJS))
+${1}_PROFYACCS := $$(patsubst %.o,%.prof.o,$$(${1}_YACCS))
+${1}_PROFFLEXS := $$(patsubst %.c,%.prof.c,$$(${1}_FLEXS))
 
 # Check if we need CXX compiler
 ifeq "$$(filter $$(CXX_EXTS),$$(${1}_SRC))" ""
@@ -197,7 +197,7 @@ ${1}_PROFPATH := $$(subst .a,.prof.a,$$(${1}_PATH))
 endif
 
 #Main target dependencies only if it is current directory or subdirectory
-ifeq ($$(filter-out $(CURDIR),$$(abspath $$(DIR))),)
+ifeq ($$(filter-out $(CURDIR)%,$$(abspath $$(DIR))),)
 all: $$(${1}_PATH)
 prof: $$(${1}_PROFPATH)
 cov: $$(${1}_COVPATH)
