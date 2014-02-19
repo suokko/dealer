@@ -13,16 +13,6 @@ struct context {
   struct handstat *ps ; /* Pointer to stats of current deal */
 } c;
 
-#ifdef STD_RAND
- #define RANDOM rand
- #define SRANDOM(seed) srand(seed) ;
-#else
- #define RANDOM gnurand
- int gnurand ();
- #define SRANDOM(seed) gnusrand(seed)
- int gnusrand (int);
-#endif /* STD_RAND */
-
 #include "pointcount.h"
 
 int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);

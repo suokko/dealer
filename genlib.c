@@ -8,9 +8,6 @@
 #include <time.h>
 #if defined(WIN32) || defined(__WIN32)
 #include <winsock2.h>
-#define initstate __initstate
-#define srandom __srandom
-#define random __random
 #else
 #include <arpa/inet.h>
 #include <sys/select.h>
@@ -21,6 +18,8 @@
 #include <assert.h>
 
 #include <errno.h>
+
+#include "Random/SFMT.h"
 
 static void usage(const char *name, int exitcode, const char *msg, ...)
 {
@@ -271,6 +270,7 @@ int main(int argc, char * const argv[])
   int verbosity = 1, running = 0;
   struct timespec tp;
   char mode[] = "w";
+  sfmt_t sfmt;
   int cores =
 #if defined(WIN32) || defined(__WIN32)
     1;
@@ -379,16 +379,11 @@ int main(int argc, char * const argv[])
   if (blocksize >= (1 << 20)/20)
     blocksize = (1 << 20)/20;
 
-  if (seedpos < 2) {
-    srandom(seed[0]);
-    sprintf(buffer, "%ld", seed[0]);
-  } else {
-    int i, pos = 0;
-    initstate(seed[0], (char*)&seed[1], (seedpos - 1)*(sizeof(seed[0])/sizeof(char)));
-    pos = sprintf(buffer, "%ld", seed[0]);
-    for (i = 1; i < seedpos; i++)
-      pos += sprintf(&buffer[pos], ",%ld", seed[i]);
-  }
+  int i, pos = 0;
+  sfmt_init_by_array(&sfmt, (uint32_t*)&seed[0], (seedpos - 1)*(sizeof(seed[0])/sizeof(uint32_t)));
+  pos = sprintf(buffer, "%ld", seed[0]);
+  for (i = 1; i < seedpos; i++)
+    pos += sprintf(&buffer[pos], ",%ld", seed[i]);
 
 
   if (verbosity >= 1)
@@ -417,7 +412,7 @@ int main(int argc, char * const argv[])
       if (b == 0)
         break;
 
-      if ((fd = makeprocess(&process[c], b, random(), verbosity)) < 0)
+      if ((fd = makeprocess(&process[c], b, sfmt_genrand_uint64(&sfmt), verbosity)) < 0)
         return 20;
       running++;
 
@@ -458,7 +453,7 @@ int main(int argc, char * const argv[])
               unsigned long b = gen - scheduled > blocksize ?
                 blocksize : gen - scheduled;
 
-              if ((fd = makeprocess(&process[p], b, random(), verbosity)) < 0)
+              if ((fd = makeprocess(&process[p], b, sfmt_genrand_uint64(&sfmt), verbosity)) < 0)
                 return 20;
 
               running++;

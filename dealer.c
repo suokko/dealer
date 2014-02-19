@@ -49,6 +49,8 @@ char* input_file = 0;
 
 #include "card.h"
 
+#include "Random/SFMT.h"
+
 void yyerror (char *);
 
 #define TWO_TO_THE_13 (1<<13)
@@ -102,6 +104,14 @@ static double average = 0.0;
 #define MAXDISTR 8*sizeof(int)
 static int **distrbitmaps[14];
 
+struct rngstate {
+  uint16_t random[512*4];
+  unsigned idx;
+  sfmt_t sfmt;
+} __attribute__  ((aligned (32)));
+
+struct rngstate rngstate;
+
 static int results[2][5][14];
 int use_compass[NSUITS];
 int use_vulnerable[NSUITS];
@@ -148,30 +158,37 @@ static int true_dd (deal d, int l, int c); /* prototype */
   unsigned char exh_player[2];
   /* the two players that have unknown cards */
 
-static int uniform_random(int max) {
-  unsigned rnd;
-  unsigned val;
-#if STD_RAND
-  const int rand_max = RAND_MAX;
-#else
-  const unsigned rand_max = RAND_MAX << 1;
-#endif
-  do {
-    val = RANDOM ();
-    rnd = val % max;
-  } while (max - rnd > rand_max - val);
-  return (int)rnd;
+static inline uint16_t random16()
+{
+  if (rngstate.idx == sizeof(rngstate.random)/sizeof(rngstate.random[0])) {
+    rngstate.idx = 0;
+    sfmt_fill_array64(&rngstate.sfmt, (uint64_t *)rngstate.random,
+        sizeof(rngstate.random)/sizeof(uint64_t));
+  }
+  return rngstate.random[rngstate.idx++];
 }
 
-static int uniform_random_table() {
-  unsigned rnd;
+static inline uint32_t random32()
+{
+  uint32_t r1 = random16();
+  uint32_t r2 = random16();
+  return (r2 << 16) | r1;
+}
+
+static uint16_t uniform_random(uint16_t max) {
+  uint16_t rnd;
+  uint16_t val;
   do {
-    rnd = RANDOM ();
-#ifdef STD_RAND
-    rnd = rnd & (NRANDMASK);
-#else
-    rnd = rnd >> (31 - RANDBITS);
-#endif
+    val = random16();
+    rnd = val % max;
+  } while (max - rnd > UINT16_MAX - val);
+  return rnd;
+}
+
+static uint16_t uniform_random_table() {
+  uint16_t rnd;
+  do {
+    rnd = random16();
     rnd = zero52[rnd & NRANDMASK];
   } while (rnd == 0xFF);
   return rnd;
@@ -1408,9 +1425,9 @@ static int evaltree (struct treebase *b) {
     case TRT_RND:
       {
         double eval = evaltree(t->tr_leaf1);
-        int random = RANDOM() & ((RAND_MAX - 1) | RAND_MAX);
+        unsigned random = random32();
         double mul = eval * random;
-        double res = mul / (RAND_MAX + 1.0);
+        double res = mul / (UINT_MAX + 1.0);
         int rv = (int)(res);
         return rv;
       }
@@ -1828,7 +1845,9 @@ int main (int argc, char **argv) {
   if (!seed_provided) {
     (void) time (&seed);
   }
-  SRANDOM (seed);
+  sfmt_init_gen_rand(&rngstate.sfmt, seed);
+  rngstate.idx = sizeof(rngstate.random)/sizeof(rngstate.random[0]);
+  assert(sfmt_get_min_array_size64(&rngstate.sfmt) < (int)(sizeof(rngstate.random)/sizeof(uint64_t)));
 
   initprogram (initialpack);
   if (maxgenerate == 0)
