@@ -1,243 +1,243 @@
 -s 1 Descr.test_defaults
    1.
-A K Q T 3           6 5 2               J 7 4               9 8 
-J 6                 A K 4 2             Q T 9 5             8 7 3 
-K J 4 2             A Q 8 7             T                   9 6 5 3 
-9 5                 T 4                 A K 8 6 3           Q J 7 2 
+A 4                 J T 9 8 6           K Q 5 3             7 2 
+J T 9 2             4                   A Q 8 6 3           K 7 5 
+K Q J               A 9 5 3             7 4                 T 8 6 2 
+A Q 5 4             K J T               7 3                 9 8 6 2 
 
    2.
-A 7 5 4             Q T                 K 9 3               J 8 6 2 
-7 6 4 2             A K 9 5             J 8 3               Q T 
-K J 2               8 7                 Q T 6 5 4 3         A 9 
-A 9                 K 8 6 5 2           T                   Q J 7 4 3 
+A 8 7 4             K 6 2               J 5                 Q T 9 3 
+T 8 6 4             Q J 5               9 7 3               A K 2 
+Q T 9 3             A K 5               7 4                 J 8 6 2 
+3                   9 7 5 2             A Q J 8 6 4         K T 
 
    3.
-T 6                 A 2                 K Q J 9 5 3         8 7 4 
-T 8                 A K Q 5 4 3 2       7 6                 J 9 
-A J 8 7 6           4 3 2               K T                 Q 9 5 
-A T 7 5             J                   K Q 3               9 8 6 4 2 
+K J T               7 6 5 3 2           A Q 8 4             9 
+A 9 7 3             Q 8 4               6                   K J T 5 2 
+7 2                 Q                   A J 9 6 3           K T 8 5 4 
+K Q J 6             A T 7 3             9 5 2               8 4 
 
    4.
-T 7 5 4             A J 6               K 3 2               Q 9 8 
-8 4 2               A K Q 3             J 9 7 6 5           T 
-A T 6 3             K J                 9 7 2               Q 8 5 4 
-5 2                 K T 7 6             8 3                 A Q J 9 4 
+A Q J 2             K T 8 6 5           7 4 3               9 
+K Q 8               A 6 4 2             7 5                 J T 9 3 
+7 6 4 2             Q 5                 A K 9 3             J T 8 
+9 7                 6 2                 A T 5 3             K Q J 8 4 
 
    5.
-A K Q J T 9 2       -                   8 4 3               7 6 5 
-6                   A 9 4 3 2           T                   K Q J 8 7 5 
-Q T 3               A J 7 5 4           K 8 6               9 2 
-4 2                 K Q 6               J 9 8 7 5 3         A T 
+A Q                 J 7 6 4 3 2         K 8 5               T 9 
+J T 9               K 7 6 4             A Q 8 5 3           2 
+A J 9               T 3 2               8 4                 K Q 7 6 5 
+K 9 8 7 2           -                   A J 3               Q T 6 5 4 
 
    6.
-A K T 5 2           9                   J 8 7 4             Q 6 3 
-9 7                 A 8 6 4             K J 3               Q T 5 2 
-9 6 5               A T 7 4 3           Q                   K J 8 2 
-J 8 4               T 9 7               A K Q 3 2           6 5 
+-                   A K 2               Q 8 6 5 4           J T 9 7 3 
+T 9 8 5 4 3         A 7 2               Q J 6               K 
+T 4 3               9 2                 K 6 5               A Q J 8 7 
+7 6 4 3             A K T 9 2           Q 5                 J 8 
 
    7.
-K T 6 2             A J 4 3             Q 8                 9 7 5 
-K J 7               A T 9 8             5 4 3               Q 6 2 
-5 4 3               Q 8 6 2             K T 7               A J 9 
-T 8 7               9                   A J 6 5 2           K Q 4 3 
+8 7 4               J 9 2               A K T 5             Q 6 3 
+A J T 5             3                   9 6 4               K Q 8 7 2 
+9 7                 K Q J 3             A 8 6 2             T 5 4 
+A 5 4 3             K Q T 9 7           6 2                 J 8 
 
    8.
-4                   J T 6               K Q 8 7 5 2         A 9 3 
-K J 5 4 2           T 9 8               6                   A Q 7 3 
-A 9                 4 2                 K Q T 6 5           J 8 7 3 
-A J 9 7 5           K Q T 3 2           8                   6 4 
+Q 8                 J 9 3               A T 7 4 2           K 6 5 
+K Q 8 7             A T 5 3 2           J                   9 6 4 
+A 7 3               Q T 6 5             K J 9 2             8 4 
+A K J 5             Q                   8 7 6               T 9 4 3 2 
 
    9.
-J 7                 T 8                 A Q 5 3 2           K 9 6 4 
-Q 8 7 5 2           T 6                 A 4 3               K J 9 
-A                   Q 8 6 5 4           J 9 3               K T 7 2 
-K 5 4 3 2           A T 8 6             J 7                 Q 9 
+A 2                 J 6                 T 9 8 7 5 3         K Q 4 
+K T 8 5             J 6                 9 2                 A Q 7 4 3 
+K J 9 3             Q T 8 4 2           7                   A 6 5 
+T 7 4               K J 3 2             A 8 6 5             Q 9 
 
   10.
-A 8 4 3             2                   Q J 7 5             K T 9 6 
-7 5 2               T 9 8               6 3                 A K Q J 4 
-A Q 4               7                   J 9 8 6 3 2         K T 5 
-J 3 2               A K Q T 9 8 7 4     5                   6 
+T                   J 8 5 3             A 9 7 4             K Q 6 2 
+A J 9 3             Q 4 2               8 6 5               K T 7 
+T 9 5 2             7 6 4               A 3                 K Q J 8 
+A T 3 2             Q 5 4               K J 8 6             9 7 
 
   11.
-K Q 4               J 6 5 3             9                   A T 8 7 2 
-Q J 9 8 2           A 7 3               K 5 4               T 6 
--                   9 8 5               K Q T 7 3 2         A J 6 4 
-A K Q 4 3           J 9 7               6 5 2               T 8 
+A J 9 6 5           Q T 7               8 2                 K 4 3 
+A K Q               J 8 7 5             6 2                 T 9 4 3 
+3                   Q J 7               A 8 6 5 4 2         K T 9 
+T 9 8 5             J 6 3               A 7 2               K Q 4 
 
   12.
-8 6                 K J 4               A T 5 2             Q 9 7 3 
-A J T 4             Q 8 5               -                   K 9 7 6 3 2 
-J 9 5 4             Q 7                 K T 8 3 2           A 6 
-A 8 5               T 9 7 6 2           Q J 4 3             K 
+K                   A 9 2               Q T 8 7 5 3         J 6 4 
+A K Q T 9 6         J 8 3               7 5 4               2 
+K 5                 8 7 6 3 2           J 4                 A Q T 9 
+Q 9 5 2             K 4                 T 8                 A J 7 6 3 
 
   13.
-7 4                 J 6 5 2             A Q T 3             K 9 8 
-Q 9 7               T 6 4               K J 2               A 8 5 3 
-Q 9 4 3 2           T 8 7               A K J               6 5 
-A J 5               K 8 2               Q 9 7               T 6 4 3 
+7 3                 4                   J 9 8 6 2           A K Q T 5 
+K 8 3               A 4 2               T 6 5               Q J 9 7 
+K Q 5 3             A J 9 8 2           7 4                 T 6 
+J 6 5 3             A Q 9 4             K 7 2               T 8 
 
   14.
-A Q 6 2             7 3                 K J 5 4             T 9 8 
-9 4 2               7                   Q J 3               A K T 8 6 5 
-K Q                 J 8 7 4 2           6 5 3               A T 9 
-A J 6 4             K Q 5 3 2           T 9 8               7 
+A 9 4 2             K J T 7 3           Q 6 5               8 
+A 6 4               J 5 2               T 7                 K Q 9 8 3 
+A Q T               J 5                 K 7 2               9 8 6 4 3 
+Q 8 2               K T 5               A J 9 6 4           7 3 
 
   15.
-9 8 6               Q 7 2               T                   A K J 5 4 3 
-K 6 4 3             A 8 7               Q J T 9             5 2 
-T 4                 8 7 6 5 2           A K Q               J 9 3 
-K 9 4 2             6 5                 Q J T 8 7           A 3 
+K 9 7 6 4           A Q J 8             T 2                 5 3 
+T 7                 A Q                 J 3 2               K 9 8 6 5 4 
+A Q 8 7 2           K J 5 4             9 6 3               T 
+7                   K 5 3               A J T 6 2           Q 9 8 4 
 
   16.
-K 7 4               T 8 6               A J 5 3             Q 9 2 
-Q 6 3               J 9 7 5 4           A K T 8 2           - 
-Q J 7 4             A 8 6               K 3                 T 9 5 2 
-6 4 2               Q J                 A 9                 K T 8 7 5 3 
+A K J 6             T 8 3 2             9 7 4               Q 5 
+A J 8 7             9 4 3               Q 5 2               K T 6 
+Q J                 9 8 7 2             A 4 3               K T 6 5 
+A Q J               7 6                 8 5 4 3             K T 9 2 
 
   17.
-Q T 4 3             K 7 5               A J 6 2             9 8 
-A T 2               K Q J 8 5           7 3                 9 6 4 
-Q 9 8 3             A K J 4             T 7 6 2             5 
-K 5                 4                   T 9 2               A Q J 8 7 6 3 
+A 8                 J 9 6 2             K Q T 7 4           5 3 
+J 9 7               K 2                 A 6 5               Q T 8 4 3 
+A T 9 8 7           K 3                 Q 5                 J 6 4 2 
+J 9 6               K T 7 5 2           Q 4 3               A 8 
 
   18.
-J 6 4               Q 7                 A 9 5 3             K T 8 2 
-A Q J               8 6 3               K T 9 2             7 5 4 
-Q 9 8 2             A J 7 6 4           K 3                 T 5 
-J T 7               6 5 3               A 4 2               K Q 9 8 
+9                   J T 8 5 3 2         A Q                 K 7 6 4 
+T 9 7               K Q 6 3             8 4 2               A J 5 
+A Q 8 7 5 2         J 3                 K 9                 T 6 4 
+K 9 7               Q                   A J T 6 4 3         8 5 2 
 
   19.
-T 6 4               9 3                 J 5 2               A K Q 8 7 
-J 7 3               K Q 8 4 2           A 9 6               T 5 
-7                   K T 4               Q J 9 8 5           A 6 3 2 
-A K Q J 9 2         7 5 3               T 4                 8 6 
+8                   T 6 5 3             K 4                 A Q J 9 7 2 
+A Q T 5 4 3         7 6                 K 9 8 2             J 
+J T 7               Q 8 4 3             A                   K 9 6 5 2 
+Q 6 2               A 9 4               K T 8 7 5 3         J 
 
   20.
-Q J T 4 2           A K 9 7             8 5 3               6 
-J 7 6 3             A K Q 9 8 5         T 2                 4 
-8 5 3               Q 9                 A K                 J T 7 6 4 2 
-4                   K                   Q J T 7 6 5         A 9 8 3 2 
+A K 9 7 6 4         J T 8 3             Q 5 2               - 
+9 8 5               A J 4 2             Q                   K T 7 6 3 
+A 6 4 2             7                   J T 3               K Q 9 8 5 
+-                   A T 8 7             K Q J 9 5 3         6 4 2 
 
   21.
-T 9                 A K 6 4             Q J 3               8 7 5 2 
-K Q 5 4             A 8 7               J 6 2               T 9 3 
-Q                   7 4 3               A T 8 6 2           K J 9 5 
-A K J T 7 2         8 6 4               Q 5                 9 3 
+T 6 4 3             J 7 2               A Q 8 5             K 9 
+K Q T               8 7 6 2             5 4                 A J 9 3 
+K J                 A Q                 T 9 8 6             7 5 4 3 2 
+K T 7 2             A Q 4 3             J 9 6               8 5 
 
   22.
-A T 8 6 5 3         4                   K J 9 2             Q 7 
-A K 6               9 5 4 3 2           J 7                 Q T 8 
-6                   A J T 7 5           K 2                 Q 9 8 4 3 
-A 9 8               5 3                 Q J T 4 2           K 7 6 
+Q J 2               9 5                 A K 8 4 3           T 7 6 
+A K 7 3 2           J 6 4               Q T                 9 8 5 
+K Q 4               3 2                 A T 9 6             J 8 7 5 
+A 2                 K Q J T 9 8         4 3                 7 6 5 
 
   23.
-A J 8 3             T 5 2               K 7 4               Q 9 6 
-A K 5               J 4 2               Q 9 8 7 6           T 3 
-8                   A K Q 7 6           5 3                 J T 9 4 2 
-K Q J T 9           8 2                 A 6 4               7 5 3 
+A 6 3               T 8 2               K Q 9               J 7 5 4 
+K T 9 3             6                   A J 8 5             Q 7 4 2 
+Q                   K 8 7 2             J 5 4 3             A T 9 6 
+A J 6 4 2           K Q T 9 3           7 5                 8 
 
   24.
-Q 6                 J                   K T 5 4 3           A 9 8 7 2 
-K J 4 2             A T 8 6 3           7 5                 Q 9 
-T 9 8 2             Q 7 6 5             A K J 3             4 
-7 6 3               A 5 2               Q T                 K J 9 8 4 
+T 8 7 3             K Q 4               A J 9               6 5 2 
+A                   Q 9 8 5 3           K J 7 4 2           T 6 
+8 7 4               A T 6 2             J 3                 K Q 9 5 
+K 8 7 6 3           Q                   A 4 2               J T 9 5 
 
   25.
-J 2                 A K 5               T 8 6 4 3           Q 9 7 
-K Q 9 5 2           T 6 3               A J 7               8 4 
-Q 9 8 5 2           A J 6               T                   K 7 4 3 
-4                   9 8 6 2             A J T 5             K Q 7 3 
+A T 9 3 2           Q 8 5 4             J                   K 7 6 
+3                   8 7                 Q 9 6 5 4           A K J T 2 
+-                   J 9 8 7 6 3         T 5 2               A K Q 4 
+K Q 9 7 4 3 2       A                   J T 6 5             8 
 
   26.
-A K 5 3             9 7 4               Q 8 2               J T 6 
-Q 7 6 5 2           9 3                 K J                 A T 8 4 
-J                   Q 5 3 2             T 9 8 7 6           A K 4 
-J 3 2               T 8 6 4             K Q 5               A 9 7 
+8 7                 4 3                 K T 9 6 2           A Q J 5 
+K T 4               Q J 8 7 5 3         A 6 2               9 
+A T 9 5 2           K Q 6 3             8 7 4               J 
+J 8 3               4                   A 5                 K Q T 9 7 6 2 
 
   27.
-A 7 6 2             K J 8 5 4           Q 3                 T 9 
-T 9 7 5             J                   A Q 4 3 2           K 8 6 
-J 7                 5 4 3               A K Q 6             T 9 8 2 
-A 9 8               J 4 3 2             7 6                 K Q T 5 
+6 2                 A Q J 7             9 8 4               K T 5 3 
+6                   K J T 5 3           7 2                 A Q 9 8 4 
+A Q 4 3 2           K 6                 J 9 5               T 8 7 
+A Q J 8 4           9 7                 K T 6 5 2           3 
 
   28.
-A K Q T 6 5 4       J 7 3 2             -                   9 8 
-7                   K Q J 4             A T 8 6 2           9 5 3 
-7 5 4               Q T 9               3 2                 A K J 8 6 
-Q 2                 9 3                 K T 8 6 5 4         A J 7 
+A K T 7 2           J 9 6               8 4                 Q 5 3 
+5 3 2               A J T 7 4           K Q 9               8 6 
+K J 7 2             A Q 4               T 9 8 6             5 3 
+3                   J 2                 A 9 7 4             K Q T 8 6 5 
 
   29.
-9 2                 K Q J T 3           A                   8 7 6 5 4 
-K J 6 4             Q T 3               A 9 8               7 5 2 
-4 2                 A K Q 7             J 9 8 6 3           T 5 
-9 8 6 5 2           Q                   K J 4 3             A T 7 
+9 8 4               J 6 3               A T 7               K Q 5 2 
+K 4 3               A Q 9 2             J T 8 7             6 5 
+A Q 9               J 7                 5 4 3               K T 8 6 2 
+Q T 9 3             J 8 4 2             K 7 5               A 6 
 
   30.
-J 7 5 4 2           T 9 6 3             A                   K Q 8 
-5 4                 J 8 3 2             A K Q               T 9 7 6 
-K 3                 A 6 4 2             J T 9 8 7           Q 5 
-Q 8 6 4             J                   A T 5 3             K 9 7 2 
+A J 6               K 5                 T 4 3 2             Q 9 8 7 
+Q J T 9 2           A 5 4 3             K 8 7 6             - 
+T 6                 4 3 2               J 8 7               A K Q 9 5 
+7 5 2               K T 9 3             Q 6                 A J 8 4 
 
   31.
-9 8 6               A J T 2             Q 7 4               K 5 3 
-J T 9 8             K 7 4               6 5 3               A Q 2 
-J 3                 K Q 2               A T 9 7 4           8 6 5 
-A K 4 3             Q 8 7               T 2                 J 9 6 5 
+6 5 3               K J 7 2             A Q T 4             9 8 
+8 5 4 2             3                   A Q 9 7             K J T 6 
+K                   J T 6 5 2           9 4                 A Q 8 7 3 
+K Q J 9 5           T 3 2               7 6 4               A 8 
 
   32.
-K J T 8 6           A 9 7 5 4           Q 3 2               - 
-9 6 4               Q 7 5               A K 8               J T 3 2 
-K Q J               T 9 7               5 4                 A 8 6 3 2 
-8 2                 T 5                 K Q 9 7 3           A J 6 4 
+K T                 Q 6 2               9 8 4               A J 7 5 3 
+A 9 8 5 3           K 6 2               Q J 7               T 4 
+8 3 2               Q T 7               A K J 5 4           9 6 
+A T 8               Q 9 7 3             J 2                 K 6 5 4 
 
   33.
-Q 9 6 3             A J 5 2             K                   T 8 7 4 
-K 6 5               8 7                 Q J T 9 4 3         A 2 
-J T 9 2             Q 8 5 3             4                   A K 7 6 
-8 7                 T 5 2               A J 9 6 4           K Q 3 
+J T 6               Q 9                 K 4 3               A 8 7 5 2 
+Q 5 3 2             J T 7 6             A K                 9 8 4 
+T 9 7 4 3           K J 8 5 2           A 6                 Q 
+K                   T 3                 A Q 9 8 7 2         J 6 5 4 
 
   34.
-A K Q 6 3           T 9                 8 7 5               J 4 2 
-K Q 7 3             J 8 6               T 9 4 2             A 5 
-Q 3                 J T 5 4             8 6 2               A K 9 7 
-Q 3                 K J 9 2             A 6 5               T 8 7 4 
+4 3                 A K 6 2             Q J 9               T 8 7 5 
+J T 6 4 2           A K                 Q 9 5               8 7 3 
+A Q 3 2             J 9 8 5 4           T 7 6               K 
+7 2                 9 4                 K Q T 3             A J 8 6 5 
 
   35.
-9 8                 A Q J T 6 5         4                   K 7 3 2 
-A Q 8 7 3           K T 4 2             J                   9 6 5 
-K J T               9 8                 7 6 5 4 3 2         A Q 
-A 3 2               5                   J 9 8 7 4           K Q T 6 
+9 5 3 2             K Q T 4             J                   A 8 7 6 
+A 7 2               8 6 5 3             K Q T 9             J 4 
+K J T 8             Q 3                 9 5                 A 7 6 4 2 
+J 3                 9 8 4               K Q T 7 5 2         A 6 
 
   36.
-5 2                 J T 3               K 7 6               A Q 9 8 4 
-J T 9 2             K Q 6 3             A 7                 8 5 4 
-K Q 4 3 2           A                   J 9 8 7 5           T 6 
-A 5                 K Q 8 6 3           J 9 4               T 7 2 
+A Q 9 7 2           K J T 8 3           6 5 4               - 
+9 7                 K 4                 J T 8 6             A Q 5 3 2 
+A J 8 2             T 5 3               6                   K Q 9 7 4 
+J 5                 T 7 6               K Q 9 8 4           A 3 2 
 
   37.
-J 6 5 4             3                   Q T 9 8 7           A K 2 
-A 2                 K Q J T 8 6         5 4                 9 7 3 
-Q 4 3               K 8 5               A 7 2               J T 9 6 
-A J 5 2             K Q 4               9 8 7               T 6 3 
+9                   A J 8 5 4           K 7                 Q T 6 3 2 
+Q J 9 8             T                   K 6 5 4 3 2         A 7 
+T 9 2               A Q 7               K J 6               8 5 4 3 
+J 8 7 4 2           Q 9 5 3             K 6                 A T 
 
   38.
-J 8 6 3             7 2                 K 4                 A Q T 9 5 
-K Q                 J 5 3               9 8 7 4 2           A T 6 
-K Q T 8             J 9 7 4             A 6 5 3 2           - 
-Q 9 3               J 6 5 4             T                   A K 8 7 2 
+A K Q 5             J 8 7 4             T 6 3 2             9 
+A 8 6               K J T 9 7 4 2       Q 3                 5 
+T                   Q 3                 A 9 8 6 5 4         K J 7 2 
+9 6 5 3 2           -                   J                   A K Q T 8 7 4 
 
   39.
-A 8                 K T 3 2             J 5 4               Q 9 7 6 
-Q 8 6 3 2           K T 5               J 7 4               A 9 
-T 4 2               9 7 5               A K 6 3             Q J 8 
-A 9 5               K 6 4               J 3 2               Q T 8 7 
+Q J T 9 6 3         K 4                 7                   A 8 5 2 
+J 7                 Q 8 6               T 5 3 2             A K 9 4 
+A 3                 Q 6 5 4             9 8 7 2             K J T 
+7 6 2               A 8 4 3             J T 9 5             K Q 
 
   40.
-J T 9 3 2           K 7 6 5             Q 8                 A 4 
-8                   K Q 5 3             A 4 2               J T 9 7 6 
-K Q 9 4             T 7                 A 8 6 5 2           J 3 
-A J 4               T 8 2               Q 6 5               K 9 7 3 
+T 8 5 3             Q 9 4               J 7                 A K 6 2 
+2                   K T                 J 8 7 5 4           A Q 9 6 3 
+A Q J 6             5 4 3 2             T 7                 K 9 8 
+J T 5 3             A Q 9 7             K 6 4 2             8 
 
 Generated 40 hands
 Produced 40 hands
@@ -245,244 +245,244 @@ Initial random seed 1
 Time needed    0.001 sec
 -s 1 -m Descr.test_defaults
    1.
-A K Q T 3           6 5 2               J 7 4               9 8 
-J 6                 A K 4 2             Q T 9 5             8 7 3 
-K J 4 2             A Q 8 7             T                   9 6 5 3 
-9 5                 T 4                 A K 8 6 3           Q J 7 2 
+A 4                 J T 9 8 6           K Q 5 3             7 2 
+J T 9 2             4                   A Q 8 6 3           K 7 5 
+K Q J               A 9 5 3             7 4                 T 8 6 2 
+A Q 5 4             K J T               7 3                 9 8 6 2 
 
    2.
-A 7 5 4             Q T                 K 9 3               J 8 6 2 
-7 6 4 2             A K 9 5             J 8 3               Q T 
-K J 2               8 7                 Q T 6 5 4 3         A 9 
-A 9                 K 8 6 5 2           T                   Q J 7 4 3 
+A 8 7 4             K 6 2               J 5                 Q T 9 3 
+T 8 6 4             Q J 5               9 7 3               A K 2 
+Q T 9 3             A K 5               7 4                 J 8 6 2 
+3                   9 7 5 2             A Q J 8 6 4         K T 
 
    3.
-T 6                 A 2                 K Q J 9 5 3         8 7 4 
-T 8                 A K Q 5 4 3 2       7 6                 J 9 
-A J 8 7 6           4 3 2               K T                 Q 9 5 
-A T 7 5             J                   K Q 3               9 8 6 4 2 
+K J T               7 6 5 3 2           A Q 8 4             9 
+A 9 7 3             Q 8 4               6                   K J T 5 2 
+7 2                 Q                   A J 9 6 3           K T 8 5 4 
+K Q J 6             A T 7 3             9 5 2               8 4 
 
    4.
-T 7 5 4             A J 6               K 3 2               Q 9 8 
-8 4 2               A K Q 3             J 9 7 6 5           T 
-A T 6 3             K J                 9 7 2               Q 8 5 4 
-5 2                 K T 7 6             8 3                 A Q J 9 4 
+A Q J 2             K T 8 6 5           7 4 3               9 
+K Q 8               A 6 4 2             7 5                 J T 9 3 
+7 6 4 2             Q 5                 A K 9 3             J T 8 
+9 7                 6 2                 A T 5 3             K Q J 8 4 
 
    5.
-A K Q J T 9 2       -                   8 4 3               7 6 5 
-6                   A 9 4 3 2           T                   K Q J 8 7 5 
-Q T 3               A J 7 5 4           K 8 6               9 2 
-4 2                 K Q 6               J 9 8 7 5 3         A T 
+A Q                 J 7 6 4 3 2         K 8 5               T 9 
+J T 9               K 7 6 4             A Q 8 5 3           2 
+A J 9               T 3 2               8 4                 K Q 7 6 5 
+K 9 8 7 2           -                   A J 3               Q T 6 5 4 
 
    6.
-A K T 5 2           9                   J 8 7 4             Q 6 3 
-9 7                 A 8 6 4             K J 3               Q T 5 2 
-9 6 5               A T 7 4 3           Q                   K J 8 2 
-J 8 4               T 9 7               A K Q 3 2           6 5 
+-                   A K 2               Q 8 6 5 4           J T 9 7 3 
+T 9 8 5 4 3         A 7 2               Q J 6               K 
+T 4 3               9 2                 K 6 5               A Q J 8 7 
+7 6 4 3             A K T 9 2           Q 5                 J 8 
 
    7.
-K T 6 2             A J 4 3             Q 8                 9 7 5 
-K J 7               A T 9 8             5 4 3               Q 6 2 
-5 4 3               Q 8 6 2             K T 7               A J 9 
-T 8 7               9                   A J 6 5 2           K Q 4 3 
+8 7 4               J 9 2               A K T 5             Q 6 3 
+A J T 5             3                   9 6 4               K Q 8 7 2 
+9 7                 K Q J 3             A 8 6 2             T 5 4 
+A 5 4 3             K Q T 9 7           6 2                 J 8 
 
    8.
-4                   J T 6               K Q 8 7 5 2         A 9 3 
-K J 5 4 2           T 9 8               6                   A Q 7 3 
-A 9                 4 2                 K Q T 6 5           J 8 7 3 
-A J 9 7 5           K Q T 3 2           8                   6 4 
+Q 8                 J 9 3               A T 7 4 2           K 6 5 
+K Q 8 7             A T 5 3 2           J                   9 6 4 
+A 7 3               Q T 6 5             K J 9 2             8 4 
+A K J 5             Q                   8 7 6               T 9 4 3 2 
 
    9.
-J 7                 T 8                 A Q 5 3 2           K 9 6 4 
-Q 8 7 5 2           T 6                 A 4 3               K J 9 
-A                   Q 8 6 5 4           J 9 3               K T 7 2 
-K 5 4 3 2           A T 8 6             J 7                 Q 9 
+A 2                 J 6                 T 9 8 7 5 3         K Q 4 
+K T 8 5             J 6                 9 2                 A Q 7 4 3 
+K J 9 3             Q T 8 4 2           7                   A 6 5 
+T 7 4               K J 3 2             A 8 6 5             Q 9 
 
   10.
-A 8 4 3             2                   Q J 7 5             K T 9 6 
-7 5 2               T 9 8               6 3                 A K Q J 4 
-A Q 4               7                   J 9 8 6 3 2         K T 5 
-J 3 2               A K Q T 9 8 7 4     5                   6 
+T                   J 8 5 3             A 9 7 4             K Q 6 2 
+A J 9 3             Q 4 2               8 6 5               K T 7 
+T 9 5 2             7 6 4               A 3                 K Q J 8 
+A T 3 2             Q 5 4               K J 8 6             9 7 
 
   11.
-K Q 4               J 6 5 3             9                   A T 8 7 2 
-Q J 9 8 2           A 7 3               K 5 4               T 6 
--                   9 8 5               K Q T 7 3 2         A J 6 4 
-A K Q 4 3           J 9 7               6 5 2               T 8 
+A J 9 6 5           Q T 7               8 2                 K 4 3 
+A K Q               J 8 7 5             6 2                 T 9 4 3 
+3                   Q J 7               A 8 6 5 4 2         K T 9 
+T 9 8 5             J 6 3               A 7 2               K Q 4 
 
   12.
-8 6                 K J 4               A T 5 2             Q 9 7 3 
-A J T 4             Q 8 5               -                   K 9 7 6 3 2 
-J 9 5 4             Q 7                 K T 8 3 2           A 6 
-A 8 5               T 9 7 6 2           Q J 4 3             K 
+K                   A 9 2               Q T 8 7 5 3         J 6 4 
+A K Q T 9 6         J 8 3               7 5 4               2 
+K 5                 8 7 6 3 2           J 4                 A Q T 9 
+Q 9 5 2             K 4                 T 8                 A J 7 6 3 
 
   13.
-7 4                 J 6 5 2             A Q T 3             K 9 8 
-Q 9 7               T 6 4               K J 2               A 8 5 3 
-Q 9 4 3 2           T 8 7               A K J               6 5 
-A J 5               K 8 2               Q 9 7               T 6 4 3 
+7 3                 4                   J 9 8 6 2           A K Q T 5 
+K 8 3               A 4 2               T 6 5               Q J 9 7 
+K Q 5 3             A J 9 8 2           7 4                 T 6 
+J 6 5 3             A Q 9 4             K 7 2               T 8 
 
   14.
-A Q 6 2             7 3                 K J 5 4             T 9 8 
-9 4 2               7                   Q J 3               A K T 8 6 5 
-K Q                 J 8 7 4 2           6 5 3               A T 9 
-A J 6 4             K Q 5 3 2           T 9 8               7 
+A 9 4 2             K J T 7 3           Q 6 5               8 
+A 6 4               J 5 2               T 7                 K Q 9 8 3 
+A Q T               J 5                 K 7 2               9 8 6 4 3 
+Q 8 2               K T 5               A J 9 6 4           7 3 
 
   15.
-9 8 6               Q 7 2               T                   A K J 5 4 3 
-K 6 4 3             A 8 7               Q J T 9             5 2 
-T 4                 8 7 6 5 2           A K Q               J 9 3 
-K 9 4 2             6 5                 Q J T 8 7           A 3 
+K 9 7 6 4           A Q J 8             T 2                 5 3 
+T 7                 A Q                 J 3 2               K 9 8 6 5 4 
+A Q 8 7 2           K J 5 4             9 6 3               T 
+7                   K 5 3               A J T 6 2           Q 9 8 4 
 
   16.
-K 7 4               T 8 6               A J 5 3             Q 9 2 
-Q 6 3               J 9 7 5 4           A K T 8 2           - 
-Q J 7 4             A 8 6               K 3                 T 9 5 2 
-6 4 2               Q J                 A 9                 K T 8 7 5 3 
+A K J 6             T 8 3 2             9 7 4               Q 5 
+A J 8 7             9 4 3               Q 5 2               K T 6 
+Q J                 9 8 7 2             A 4 3               K T 6 5 
+A Q J               7 6                 8 5 4 3             K T 9 2 
 
   17.
-Q T 4 3             K 7 5               A J 6 2             9 8 
-A T 2               K Q J 8 5           7 3                 9 6 4 
-Q 9 8 3             A K J 4             T 7 6 2             5 
-K 5                 4                   T 9 2               A Q J 8 7 6 3 
+A 8                 J 9 6 2             K Q T 7 4           5 3 
+J 9 7               K 2                 A 6 5               Q T 8 4 3 
+A T 9 8 7           K 3                 Q 5                 J 6 4 2 
+J 9 6               K T 7 5 2           Q 4 3               A 8 
 
   18.
-J 6 4               Q 7                 A 9 5 3             K T 8 2 
-A Q J               8 6 3               K T 9 2             7 5 4 
-Q 9 8 2             A J 7 6 4           K 3                 T 5 
-J T 7               6 5 3               A 4 2               K Q 9 8 
+9                   J T 8 5 3 2         A Q                 K 7 6 4 
+T 9 7               K Q 6 3             8 4 2               A J 5 
+A Q 8 7 5 2         J 3                 K 9                 T 6 4 
+K 9 7               Q                   A J T 6 4 3         8 5 2 
 
   19.
-T 6 4               9 3                 J 5 2               A K Q 8 7 
-J 7 3               K Q 8 4 2           A 9 6               T 5 
-7                   K T 4               Q J 9 8 5           A 6 3 2 
-A K Q J 9 2         7 5 3               T 4                 8 6 
+8                   T 6 5 3             K 4                 A Q J 9 7 2 
+A Q T 5 4 3         7 6                 K 9 8 2             J 
+J T 7               Q 8 4 3             A                   K 9 6 5 2 
+Q 6 2               A 9 4               K T 8 7 5 3         J 
 
   20.
-Q J T 4 2           A K 9 7             8 5 3               6 
-J 7 6 3             A K Q 9 8 5         T 2                 4 
-8 5 3               Q 9                 A K                 J T 7 6 4 2 
-4                   K                   Q J T 7 6 5         A 9 8 3 2 
+A K 9 7 6 4         J T 8 3             Q 5 2               - 
+9 8 5               A J 4 2             Q                   K T 7 6 3 
+A 6 4 2             7                   J T 3               K Q 9 8 5 
+-                   A T 8 7             K Q J 9 5 3         6 4 2 
 
   21.
-T 9                 A K 6 4             Q J 3               8 7 5 2 
-K Q 5 4             A 8 7               J 6 2               T 9 3 
-Q                   7 4 3               A T 8 6 2           K J 9 5 
-A K J T 7 2         8 6 4               Q 5                 9 3 
+T 6 4 3             J 7 2               A Q 8 5             K 9 
+K Q T               8 7 6 2             5 4                 A J 9 3 
+K J                 A Q                 T 9 8 6             7 5 4 3 2 
+K T 7 2             A Q 4 3             J 9 6               8 5 
 
   22.
-A T 8 6 5 3         4                   K J 9 2             Q 7 
-A K 6               9 5 4 3 2           J 7                 Q T 8 
-6                   A J T 7 5           K 2                 Q 9 8 4 3 
-A 9 8               5 3                 Q J T 4 2           K 7 6 
+Q J 2               9 5                 A K 8 4 3           T 7 6 
+A K 7 3 2           J 6 4               Q T                 9 8 5 
+K Q 4               3 2                 A T 9 6             J 8 7 5 
+A 2                 K Q J T 9 8         4 3                 7 6 5 
 
   23.
-A J 8 3             T 5 2               K 7 4               Q 9 6 
-A K 5               J 4 2               Q 9 8 7 6           T 3 
-8                   A K Q 7 6           5 3                 J T 9 4 2 
-K Q J T 9           8 2                 A 6 4               7 5 3 
+A 6 3               T 8 2               K Q 9               J 7 5 4 
+K T 9 3             6                   A J 8 5             Q 7 4 2 
+Q                   K 8 7 2             J 5 4 3             A T 9 6 
+A J 6 4 2           K Q T 9 3           7 5                 8 
 
   24.
-Q 6                 J                   K T 5 4 3           A 9 8 7 2 
-K J 4 2             A T 8 6 3           7 5                 Q 9 
-T 9 8 2             Q 7 6 5             A K J 3             4 
-7 6 3               A 5 2               Q T                 K J 9 8 4 
+T 8 7 3             K Q 4               A J 9               6 5 2 
+A                   Q 9 8 5 3           K J 7 4 2           T 6 
+8 7 4               A T 6 2             J 3                 K Q 9 5 
+K 8 7 6 3           Q                   A 4 2               J T 9 5 
 
   25.
-J 2                 A K 5               T 8 6 4 3           Q 9 7 
-K Q 9 5 2           T 6 3               A J 7               8 4 
-Q 9 8 5 2           A J 6               T                   K 7 4 3 
-4                   9 8 6 2             A J T 5             K Q 7 3 
+A T 9 3 2           Q 8 5 4             J                   K 7 6 
+3                   8 7                 Q 9 6 5 4           A K J T 2 
+-                   J 9 8 7 6 3         T 5 2               A K Q 4 
+K Q 9 7 4 3 2       A                   J T 6 5             8 
 
   26.
-A K 5 3             9 7 4               Q 8 2               J T 6 
-Q 7 6 5 2           9 3                 K J                 A T 8 4 
-J                   Q 5 3 2             T 9 8 7 6           A K 4 
-J 3 2               T 8 6 4             K Q 5               A 9 7 
+8 7                 4 3                 K T 9 6 2           A Q J 5 
+K T 4               Q J 8 7 5 3         A 6 2               9 
+A T 9 5 2           K Q 6 3             8 7 4               J 
+J 8 3               4                   A 5                 K Q T 9 7 6 2 
 
   27.
-A 7 6 2             K J 8 5 4           Q 3                 T 9 
-T 9 7 5             J                   A Q 4 3 2           K 8 6 
-J 7                 5 4 3               A K Q 6             T 9 8 2 
-A 9 8               J 4 3 2             7 6                 K Q T 5 
+6 2                 A Q J 7             9 8 4               K T 5 3 
+6                   K J T 5 3           7 2                 A Q 9 8 4 
+A Q 4 3 2           K 6                 J 9 5               T 8 7 
+A Q J 8 4           9 7                 K T 6 5 2           3 
 
   28.
-A K Q T 6 5 4       J 7 3 2             -                   9 8 
-7                   K Q J 4             A T 8 6 2           9 5 3 
-7 5 4               Q T 9               3 2                 A K J 8 6 
-Q 2                 9 3                 K T 8 6 5 4         A J 7 
+A K T 7 2           J 9 6               8 4                 Q 5 3 
+5 3 2               A J T 7 4           K Q 9               8 6 
+K J 7 2             A Q 4               T 9 8 6             5 3 
+3                   J 2                 A 9 7 4             K Q T 8 6 5 
 
   29.
-9 2                 K Q J T 3           A                   8 7 6 5 4 
-K J 6 4             Q T 3               A 9 8               7 5 2 
-4 2                 A K Q 7             J 9 8 6 3           T 5 
-9 8 6 5 2           Q                   K J 4 3             A T 7 
+9 8 4               J 6 3               A T 7               K Q 5 2 
+K 4 3               A Q 9 2             J T 8 7             6 5 
+A Q 9               J 7                 5 4 3               K T 8 6 2 
+Q T 9 3             J 8 4 2             K 7 5               A 6 
 
   30.
-J 7 5 4 2           T 9 6 3             A                   K Q 8 
-5 4                 J 8 3 2             A K Q               T 9 7 6 
-K 3                 A 6 4 2             J T 9 8 7           Q 5 
-Q 8 6 4             J                   A T 5 3             K 9 7 2 
+A J 6               K 5                 T 4 3 2             Q 9 8 7 
+Q J T 9 2           A 5 4 3             K 8 7 6             - 
+T 6                 4 3 2               J 8 7               A K Q 9 5 
+7 5 2               K T 9 3             Q 6                 A J 8 4 
 
   31.
-9 8 6               A J T 2             Q 7 4               K 5 3 
-J T 9 8             K 7 4               6 5 3               A Q 2 
-J 3                 K Q 2               A T 9 7 4           8 6 5 
-A K 4 3             Q 8 7               T 2                 J 9 6 5 
+6 5 3               K J 7 2             A Q T 4             9 8 
+8 5 4 2             3                   A Q 9 7             K J T 6 
+K                   J T 6 5 2           9 4                 A Q 8 7 3 
+K Q J 9 5           T 3 2               7 6 4               A 8 
 
   32.
-K J T 8 6           A 9 7 5 4           Q 3 2               - 
-9 6 4               Q 7 5               A K 8               J T 3 2 
-K Q J               T 9 7               5 4                 A 8 6 3 2 
-8 2                 T 5                 K Q 9 7 3           A J 6 4 
+K T                 Q 6 2               9 8 4               A J 7 5 3 
+A 9 8 5 3           K 6 2               Q J 7               T 4 
+8 3 2               Q T 7               A K J 5 4           9 6 
+A T 8               Q 9 7 3             J 2                 K 6 5 4 
 
   33.
-Q 9 6 3             A J 5 2             K                   T 8 7 4 
-K 6 5               8 7                 Q J T 9 4 3         A 2 
-J T 9 2             Q 8 5 3             4                   A K 7 6 
-8 7                 T 5 2               A J 9 6 4           K Q 3 
+J T 6               Q 9                 K 4 3               A 8 7 5 2 
+Q 5 3 2             J T 7 6             A K                 9 8 4 
+T 9 7 4 3           K J 8 5 2           A 6                 Q 
+K                   T 3                 A Q 9 8 7 2         J 6 5 4 
 
   34.
-A K Q 6 3           T 9                 8 7 5               J 4 2 
-K Q 7 3             J 8 6               T 9 4 2             A 5 
-Q 3                 J T 5 4             8 6 2               A K 9 7 
-Q 3                 K J 9 2             A 6 5               T 8 7 4 
+4 3                 A K 6 2             Q J 9               T 8 7 5 
+J T 6 4 2           A K                 Q 9 5               8 7 3 
+A Q 3 2             J 9 8 5 4           T 7 6               K 
+7 2                 9 4                 K Q T 3             A J 8 6 5 
 
   35.
-9 8                 A Q J T 6 5         4                   K 7 3 2 
-A Q 8 7 3           K T 4 2             J                   9 6 5 
-K J T               9 8                 7 6 5 4 3 2         A Q 
-A 3 2               5                   J 9 8 7 4           K Q T 6 
+9 5 3 2             K Q T 4             J                   A 8 7 6 
+A 7 2               8 6 5 3             K Q T 9             J 4 
+K J T 8             Q 3                 9 5                 A 7 6 4 2 
+J 3                 9 8 4               K Q T 7 5 2         A 6 
 
   36.
-5 2                 J T 3               K 7 6               A Q 9 8 4 
-J T 9 2             K Q 6 3             A 7                 8 5 4 
-K Q 4 3 2           A                   J 9 8 7 5           T 6 
-A 5                 K Q 8 6 3           J 9 4               T 7 2 
+A Q 9 7 2           K J T 8 3           6 5 4               - 
+9 7                 K 4                 J T 8 6             A Q 5 3 2 
+A J 8 2             T 5 3               6                   K Q 9 7 4 
+J 5                 T 7 6               K Q 9 8 4           A 3 2 
 
   37.
-J 6 5 4             3                   Q T 9 8 7           A K 2 
-A 2                 K Q J T 8 6         5 4                 9 7 3 
-Q 4 3               K 8 5               A 7 2               J T 9 6 
-A J 5 2             K Q 4               9 8 7               T 6 3 
+9                   A J 8 5 4           K 7                 Q T 6 3 2 
+Q J 9 8             T                   K 6 5 4 3 2         A 7 
+T 9 2               A Q 7               K J 6               8 5 4 3 
+J 8 7 4 2           Q 9 5 3             K 6                 A T 
 
   38.
-J 8 6 3             7 2                 K 4                 A Q T 9 5 
-K Q                 J 5 3               9 8 7 4 2           A T 6 
-K Q T 8             J 9 7 4             A 6 5 3 2           - 
-Q 9 3               J 6 5 4             T                   A K 8 7 2 
+A K Q 5             J 8 7 4             T 6 3 2             9 
+A 8 6               K J T 9 7 4 2       Q 3                 5 
+T                   Q 3                 A 9 8 6 5 4         K J 7 2 
+9 6 5 3 2           -                   J                   A K Q T 8 7 4 
 
   39.
-A 8                 K T 3 2             J 5 4               Q 9 7 6 
-Q 8 6 3 2           K T 5               J 7 4               A 9 
-T 4 2               9 7 5               A K 6 3             Q J 8 
-A 9 5               K 6 4               J 3 2               Q T 8 7 
+Q J T 9 6 3         K 4                 7                   A 8 5 2 
+J 7                 Q 8 6               T 5 3 2             A K 9 4 
+A 3                 Q 6 5 4             9 8 7 2             K J T 
+7 6 2               A 8 4 3             J T 9 5             K Q 
 
   40.
-J T 9 3 2           K 7 6 5             Q 8                 A 4 
-8                   K Q 5 3             A 4 2               J T 9 7 6 
-K Q 9 4             T 7                 A 8 6 5 2           J 3 
-A J 4               T 8 2               Q 6 5               K 9 7 3 
+T 8 5 3             Q 9 4               J 7                 A K 6 2 
+2                   K T                 J 8 7 5 4           A Q 9 6 3 
+A Q J 6             5 4 3 2             T 7                 K 9 8 
+J T 5 3             A Q 9 7             K 6 4 2             8 
 
 Generated 40 hands
 Produced 40 hands
@@ -490,1221 +490,1221 @@ Initial random seed 1
 Time needed    0.001 sec
 -s 1 -m -p 200 Descr.test_defaults
    1.
-A K Q T 3           6 5 2               J 7 4               9 8 
-J 6                 A K 4 2             Q T 9 5             8 7 3 
-K J 4 2             A Q 8 7             T                   9 6 5 3 
-9 5                 T 4                 A K 8 6 3           Q J 7 2 
+A 4                 J T 9 8 6           K Q 5 3             7 2 
+J T 9 2             4                   A Q 8 6 3           K 7 5 
+K Q J               A 9 5 3             7 4                 T 8 6 2 
+A Q 5 4             K J T               7 3                 9 8 6 2 
 
    2.
-A 7 5 4             Q T                 K 9 3               J 8 6 2 
-7 6 4 2             A K 9 5             J 8 3               Q T 
-K J 2               8 7                 Q T 6 5 4 3         A 9 
-A 9                 K 8 6 5 2           T                   Q J 7 4 3 
+A 8 7 4             K 6 2               J 5                 Q T 9 3 
+T 8 6 4             Q J 5               9 7 3               A K 2 
+Q T 9 3             A K 5               7 4                 J 8 6 2 
+3                   9 7 5 2             A Q J 8 6 4         K T 
 
    3.
-T 6                 A 2                 K Q J 9 5 3         8 7 4 
-T 8                 A K Q 5 4 3 2       7 6                 J 9 
-A J 8 7 6           4 3 2               K T                 Q 9 5 
-A T 7 5             J                   K Q 3               9 8 6 4 2 
+K J T               7 6 5 3 2           A Q 8 4             9 
+A 9 7 3             Q 8 4               6                   K J T 5 2 
+7 2                 Q                   A J 9 6 3           K T 8 5 4 
+K Q J 6             A T 7 3             9 5 2               8 4 
 
    4.
-T 7 5 4             A J 6               K 3 2               Q 9 8 
-8 4 2               A K Q 3             J 9 7 6 5           T 
-A T 6 3             K J                 9 7 2               Q 8 5 4 
-5 2                 K T 7 6             8 3                 A Q J 9 4 
+A Q J 2             K T 8 6 5           7 4 3               9 
+K Q 8               A 6 4 2             7 5                 J T 9 3 
+7 6 4 2             Q 5                 A K 9 3             J T 8 
+9 7                 6 2                 A T 5 3             K Q J 8 4 
 
    5.
-A K Q J T 9 2       -                   8 4 3               7 6 5 
-6                   A 9 4 3 2           T                   K Q J 8 7 5 
-Q T 3               A J 7 5 4           K 8 6               9 2 
-4 2                 K Q 6               J 9 8 7 5 3         A T 
+A Q                 J 7 6 4 3 2         K 8 5               T 9 
+J T 9               K 7 6 4             A Q 8 5 3           2 
+A J 9               T 3 2               8 4                 K Q 7 6 5 
+K 9 8 7 2           -                   A J 3               Q T 6 5 4 
 
    6.
-A K T 5 2           9                   J 8 7 4             Q 6 3 
-9 7                 A 8 6 4             K J 3               Q T 5 2 
-9 6 5               A T 7 4 3           Q                   K J 8 2 
-J 8 4               T 9 7               A K Q 3 2           6 5 
+-                   A K 2               Q 8 6 5 4           J T 9 7 3 
+T 9 8 5 4 3         A 7 2               Q J 6               K 
+T 4 3               9 2                 K 6 5               A Q J 8 7 
+7 6 4 3             A K T 9 2           Q 5                 J 8 
 
    7.
-K T 6 2             A J 4 3             Q 8                 9 7 5 
-K J 7               A T 9 8             5 4 3               Q 6 2 
-5 4 3               Q 8 6 2             K T 7               A J 9 
-T 8 7               9                   A J 6 5 2           K Q 4 3 
+8 7 4               J 9 2               A K T 5             Q 6 3 
+A J T 5             3                   9 6 4               K Q 8 7 2 
+9 7                 K Q J 3             A 8 6 2             T 5 4 
+A 5 4 3             K Q T 9 7           6 2                 J 8 
 
    8.
-4                   J T 6               K Q 8 7 5 2         A 9 3 
-K J 5 4 2           T 9 8               6                   A Q 7 3 
-A 9                 4 2                 K Q T 6 5           J 8 7 3 
-A J 9 7 5           K Q T 3 2           8                   6 4 
+Q 8                 J 9 3               A T 7 4 2           K 6 5 
+K Q 8 7             A T 5 3 2           J                   9 6 4 
+A 7 3               Q T 6 5             K J 9 2             8 4 
+A K J 5             Q                   8 7 6               T 9 4 3 2 
 
    9.
-J 7                 T 8                 A Q 5 3 2           K 9 6 4 
-Q 8 7 5 2           T 6                 A 4 3               K J 9 
-A                   Q 8 6 5 4           J 9 3               K T 7 2 
-K 5 4 3 2           A T 8 6             J 7                 Q 9 
+A 2                 J 6                 T 9 8 7 5 3         K Q 4 
+K T 8 5             J 6                 9 2                 A Q 7 4 3 
+K J 9 3             Q T 8 4 2           7                   A 6 5 
+T 7 4               K J 3 2             A 8 6 5             Q 9 
 
   10.
-A 8 4 3             2                   Q J 7 5             K T 9 6 
-7 5 2               T 9 8               6 3                 A K Q J 4 
-A Q 4               7                   J 9 8 6 3 2         K T 5 
-J 3 2               A K Q T 9 8 7 4     5                   6 
+T                   J 8 5 3             A 9 7 4             K Q 6 2 
+A J 9 3             Q 4 2               8 6 5               K T 7 
+T 9 5 2             7 6 4               A 3                 K Q J 8 
+A T 3 2             Q 5 4               K J 8 6             9 7 
 
   11.
-K Q 4               J 6 5 3             9                   A T 8 7 2 
-Q J 9 8 2           A 7 3               K 5 4               T 6 
--                   9 8 5               K Q T 7 3 2         A J 6 4 
-A K Q 4 3           J 9 7               6 5 2               T 8 
+A J 9 6 5           Q T 7               8 2                 K 4 3 
+A K Q               J 8 7 5             6 2                 T 9 4 3 
+3                   Q J 7               A 8 6 5 4 2         K T 9 
+T 9 8 5             J 6 3               A 7 2               K Q 4 
 
   12.
-8 6                 K J 4               A T 5 2             Q 9 7 3 
-A J T 4             Q 8 5               -                   K 9 7 6 3 2 
-J 9 5 4             Q 7                 K T 8 3 2           A 6 
-A 8 5               T 9 7 6 2           Q J 4 3             K 
+K                   A 9 2               Q T 8 7 5 3         J 6 4 
+A K Q T 9 6         J 8 3               7 5 4               2 
+K 5                 8 7 6 3 2           J 4                 A Q T 9 
+Q 9 5 2             K 4                 T 8                 A J 7 6 3 
 
   13.
-7 4                 J 6 5 2             A Q T 3             K 9 8 
-Q 9 7               T 6 4               K J 2               A 8 5 3 
-Q 9 4 3 2           T 8 7               A K J               6 5 
-A J 5               K 8 2               Q 9 7               T 6 4 3 
+7 3                 4                   J 9 8 6 2           A K Q T 5 
+K 8 3               A 4 2               T 6 5               Q J 9 7 
+K Q 5 3             A J 9 8 2           7 4                 T 6 
+J 6 5 3             A Q 9 4             K 7 2               T 8 
 
   14.
-A Q 6 2             7 3                 K J 5 4             T 9 8 
-9 4 2               7                   Q J 3               A K T 8 6 5 
-K Q                 J 8 7 4 2           6 5 3               A T 9 
-A J 6 4             K Q 5 3 2           T 9 8               7 
+A 9 4 2             K J T 7 3           Q 6 5               8 
+A 6 4               J 5 2               T 7                 K Q 9 8 3 
+A Q T               J 5                 K 7 2               9 8 6 4 3 
+Q 8 2               K T 5               A J 9 6 4           7 3 
 
   15.
-9 8 6               Q 7 2               T                   A K J 5 4 3 
-K 6 4 3             A 8 7               Q J T 9             5 2 
-T 4                 8 7 6 5 2           A K Q               J 9 3 
-K 9 4 2             6 5                 Q J T 8 7           A 3 
+K 9 7 6 4           A Q J 8             T 2                 5 3 
+T 7                 A Q                 J 3 2               K 9 8 6 5 4 
+A Q 8 7 2           K J 5 4             9 6 3               T 
+7                   K 5 3               A J T 6 2           Q 9 8 4 
 
   16.
-K 7 4               T 8 6               A J 5 3             Q 9 2 
-Q 6 3               J 9 7 5 4           A K T 8 2           - 
-Q J 7 4             A 8 6               K 3                 T 9 5 2 
-6 4 2               Q J                 A 9                 K T 8 7 5 3 
+A K J 6             T 8 3 2             9 7 4               Q 5 
+A J 8 7             9 4 3               Q 5 2               K T 6 
+Q J                 9 8 7 2             A 4 3               K T 6 5 
+A Q J               7 6                 8 5 4 3             K T 9 2 
 
   17.
-Q T 4 3             K 7 5               A J 6 2             9 8 
-A T 2               K Q J 8 5           7 3                 9 6 4 
-Q 9 8 3             A K J 4             T 7 6 2             5 
-K 5                 4                   T 9 2               A Q J 8 7 6 3 
+A 8                 J 9 6 2             K Q T 7 4           5 3 
+J 9 7               K 2                 A 6 5               Q T 8 4 3 
+A T 9 8 7           K 3                 Q 5                 J 6 4 2 
+J 9 6               K T 7 5 2           Q 4 3               A 8 
 
   18.
-J 6 4               Q 7                 A 9 5 3             K T 8 2 
-A Q J               8 6 3               K T 9 2             7 5 4 
-Q 9 8 2             A J 7 6 4           K 3                 T 5 
-J T 7               6 5 3               A 4 2               K Q 9 8 
+9                   J T 8 5 3 2         A Q                 K 7 6 4 
+T 9 7               K Q 6 3             8 4 2               A J 5 
+A Q 8 7 5 2         J 3                 K 9                 T 6 4 
+K 9 7               Q                   A J T 6 4 3         8 5 2 
 
   19.
-T 6 4               9 3                 J 5 2               A K Q 8 7 
-J 7 3               K Q 8 4 2           A 9 6               T 5 
-7                   K T 4               Q J 9 8 5           A 6 3 2 
-A K Q J 9 2         7 5 3               T 4                 8 6 
+8                   T 6 5 3             K 4                 A Q J 9 7 2 
+A Q T 5 4 3         7 6                 K 9 8 2             J 
+J T 7               Q 8 4 3             A                   K 9 6 5 2 
+Q 6 2               A 9 4               K T 8 7 5 3         J 
 
   20.
-Q J T 4 2           A K 9 7             8 5 3               6 
-J 7 6 3             A K Q 9 8 5         T 2                 4 
-8 5 3               Q 9                 A K                 J T 7 6 4 2 
-4                   K                   Q J T 7 6 5         A 9 8 3 2 
+A K 9 7 6 4         J T 8 3             Q 5 2               - 
+9 8 5               A J 4 2             Q                   K T 7 6 3 
+A 6 4 2             7                   J T 3               K Q 9 8 5 
+-                   A T 8 7             K Q J 9 5 3         6 4 2 
 
   21.
-T 9                 A K 6 4             Q J 3               8 7 5 2 
-K Q 5 4             A 8 7               J 6 2               T 9 3 
-Q                   7 4 3               A T 8 6 2           K J 9 5 
-A K J T 7 2         8 6 4               Q 5                 9 3 
+T 6 4 3             J 7 2               A Q 8 5             K 9 
+K Q T               8 7 6 2             5 4                 A J 9 3 
+K J                 A Q                 T 9 8 6             7 5 4 3 2 
+K T 7 2             A Q 4 3             J 9 6               8 5 
 
   22.
-A T 8 6 5 3         4                   K J 9 2             Q 7 
-A K 6               9 5 4 3 2           J 7                 Q T 8 
-6                   A J T 7 5           K 2                 Q 9 8 4 3 
-A 9 8               5 3                 Q J T 4 2           K 7 6 
+Q J 2               9 5                 A K 8 4 3           T 7 6 
+A K 7 3 2           J 6 4               Q T                 9 8 5 
+K Q 4               3 2                 A T 9 6             J 8 7 5 
+A 2                 K Q J T 9 8         4 3                 7 6 5 
 
   23.
-A J 8 3             T 5 2               K 7 4               Q 9 6 
-A K 5               J 4 2               Q 9 8 7 6           T 3 
-8                   A K Q 7 6           5 3                 J T 9 4 2 
-K Q J T 9           8 2                 A 6 4               7 5 3 
+A 6 3               T 8 2               K Q 9               J 7 5 4 
+K T 9 3             6                   A J 8 5             Q 7 4 2 
+Q                   K 8 7 2             J 5 4 3             A T 9 6 
+A J 6 4 2           K Q T 9 3           7 5                 8 
 
   24.
-Q 6                 J                   K T 5 4 3           A 9 8 7 2 
-K J 4 2             A T 8 6 3           7 5                 Q 9 
-T 9 8 2             Q 7 6 5             A K J 3             4 
-7 6 3               A 5 2               Q T                 K J 9 8 4 
+T 8 7 3             K Q 4               A J 9               6 5 2 
+A                   Q 9 8 5 3           K J 7 4 2           T 6 
+8 7 4               A T 6 2             J 3                 K Q 9 5 
+K 8 7 6 3           Q                   A 4 2               J T 9 5 
 
   25.
-J 2                 A K 5               T 8 6 4 3           Q 9 7 
-K Q 9 5 2           T 6 3               A J 7               8 4 
-Q 9 8 5 2           A J 6               T                   K 7 4 3 
-4                   9 8 6 2             A J T 5             K Q 7 3 
+A T 9 3 2           Q 8 5 4             J                   K 7 6 
+3                   8 7                 Q 9 6 5 4           A K J T 2 
+-                   J 9 8 7 6 3         T 5 2               A K Q 4 
+K Q 9 7 4 3 2       A                   J T 6 5             8 
 
   26.
-A K 5 3             9 7 4               Q 8 2               J T 6 
-Q 7 6 5 2           9 3                 K J                 A T 8 4 
-J                   Q 5 3 2             T 9 8 7 6           A K 4 
-J 3 2               T 8 6 4             K Q 5               A 9 7 
+8 7                 4 3                 K T 9 6 2           A Q J 5 
+K T 4               Q J 8 7 5 3         A 6 2               9 
+A T 9 5 2           K Q 6 3             8 7 4               J 
+J 8 3               4                   A 5                 K Q T 9 7 6 2 
 
   27.
-A 7 6 2             K J 8 5 4           Q 3                 T 9 
-T 9 7 5             J                   A Q 4 3 2           K 8 6 
-J 7                 5 4 3               A K Q 6             T 9 8 2 
-A 9 8               J 4 3 2             7 6                 K Q T 5 
+6 2                 A Q J 7             9 8 4               K T 5 3 
+6                   K J T 5 3           7 2                 A Q 9 8 4 
+A Q 4 3 2           K 6                 J 9 5               T 8 7 
+A Q J 8 4           9 7                 K T 6 5 2           3 
 
   28.
-A K Q T 6 5 4       J 7 3 2             -                   9 8 
-7                   K Q J 4             A T 8 6 2           9 5 3 
-7 5 4               Q T 9               3 2                 A K J 8 6 
-Q 2                 9 3                 K T 8 6 5 4         A J 7 
+A K T 7 2           J 9 6               8 4                 Q 5 3 
+5 3 2               A J T 7 4           K Q 9               8 6 
+K J 7 2             A Q 4               T 9 8 6             5 3 
+3                   J 2                 A 9 7 4             K Q T 8 6 5 
 
   29.
-9 2                 K Q J T 3           A                   8 7 6 5 4 
-K J 6 4             Q T 3               A 9 8               7 5 2 
-4 2                 A K Q 7             J 9 8 6 3           T 5 
-9 8 6 5 2           Q                   K J 4 3             A T 7 
+9 8 4               J 6 3               A T 7               K Q 5 2 
+K 4 3               A Q 9 2             J T 8 7             6 5 
+A Q 9               J 7                 5 4 3               K T 8 6 2 
+Q T 9 3             J 8 4 2             K 7 5               A 6 
 
   30.
-J 7 5 4 2           T 9 6 3             A                   K Q 8 
-5 4                 J 8 3 2             A K Q               T 9 7 6 
-K 3                 A 6 4 2             J T 9 8 7           Q 5 
-Q 8 6 4             J                   A T 5 3             K 9 7 2 
+A J 6               K 5                 T 4 3 2             Q 9 8 7 
+Q J T 9 2           A 5 4 3             K 8 7 6             - 
+T 6                 4 3 2               J 8 7               A K Q 9 5 
+7 5 2               K T 9 3             Q 6                 A J 8 4 
 
   31.
-9 8 6               A J T 2             Q 7 4               K 5 3 
-J T 9 8             K 7 4               6 5 3               A Q 2 
-J 3                 K Q 2               A T 9 7 4           8 6 5 
-A K 4 3             Q 8 7               T 2                 J 9 6 5 
+6 5 3               K J 7 2             A Q T 4             9 8 
+8 5 4 2             3                   A Q 9 7             K J T 6 
+K                   J T 6 5 2           9 4                 A Q 8 7 3 
+K Q J 9 5           T 3 2               7 6 4               A 8 
 
   32.
-K J T 8 6           A 9 7 5 4           Q 3 2               - 
-9 6 4               Q 7 5               A K 8               J T 3 2 
-K Q J               T 9 7               5 4                 A 8 6 3 2 
-8 2                 T 5                 K Q 9 7 3           A J 6 4 
+K T                 Q 6 2               9 8 4               A J 7 5 3 
+A 9 8 5 3           K 6 2               Q J 7               T 4 
+8 3 2               Q T 7               A K J 5 4           9 6 
+A T 8               Q 9 7 3             J 2                 K 6 5 4 
 
   33.
-Q 9 6 3             A J 5 2             K                   T 8 7 4 
-K 6 5               8 7                 Q J T 9 4 3         A 2 
-J T 9 2             Q 8 5 3             4                   A K 7 6 
-8 7                 T 5 2               A J 9 6 4           K Q 3 
+J T 6               Q 9                 K 4 3               A 8 7 5 2 
+Q 5 3 2             J T 7 6             A K                 9 8 4 
+T 9 7 4 3           K J 8 5 2           A 6                 Q 
+K                   T 3                 A Q 9 8 7 2         J 6 5 4 
 
   34.
-A K Q 6 3           T 9                 8 7 5               J 4 2 
-K Q 7 3             J 8 6               T 9 4 2             A 5 
-Q 3                 J T 5 4             8 6 2               A K 9 7 
-Q 3                 K J 9 2             A 6 5               T 8 7 4 
+4 3                 A K 6 2             Q J 9               T 8 7 5 
+J T 6 4 2           A K                 Q 9 5               8 7 3 
+A Q 3 2             J 9 8 5 4           T 7 6               K 
+7 2                 9 4                 K Q T 3             A J 8 6 5 
 
   35.
-9 8                 A Q J T 6 5         4                   K 7 3 2 
-A Q 8 7 3           K T 4 2             J                   9 6 5 
-K J T               9 8                 7 6 5 4 3 2         A Q 
-A 3 2               5                   J 9 8 7 4           K Q T 6 
+9 5 3 2             K Q T 4             J                   A 8 7 6 
+A 7 2               8 6 5 3             K Q T 9             J 4 
+K J T 8             Q 3                 9 5                 A 7 6 4 2 
+J 3                 9 8 4               K Q T 7 5 2         A 6 
 
   36.
-5 2                 J T 3               K 7 6               A Q 9 8 4 
-J T 9 2             K Q 6 3             A 7                 8 5 4 
-K Q 4 3 2           A                   J 9 8 7 5           T 6 
-A 5                 K Q 8 6 3           J 9 4               T 7 2 
+A Q 9 7 2           K J T 8 3           6 5 4               - 
+9 7                 K 4                 J T 8 6             A Q 5 3 2 
+A J 8 2             T 5 3               6                   K Q 9 7 4 
+J 5                 T 7 6               K Q 9 8 4           A 3 2 
 
   37.
-J 6 5 4             3                   Q T 9 8 7           A K 2 
-A 2                 K Q J T 8 6         5 4                 9 7 3 
-Q 4 3               K 8 5               A 7 2               J T 9 6 
-A J 5 2             K Q 4               9 8 7               T 6 3 
+9                   A J 8 5 4           K 7                 Q T 6 3 2 
+Q J 9 8             T                   K 6 5 4 3 2         A 7 
+T 9 2               A Q 7               K J 6               8 5 4 3 
+J 8 7 4 2           Q 9 5 3             K 6                 A T 
 
   38.
-J 8 6 3             7 2                 K 4                 A Q T 9 5 
-K Q                 J 5 3               9 8 7 4 2           A T 6 
-K Q T 8             J 9 7 4             A 6 5 3 2           - 
-Q 9 3               J 6 5 4             T                   A K 8 7 2 
+A K Q 5             J 8 7 4             T 6 3 2             9 
+A 8 6               K J T 9 7 4 2       Q 3                 5 
+T                   Q 3                 A 9 8 6 5 4         K J 7 2 
+9 6 5 3 2           -                   J                   A K Q T 8 7 4 
 
   39.
-A 8                 K T 3 2             J 5 4               Q 9 7 6 
-Q 8 6 3 2           K T 5               J 7 4               A 9 
-T 4 2               9 7 5               A K 6 3             Q J 8 
-A 9 5               K 6 4               J 3 2               Q T 8 7 
+Q J T 9 6 3         K 4                 7                   A 8 5 2 
+J 7                 Q 8 6               T 5 3 2             A K 9 4 
+A 3                 Q 6 5 4             9 8 7 2             K J T 
+7 6 2               A 8 4 3             J T 9 5             K Q 
 
   40.
-J T 9 3 2           K 7 6 5             Q 8                 A 4 
-8                   K Q 5 3             A 4 2               J T 9 7 6 
-K Q 9 4             T 7                 A 8 6 5 2           J 3 
-A J 4               T 8 2               Q 6 5               K 9 7 3 
+T 8 5 3             Q 9 4               J 7                 A K 6 2 
+2                   K T                 J 8 7 5 4           A Q 9 6 3 
+A Q J 6             5 4 3 2             T 7                 K 9 8 
+J T 5 3             A Q 9 7             K 6 4 2             8 
 
   41.
-A K J 7 3           9 6                 Q 8 5 2             T 4 
-K J 4 3             Q 6 2               7 5                 A T 9 8 
-A 8 3               Q 7 5 4 2           J 6                 K T 9 
-4                   J 9 2               A Q T 6 3           K 8 7 5 
+Q T 8               J 7 2               A K 6 3             9 5 4 
+A K 3               J                   T 9 7 6 5           Q 8 4 2 
+J T 7               K Q 9 6 3           5                   A 8 4 2 
+A 5 3 2             Q 8 7 6             K J T               9 4 
 
   42.
-6 5 2               A 8                 Q J 9 7             K T 4 3 
-Q 8 3               7 5 2               A K 9 4             J T 6 
-A Q J 6 3 2         K T 7 5             -                   9 8 4 
-3                   K J 8 5             Q T 9 6 2           A 7 4 
+8 4 3 2             9                   A Q 7 6 5           K J T 
+K 3                 Q T 6               A J 7 2             9 8 5 4 
+Q J                 K T 9 8 5 3         7 4 2               A 6 
+J T 7 5 3           A 9 4               K                   Q 8 6 2 
 
   43.
-K                   J 9 6 5             8 4 3               A Q T 7 2 
-A Q 3               J T 8               K 7 4               9 6 5 2 
-A K 7               T 9 5               6 4 3               Q J 8 2 
-A Q 6 5 3 2         K J 7               T 9 8 4             - 
+7 5                 J 6 4               K 9 8               A Q T 3 2 
+T 9 5 4 2           K 8 6               A Q 7 3             J 
+K 5                 Q 8 7 6 4           A T 9 2             J 3 
+A T 5 3             K 9                 7 4                 Q J 8 6 2 
 
   44.
-A T 9 8 6 5         4 3                 K Q 7               J 2 
-A J                 Q 7 6 3             T 9 4 2             K 8 5 
-8 4 2               A K 7 3             J 9 6 5             Q T 
-T 7                 A J 8               3 2                 K Q 9 6 5 4 
+T                   A K 7 4             J 9 8 6 5 3 2       Q 
+K Q J               A T 6 5 3           8 7 2               9 4 
+9 8 7 6 5           4 2                 K T                 A Q J 3 
+Q J 3 2             9 4                 7                   A K T 8 6 5 
 
   45.
-8 5 3               Q 7                 A K 6 2             J T 9 4 
-J 6 5 3             8 7 2               A K 4               Q T 9 
-A Q 8 2             J 9 7 6 5           K 4 3               T 
-T 5                 J 8 4               A K 3               Q 9 7 6 2 
+K J T 7 2           A 6 5 4 3           8                   Q 9 
+A J 3               K Q 6               T 7 4               9 8 5 2 
+K T                 9 8                 A J 6 4 3           Q 7 5 2 
+A 7 3               9 6 5               K J T 8             Q 4 2 
 
   46.
-J 7 5               A K T 8 6 4         9 3 2               Q 
-2                   A Q                 K J 7 3             T 9 8 6 5 4 
-K Q T 8 2           9 7                 A J 4 3             6 5 
-K T 4 2             A 8 7               J 9                 Q 6 5 3 
+Q J 8 6             T 9 4 3             K 2                 A 7 5 
+5                   K Q J 9 6           T 7 3               A 8 4 2 
+J T 9 8 3           A Q 2               K 7 5 4             6 
+T 8 4               K                   9 7 5 3             A Q J 6 2 
 
   47.
-A T 8               J 3                 Q 9 7 4             K 6 5 2 
-T 8 4 3             Q J 6               A K 2               9 7 5 
-A K T               9 7 3 2             Q 6 5 4             J 8 
-9 7 6               A K Q 3             J 4                 T 8 5 2 
+9                   T 6 5 3             Q J 7 4 2           A K 8 
+A K J 8 7 6 3 2     9                   Q T 5               4 
+6 2                 A K J T 9 5         -                   Q 8 7 4 3 
+7 4                 T 5                 K Q 9 8 3           A J 6 2 
 
   48.
-A Q 9               T 6 4               K J 5 2             8 7 3 
-Q T 8 7 6 4         9 5                 3 2                 A K J 
-K 2                 9 7 6 3             A Q J               T 8 5 4 
-K 9                 8 7 5 2             A T 6 3             Q J 4 
+J T 7 4             A 9                 8 6 2               K Q 5 3 
+6 5 4               9 8 7 2             A Q J T             K 3 
+A Q 7 4             K 9 6 3             J 8 5               T 2 
+8 6                 A 5 2               Q 9 3               K J T 7 4 
 
   49.
-T 7                 9 5                 K 8 6 2             A Q J 4 3 
-Q J 6 2             -                   A K 7 3             T 9 8 5 4 
-9 4 2               K 8 7 6 5           Q J 3               A T 
-A T 8 7             K Q J 6 4 3         9 2                 5 
+A 5 3               J T 9 6             K 8 4 2             Q 7 
+5 2                 K J 7 3             Q T 8 4             A 9 6 
+Q J 9 8 6 4         A 2                 K 5                 T 7 3 
+K 7                 J 9 4               A 5 2               Q T 8 6 3 
 
   50.
-K 7 4 3             A                   Q J 5               T 9 8 6 2 
-A 9                 K 7 6 3 2           Q J 4               T 8 5 
-Q 6 3 2             K T 9               A                   J 8 7 5 4 
-J 9 4               Q T 8 5             A K 7 6 3 2         - 
+8 4                 J T 9 7 2           6 5                 A K Q 3 
+J T 9 8             6                   K 3                 A Q 7 5 4 2 
+9 6 5 4 2           Q J                 A K T 7             8 3 
+9 3                 A J T 6 5           K Q 7 4 2           8 
 
   51.
--                   J 8 6 2             A K T 5             Q 9 7 4 3 
-Q 6 5 2             K 4                 A T 3               J 9 8 7 
-K 9 5 2             T 8 6 3             A Q J 7             4 
-9 7 6 5 4           J T 2               A 8                 K Q 3 
+9                   7                   K Q T 6 5           A J 8 4 3 2 
+9 6 5 4 3           K Q J 8 7           A T                 2 
+A K                 J 7 5 4             T 8 3               Q 9 6 2 
+Q J 9 8 3           T 7 6               A K 2               5 4 
 
   52.
-A Q                 K 4                 J T 8 6 2           9 7 5 3 
-Q 9 6 2             A K J 8 5           T                   7 4 3 
-9 8 5               K Q 7 2             A J 4               T 6 3 
-A 9 6 5             7 4                 Q J T 3             K 8 2 
+A K 9 7 6 2         Q 5                 8                   J T 4 3 
+6                   A K Q T 9 8         J 5 3               7 4 2 
+K T 3               A J                 Q 8 7 6 5 2         9 4 
+7 5 2               T 6 3               K J 8               A Q 9 4 
 
   53.
-9 8                 K Q 5               A T 2               J 7 6 4 3 
-K J T 6             3                   A 9 8 4             Q 7 5 2 
-K Q J               8 6 5 4 3           A 9 7               T 2 
-A K 7 6             8 5 4 3             Q J T               9 2 
+7 6 3 2             Q T 5               9 4                 A K J 8 
+8                   A K 7               Q J T 9 6 5 3 2     4 
+T                   A 7 5 4 2           8                   K Q J 9 6 3 
+A Q 8 6 5 4 3       K T                 J 2                 9 7 
 
   54.
-A T 9 6 4 2         K J 8               Q 3                 7 5 
-7 4 3               A T 8               K 6                 Q J 9 5 2 
-Q                   A T 6 2             J 9 5 3             K 8 7 4 
-T 6 2               A K J               Q 9 8 4 3           7 5 
+K 9                 8 4 2               J T 3               A Q 7 6 5 
+K 7 5 4             J 8 6 2             Q 3                 A T 9 
+K 9 8 5             Q 7 4               J T 2               A 6 3 
+T 6 5               K 3 2               J 9 8 7 4           A Q 
 
   55.
-A K 2               J 7                 Q T 9 4             8 6 5 3 
-J 5                 Q 4 3 2             K T 9 7             A 8 6 
-J T 8 5             K Q 3               A 2                 9 7 6 4 
-A Q 9 3             J 6 4 2             K 7 5               T 8 
+Q 2                 K 9 6 3             J T 8 5             A 7 4 
+A J 9 7 3           Q 8 6               4 2                 K T 5 
+K 9 4               T 6 2               Q 8 7               A J 5 3 
+9 5 2               T 7 3               A Q J 6             K 8 4 
 
   56.
-Q                   J T 9 8 4           A 7 2               K 6 5 3 
-A T 8               9 7 4 2             J 6 5               K Q 3 
-T 6                 A                   K J 9 7 3           Q 8 5 4 2 
-A K T 9 7 6 2       8 5 3               J 4                 Q 
+A J 7 2             Q 4 3               -                   K T 9 8 6 5 
+Q J 8               6 4                 T 9 7 5 2           A K 3 
+A Q 4               T 5 3 2             K 9 8               J 7 6 
+Q 3 2               A 7 5 4             K J T 9 8           6 
 
   57.
-Q 8 3               A 7 6               J 9 2               K T 5 4 
-K T 9 8 7           A 6 4               J 3                 Q 5 2 
-9 4                 K                   A J T 8 6 5 3       Q 7 2 
-Q J 7               A K 8 6 3 2         5                   T 9 4 
+J T 9 8 6 4         K Q 3               A 5                 7 2 
+Q T 9 4             8 6 3               A K J 2             7 5 
+-                   J T 3 2             A K Q 9             8 7 6 5 4 
+Q 7 5               K 9 8               A T 6               J 4 3 2 
 
   58.
-K 9 7 4             J T                 5 3                 A Q 8 6 2 
-7 4                 9 2                 A J 8 6 5 3         K Q T 
-T 5 3               A K 8 6 4           J 7 2               Q 9 
-J 7 5 2             K Q 8 3             A 9                 T 6 4 
+Q T 6 3             J 9 5 4 2           K 8 7               A 
+T 5                 A 8 6 2             K Q 7               J 9 4 3 
+A K 8 3             Q 5 2               9 7                 J T 6 4 
+T 5 2               J                   K 9 8 7 3           A Q 6 4 
 
   59.
-A J T               Q 4 3 2             8 7 6 5             K 9 
-J 9 6 4             A K 5 2             8                   Q T 7 3 
-6 2                 K Q 7               J T 9 8 4           A 5 3 
-Q T 7 2             A K                 6 5 3               J 9 8 4 
+J 7 5               8 4 3 2             A 9 6               K Q T 
+T 8 6 4             A K 7               J 5 3               Q 9 2 
+8 3 2               J T 9               K Q 7 6 4           A 5 
+T 4 3               A K J               7 6                 Q 9 8 5 2 
 
   60.
-A T 6               5 4 2               K Q J 8             9 7 3 
-J 7 4               T 2                 A Q 9 6             K 8 5 3 
-9                   K Q 8 6             A J 7 5             T 4 3 2 
-J 9 8 7 6 4         A Q T 5             3                   K 2 
+K Q J 6             A T 7 4 2           3                   9 8 5 
+K 7                 A J 4               T 8 6 2             Q 9 5 3 
+K Q 7 5 2           A 8                 6 4                 J T 9 3 
+9 8                 Q T 5               K J 7 4 3 2         A 6 
 
   61.
-Q J 8 5 2           K 6 4 3             9                   A T 7 
-K 8 7 4             Q J T 9 6           3                   A 5 2 
-T 2                 K 9 5               A Q 8 6 4           J 7 3 
-T 6                 9                   A K Q 5 4 3         J 8 7 2 
+9 4 2               Q J 8 5             T 3                 A K 7 6 
+J 8 4               T 3                 Q 9 7               A K 6 5 2 
+Q J 9 7 4           A K                 T 8 3               6 5 2 
+K T                 A J 9 7 5           Q 8 6 4 3           2 
 
   62.
-9 8 7 4 3           Q J T 2             A K                 6 5 
-6 5 3               J 9                 A K T 8 4           Q 7 2 
-T 8                 9 7 6 2             Q J 5               A K 4 3 
-J 9 4               8 5 3               T 6 2               A K Q 7 
+A Q 7 3             K J 2               T 9 6 5 4           8 
+8 7 4               A Q 6 5 3           J 2                 K T 9 
+9                   Q 8                 K J 5 4 3 2         A T 7 6 
+K J 9 8 2           A Q 7               -                   T 6 5 4 3 
 
   63.
-Q 8 7 4 3           K 6 5 2             A J T               9 
-J 7                 Q 9 4               K T 6 2             A 8 5 3 
-K 9 5 4             J 7 3               A 6 2               Q T 8 
-J 3                 A K 4               8 7 5               Q T 9 6 2 
+Q J 9 6 4           A K T 8             2                   7 5 3 
+K 7 3               A 9 4               T 6 5 2             Q J 8 
+8 4 3               A K 5               J T 7 6 2           Q 9 
+A 8                 K T 6               9 7 4               Q J 5 3 2 
 
   64.
-K Q 9 3 2           A 8 6               J 7 5 4             T 
-J 9 7 4             T 8 5               3                   A K Q 6 2 
-J                   Q 9 7 6 5           A T 3 2             K 8 4 
-T 4 2               Q 6                 A 8 7 5             K J 9 3 
+A K 9 4 2           8 6                 Q T 7 5             J 3 
+A                   T 8 7 6             Q J 3 2             K 9 5 4 
+A Q 6 3             J 5                 K 9 7               T 8 4 2 
+A 7 6               K Q 9 5 4           J 8                 T 3 2 
 
   65.
-4                   6 5 3 2             Q J T               A K 9 8 7 
-8 7 6 3 2           Q 9 5               K J T               A 4 
-T 9 6 5 2           K 7 4               J 8                 A Q 3 
-6 4                 Q 7 5               J T 9 8 2           A K 3 
+J 8 2               T 6 4               K Q 9 5 3           A 7 
+K Q T 7             A 3 2               J 6 5 4             9 8 
+J 8 7               9 6 5 3 2           K T                 A Q 4 
+8 6 3               K 5                 Q 9                 A J T 7 4 2 
 
   66.
-Q 6 3 2             7 4                 J T                 A K 9 8 5 
-T 9 5 3             6                   K Q 7 4 2           A J 8 
-9 2                 A K J T 8 4 3       6                   Q 7 5 
-A 6 2               J 5 3               K Q 9 8 4           T 7 
+J T 8               A K 7 5 4           Q 6 2               9 3 
+T 6 4               9 5                 A K 8 2             Q J 7 3 
+J 8 7 2             Q T 4 3             A 6                 K 9 5 
+A 8 3               5 4                 K J 7 6             Q T 9 2 
 
   67.
-J T 4               K 6 3               9 7                 A Q 8 5 2 
-Q 7                 K J 4               9 6 5 2             A T 8 3 
-Q T 7 5 3 2         9 8                 A K                 J 6 4 
-8 6                 K Q J 9 3           T 7 5 4 2           A 
+T 6 3               8 7 4               A Q J 5             K 9 2 
+K 4                 9 7                 A Q J 3             T 8 6 5 2 
+Q T 9 7 3 2         K 8                 A 4                 J 6 5 
+A 8                 K Q 7 5 4 3         T 9 6               J 2 
 
   68.
-K 4                 9 8 7 6             A T 5               Q J 3 2 
-J 8 5 3             6                   T 9 7 4             A K Q 2 
-K Q J T             A 5 3 2             9 8 6 4             7 
-J 6 5               Q 9 8 2             T 7                 A K 4 3 
+A 3                 7 5 2               T 6 4               K Q J 9 8 
+K 9 8 6             A                   J T                 Q 7 5 4 3 2 
+K T 7 3             J 9 8 2             Q 6 5 4             A 
+J T 3               K Q 6 4 2           A 9 8 7             5 
 
   69.
-9 7                 Q 5                 2                   A K J T 8 6 4 3 
-K J 9 4             8 7 3 2             A 6 5               Q T 
-K 4                 7 2                 A J T 9 6 5 3       Q 8 
-Q 9 7 3 2           A K 8 6 4           T 5                 J 
+A 8 7 4             Q T 9 3             K 5                 J 6 2 
+A T 7 3             9 6 2               K J 8               Q 5 4 
+4 3                 J T 8               A K Q 7 2           9 6 5 
+K Q J               8 6 2               A T 3               9 7 5 4 
 
   70.
-T 7 6 3             K 8 5 2             A J 9 4             Q 
-T 8                 K 9 5               Q J                 A 7 6 4 3 2 
-A 3 2               T 8 7               K Q 9 4             J 6 5 
-K 7 6 5             J T 3               9 8 2               A Q 4 
+A 7 3               K Q T 6 2           J 8 5               9 4 
+A J T 6 3           9 8 5               K Q 7 2             4 
+T 8 2               Q 6 5               K 7 4 3             A J 9 
+J 8                 T 7                 4 3                 A K Q 9 6 5 2 
 
   71.
-Q 5 3               A K J T 8 7 4 2     6                   9 
-A Q T               -                   J 6 3 2             K 9 8 7 5 4 
-7 6 5 4             Q 9                 J 8 3               A K T 2 
-9 6 3               A J 2               T 8 7 5 4           K Q 
+A J 2               K T 7 3             Q 9                 8 6 5 4 
+7 6 5               K T 8               A Q 2               J 9 4 3 
+K 9 6 5             A 4 2               T 8 7 3             Q J 
+9 8 2               K 6 3               A J 7 5             Q T 4 
 
   72.
-T 6 2               A Q 3               K J 5 4             9 8 7 
-A Q T 9 7 6         K 3                 J 8 5 4             2 
-T 3                 5                   A Q J 9             K 8 7 6 4 2 
-T 8                 K J 7 6 5 4 2       3                   A Q 9 
+A K J               9 7 4 3             8 5 2               Q T 6 
+K T 7 4             Q 9 6 5 3           A J                 8 2 
+K J 2               Q 9 4               T 8 7 5             A 6 3 
+T 9 2               6                   K 5 4 3             A Q J 8 7 
 
   73.
-J T 2               6 5 4               Q 8 3               A K 9 7 
-A 6 4               K 9 8 7             T 5 3               Q J 2 
-K 8 5 2             T 9                 Q 6 4               A J 7 3 
-K T 9               Q 7 4 3             A 8 6 5             J 2 
+A T 4               Q 8                 5 2                 K J 9 7 6 3 
+7 3                 A 9 6 4             K Q T 8 5           J 2 
+A Q J 7 2           8 5 4               9 3                 K T 6 
+T 8 3               A K 5 4             Q J 7 2             9 6 
 
   74.
-Q 9 8 4 3           T 6 5 2             7                   A K J 
-Q 8 6 5 2           A T 9 4 3           7                   K J 
-6                   K Q 2               J T 9 7 4 3         A 8 5 
-K 3                 4                   Q T 8 7 5           A J 9 6 2 
+T 9 8 5             A 3 2               7                   K Q J 6 4 
+8 4 3               A K J T 5           Q 9 7 6             2 
+A 4                 K Q 3               T 9 8 7 2           J 6 5 
+A K Q 5             7 4                 9 8 3               J T 6 2 
 
   75.
-9 6                 Q J 7 4             8 5                 A K T 3 2 
-Q                   A 3 2               9 8 7 6 5           K J T 4 
-A 9 6 4 3           K Q T 7 2           J                   8 5 
-A K 4 3 2           8                   Q J 9 7 5           T 6 
+A 8 3               7 6 4 2             K Q J T 9 5         - 
+K 8 5 3             J                   A 9 6 2             Q T 7 4 
+Q 5 3               K T 4 2             6                   A J 9 8 7 
+Q T 9               K 6 4 2             J 8                 A 7 5 3 
 
   76.
-6 2                 8 5 3               A K Q T 9           J 7 4 
-A 6 3               K T 9 2             4                   Q J 8 7 5 
-J 9 8 3             A Q 7 5             T 6 4               K 2 
-Q J 8 2             A 9                 T 7 6 3             K 5 4 
+J T 9 8 2           K 6 4               A Q 7               5 3 
+9                   K Q T 6             8 5 2               A J 7 4 3 
+6 3 2               9 8 5               K Q J 7             A T 4 
+K Q 9 2             T 8 5               J 7 4               A 6 3 
 
   77.
-Q 6 5 2             A T 7               8                   K J 9 4 3 
-A 6 3 2             K J T 9 4           Q                   8 7 5 
-J 8 7 3             9                   K Q 5 4 2           A T 6 
-9                   A K Q 6             J T 8 7 4 2         5 3 
+8 4                 A K Q 5 3 2         J T 7               9 6 
+A K 8 4             Q J                 7 5 3 2             T 9 6 
+7 6 5               Q J 8               K 2                 A T 9 4 3 
+K Q 7 4             J T                 9 8 3 2             A 6 5 
 
   78.
-A T 4 2             Q 8                 K 9 6 3             J 7 5 
-9 5                 T 8 7 6 2           Q 4 3               A K J 
-K T 8 3             Q 7 6 5             4 2                 A J 9 
-Q 9 3               6 5                 A K J 8             T 7 4 2 
+Q 9                 A T 8 7 6 5 3       J                   K 4 2 
+A Q T               K J                 6 5 4 3 2           9 8 7 
+A 6 3               Q T 9               K J 8 5 2           7 4 
+K Q T 7 6           J                   A 8                 9 5 4 3 2 
 
   79.
-6                   A K J 9 4 3 2       T 8                 Q 7 5 
-Q J T 6 2           K                   9 8 7 4 3           A 5 
-A 9 4               T                   K 8 7 6             Q J 5 3 2 
-K J T 6             Q 8 4 2             9 7                 A 5 3 
+J 7                 T 8                 Q 6 4 2             A K 9 5 3 
+J 4 2               A 9 7 6             Q 8 3               K T 5 
+K 7 5               Q                   J 9 8 4 2           A T 6 3 
+Q J T 6 3           A K 9 8 7 2         5                   4 
 
   80.
-K 8 7 5 2           4                   A T 6 3             Q J 9 
-A K Q J             9 5 4 3             7 2                 T 8 6 
-A T 7               J 9 6               K 5 4 3             Q 8 2 
-A                   T 8 7 6 4           J 9 5               K Q 3 2 
+Q 8 7 5             A K T 3             J 6 4 2             9 
+A 9 7 4             6 3                 K                   Q J T 8 5 2 
+5 2                 A K J 8 4           Q 3                 T 9 7 6 
+J T 7               K 5                 Q 9 8 6 4 3         A 2 
 
   81.
-K Q J 9 3 2         -                   A 7 5               T 8 6 4 
-9 8 3 2             A T 7 6             K                   Q J 5 4 
-A 5                 K Q 4 2             J 9 8 6 3           T 7 
-7                   K Q T 9 4           A J 5 3             8 6 2 
+A Q 9 8 2           K 6 5 4             7 3                 J T 
+Q 8 5 3             A 7 6 4             J T 2               K 9 
+A T                 4                   J 9 5 2             K Q 8 7 6 3 
+A 9                 K Q T 6             J 8 4 3             7 5 2 
 
   82.
-9 6                 K Q 7               A T 5               J 8 4 3 2 
-K 8 7 4 2           A Q J 6 5           T 9 3               - 
-K Q T 5             9                   J 8 7 3             A 6 4 2 
-J T                 Q 6 4 3             K 9 7               A 8 5 2 
+Q T 9 5 3           K 8                 A 7 2               J 6 4 
+9 8 7 5 3           K Q T 2             A 4                 J 6 
+K                   A Q 5               J T 9 2             8 7 6 4 3 
+8 6                 A Q 4 3             T 9 7 2             K J 5 
 
   83.
-K J 7 2             A Q 4 3             T 6                 9 8 5 
-Q T 8 4             K 9 6 3             J 2                 A 7 5 
-T 5 2               9 8 4               A Q J 6             K 7 3 
-K 5                 J 2                 A Q T 9 7           8 6 4 3 
+A 5                 J 7 4 3             K Q 9               T 8 6 2 
+A                   J T 8 7 5 4 2       K                   Q 9 6 3 
+K 9 5 4             8                   Q J T 3             A 7 6 2 
+A T 7 4 3 2         J                   K Q 9 6 5           8 
 
   84.
-A K T 8 5 4         J                   Q 9 7 6 3 2         - 
-9                   Q T 3 2             A J 7               K 8 6 5 4 
-Q 8 5 3             K J 9 4             -                   A T 7 6 2 
-8 5                 A Q 7 6             K T 4 2             J 9 3 
+A Q 4 3             K J T 7 5           9 8                 6 2 
+J 9 3               5 2                 A K 7 4             Q T 8 6 
+K T 2               A Q 7               4                   J 9 8 6 5 3 
+9 4 2               J T 3               A Q 8 7 6 5         K 
 
   85.
-A K 3 2             Q J 6 4             5                   T 9 8 7 
-T 9 8 6 2           A Q 7 4             5                   K J 3 
-J 5                 A                   Q 9 8 7 6 4 2       K T 3 
-5 4                 A Q T 9             K J 7 2             8 6 3 
+8 4                 A 7                 K 9 6 3 2           Q J T 5 
+A K Q 6             T 8 5               4 3                 J 9 7 2 
+K T 3 2             9 7 6 5 4           A Q                 J 8 
+A 8 3               Q J 2               K 7 6 5             T 9 4 
 
   86.
-A Q 8 4 3 2         J T                 K 9                 7 6 5 
-J 8 4 2             A 9 6               T 5                 K Q 7 3 
-K                   A Q 3               9 8 7 6 5           J T 4 2 
-4 2                 K T 9 8 6           Q J 7 3             A 5 
+8 3                 7 6 2               K J 9 4             A Q T 5 
+K 9 6 3             Q J 2               T 4                 A 8 7 5 
+K T                 A J 9 4 3           Q 8 7               6 5 2 
+K J T 3 2           Q 7                 A 9 6 5             8 4 
 
   87.
-J 5 2               A K Q T 9 3         8 4                 7 6 
-Q J 8 7 3           9 5 4               T 2                 A K 6 
-9                   A 8 5               Q T 7 4             K J 6 3 2 
-K 7 6 2             J                   A Q T 4 3           9 8 5 
+9 7 4 3             K J 6               Q 5 2               A T 8 
+T 8 5               Q J 7 6 3 2         K 9 4               A 
+Q 8                 A 6                 4 3 2               K J T 9 7 5 
+A Q 7 5             8 3                 K J 6 2             T 9 4 
 
   88.
-K T 6 5 3           8 4 2               J 9                 A Q 7 
-A T 3               9 8 5               K Q 4 2             J 7 6 
-6                   K T 9 7 3           A Q 8 4             J 5 2 
-A K 5 2             J 6                 9 7 4               Q T 8 3 
+A 4                 J 9 8 2             T 7 6 5 3           K Q 
+T 9 8 6 5 4 2       J                   A                   K Q 7 3 
+K                   J 9 8 4             T 5 2               A Q 7 6 3 
+T 8 3               J 9 6 5             A K 7 2             Q 4 
 
   89.
-8 7                 T 9 3               A K J 6             Q 5 4 2 
-T 9 4 2             Q J 6 3             K 7                 A 8 5 
-9                   K 7 2               Q T 8 3             A J 6 5 4 
-A K Q J 5 2         9 6 4               T 8 7               3 
+Q 2                 A J T 5             8 4 3               K 9 7 6 
+A Q T 6 3           8                   9 7 4               K J 5 2 
+K 5 3               A Q J 6 4 2         T 9 7               8 
+J 7 5               K 9                 Q 8 4 3             A T 6 2 
 
   90.
-A 8 6 4             Q T 7               K 5 3               J 9 2 
-Q J T               K 6 2               A 9 5               8 7 4 3 
-A 9 5               K J 7 6 2           8 4 3               Q T 
-Q 6 4               9 2                 A K T 5             J 8 7 3 
+K 9 7 4 3           J 2                 A T 6               Q 8 5 
+K Q 9 3             A T 8 7 4 2         J 5                 6 
+T 4                 7 3                 A 9 5 2             K Q J 8 6 
+9 7                 8 5 4               A K T 6             Q J 3 2 
 
   91.
-K 7 2               A Q 8 5 4           J 9 3               T 6 
-3                   8                   K 9 4 2             A Q J T 7 6 5 
-K 7                 J T 9 5 2           A Q 4               8 6 3 
-A 9 8 5 4 3 2       T 6                 K J 7               Q 
+K J T 4             A 6 5               8 7                 Q 9 3 2 
+A K                 Q 5 3 2             T 9                 J 8 7 6 4 
+7 3 2               A 9 4               K Q J T             8 6 5 
+K J T 7             Q 4 3               A 8 6 5 2           9 
 
   92.
-K J T 8 7           4 3                 A 6 2               Q 9 5 
-K J T               8 6 4               A 9 2               Q 7 5 3 
-Q 7 2               J 6 5 4 3           A K 9 8             T 
-A 5                 K 9 2               7 4 3               Q J T 8 6 
+T 8 6 4             A K 2               J 7 5               Q 9 3 
+K J 2               8 7                 A 9 5               Q T 6 4 3 
+7                   A J T 4 3           K Q 6 2             9 8 5 
+J 7 5 4 2           Q 9 3               K T 8               A 6 
 
   93.
-Q 7 4               8 5 3 2             K J                 A T 9 6 
-7 4                 6 3 2               A Q J T 8 5         K 9 
-Q T 7 2             A J 3               K 8 6 5             9 4 
-K 9 7 6             A 8 3               2                   Q J T 5 4 
+A K 9 6 4           Q J                 T 8 3               7 5 2 
+A 9 5 2             8                   T 7 6 4             K Q J 3 
+A Q 6 4             J 3 2               K T 8 5             9 7 
+-                   A Q T 8 7 6 5       3 2                 K J 9 4 
 
   94.
-8 7 6               A J 9 2             K Q T 3             5 4 
-A T 9 6 3           K 2                 Q 5                 J 8 7 4 
-3                   T 9 6 5 4           A Q J 7             K 8 2 
-K T 9 8             7 2                 Q J 3               A 6 5 4 
+Q 4                 A K 7 6 2           T 8 5               J 9 3 
+8 3                 Q 9 7 6             K J T 5 2           A 4 
+A T 4 2             J 7                 Q 8 3               K 9 6 5 
+A Q T 8 7           9 5                 J 6                 K 4 3 2 
 
   95.
-A T 9 8 7 6         J 3                 K Q 5 4             2 
-6 3                 K J T 8 5 2         Q                   A 9 7 4 
-A 6 3               J                   K 9 8 4 2           Q T 7 5 
-T 6                 A J 4 3             Q 5 2               K 9 8 7 
+Q 9 7 4 2           A J 5 3             -                   K T 8 6 
+J 6                 A K 9 2             T 8 4               Q 7 5 3 
+T 2                 K 9 5               Q J 8 6 4           A 7 3 
+J 5 4 3             A 7                 K Q T 9 8           6 2 
 
   96.
-7 4                 A Q 8 3 2           J 9 5               K T 6 
-4 2                 A Q J               9 7 5               K T 8 6 3 
-A Q T 8             9 6                 K 7 5 4 3           J 2 
-A J 8 5 3           K 6 4               9 7                 Q T 2 
+Q 6                 A 9 8 5 4 2         K                   J T 7 3 
+A Q 8               K J 6 5 2           T 4                 9 7 3 
+Q T 8 4             J 9                 A K 7 6 5 2         3 
+J 9 6 3             -                   Q 8 7 4             A K T 5 2 
 
   97.
-9 8 6               K Q 5 4 2           J T 7 3             A 
-9 2                 A 5 4 3             T                   K Q J 8 7 6 
-J 6 2               Q                   A T 9 7 4           K 8 5 3 
-A J T 8 6           Q 9 7               K 4 2               5 3 
+K Q 9 4 2           J 7                 8 5 3               A T 6 
+4                   A K Q 6 3           J 5                 T 9 8 7 2 
+8 6 4               A Q 5 3             K T                 J 9 7 2 
+A 9 4 2             Q 8                 K J T 6 5 3         7 
 
   98.
-A T 9 7 6 4         J                   Q 3                 K 8 5 2 
-8 3                 A 6 5 2             K Q T 4             J 9 7 
-Q 4 3               K T 8               9 7 2               A J 6 5 
-T 6                 K 8 5 4 3           A Q 7 2             J 9 
+K T 9 7 4 2         A 3                 Q J 6               8 5 
+A 7                 J T 9 5 3           K 6 4               Q 8 2 
+A 5                 8 7                 K T 6 3             Q J 9 4 2 
+A K 6               J T 8 4             Q 7 3               9 5 2 
 
   99.
-8 2                 T 7 6 3             A J 9               K Q 5 4 
-Q T 7               A K J 5             9 4                 8 6 3 2 
-8 7                 T 6 3               A Q 9 5 4           K J 2 
-A J T 7 3 2         Q 9                 8 5 4               K 6 
+J                   A 4 3               Q 8 6 5             K T 9 7 2 
+7 5                 6                   A T 9 2             K Q J 8 4 3 
+Q J 7 6 5           K T 8 4 3 2         A 9                 - 
+Q J T 9 4           7 6 2               K 8 3               A 5 
 
  100.
-A T 8 6             7                   K 9 3 2             Q J 5 4 
-6 3 2               A 9 5               Q 8                 K J T 7 4 
-A K T 8             J 7 6 5 3 2         9                   Q 4 
-8 3                 A 7 2               K Q J T 9 6         5 4 
+A K                 7 5 4 3             9 6 2               Q J T 8 
+A J T 7             6                   Q 8 5               K 9 4 3 2 
+A T 6 3 2           Q J 8 5             K 9 7 4             - 
+3 2                 K J 7 4             Q 9 6               A T 8 5 
 
  101.
-K Q 8 3             A 9 7               T 5 4 2             J 6 
-Q 9 5 4 2           K 8 3               7 6                 A J T 
-5 3                 A 8 7 6             K J 9 2             Q T 4 
-5 4                 A K T               Q 9 3               J 8 7 6 2 
+K 9 7 4             6 5 3 2             Q T                 A J 8 
+7 6                 8 4                 K J 9 5 3           A Q T 2 
+Q J                 A K 6 5 4 3         -                   T 9 8 7 2 
+A K Q 9 4           8                   J 7 6 5 3 2         T 
 
  102.
-9 8 5               Q 4 2               A K T 7             J 6 3 
--                   K 9 8 5 2           A Q 7 6             J T 4 3 
-T 8 3 2             K 9                 Q J 7               A 6 5 4 
-K T 9 5 4 2         J 8 7               A 3                 Q 6 
+J 6                 K T 9 8 5 2         Q 7                 A 4 3 
+A T 7               9 3 2               Q 8 6 4             K J 5 
+J 9 5               7                   A K 6               Q T 8 4 3 2 
+A K 7 6 5           Q 8 3               J T 4 2             9 
 
  103.
-9 2                 K J T 6 4           A 7 5               Q 8 3 
-A Q J 7             9 8                 K T 6 5             4 3 2 
-Q 8 4 3             T 2                 A 9 7               K J 6 5 
-8 7 2               A 6 4 3             J 9 5               K Q T 
+T                   J 7 2               6 5 4               A K Q 9 8 3 
+A 8 6               7 4 2               Q J 5 3             K T 9 
+9 7 6 5 2           Q J T 4             A 8                 K 3 
+K J 6 5             A 4 3               Q T 9 7             8 2 
 
  104.
-A J 6 5             3                   T 8 4 2             K Q 9 7 
-J 9 6 3             A Q 8 5 4 2         T 7                 K 
-K Q 8 6 5           T 7 2               J 9 4               A 3 
--                   J 6 5               8 7 4 2             A K Q T 9 3 
+9 7 6 5             A K Q               J 3 2               T 8 4 
+K Q                 J 6 4 2             A T 7 3             9 8 5 
+K J 8 6             7 5 3               Q 9 4 2             A T 
+J T 3               9 8 5               K 6                 A Q 7 4 2 
 
  105.
-8 2                 A K J 7 3           T 6 4               Q 9 5 
-A 9 8 6 5 3 2       K Q 4               T 7                 J 
-J 6 4               A                   K Q 9 7 2           T 8 5 3 
-T                   J 4 3 2             A Q 7               K 9 8 6 5 
+A J 5 3             K 6 4               Q 9                 T 8 7 2 
+Q 5 4               A K J 8             T 9 7 6 2           3 
+9 4 2               J 8                 Q T 7 5             A K 6 3 
+6 4 3               A Q 9 5             K 8                 J T 7 2 
 
  106.
-J 9 8 3 2           Q T 5               A 6                 K 7 4 
-K 5                 Q J 8 7 4 3         T 9 6               A 2 
-A K 7 2             T 6 3               Q 8                 J 9 5 4 
-K 2                 8                   Q J 9 6 5 3         A T 7 4 
+K                   A J 7 6             9 8 5 3             Q T 4 2 
+8 5 4 2             J T 9 7 3           A K                 Q 6 
+Q J 2               8 3                 A K T 7             9 6 5 4 
+Q T 9 7 4           J 5                 A 8 2               K 6 3 
 
  107.
-K Q 8 6             A J T 9 7 3 2       4                   5 
-K 7 3               T 5 4               A Q J 9             8 6 2 
-T 8 4               5                   A Q                 K J 9 7 6 3 2 
-A 6 4               9 7                 K J T 8 5 2         Q 3 
+K 9 3 2             Q J T 6             A 7                 8 5 4 
+K 5 3 2             A J 4               T 6                 Q 9 8 7 
+K T 3               8 7 6               Q J 9 2             A 5 4 
+8 4                 J 7 5               Q T 9 6 3           A K 2 
 
  108.
-9 7 6               Q J                 A K 5 3 2           T 8 4 
-K 5                 Q T 9 7 6 4 2       A                   J 8 3 
-K T 8 3             7 6                 J 4                 A Q 9 5 2 
-A 7 6 4             K T                 J 8 5 3 2           Q 9 
+6 4                 Q J 9 7 2           K 5                 A T 8 3 
+A Q 5 4 2           3                   K J 8 7 6           T 9 
+8 5 2               Q J 6               K 4 3               A T 9 7 
+T 8 6               K Q 7 2             J 9 5               A 4 3 
 
  109.
-J 7 6 5 2           A                   K Q T 9 8           4 3 
-A Q 2               T 9 6 4 3           J 7                 K 8 5 
-K Q 9 8             A J 4 2             7 6 5               T 3 
-3                   Q 6 4               J 5 2               A K T 9 8 7 
+Q 5 3 2             J                   9 7 6               A K T 8 4 
+Q J                 A K 7 6 5           9 8 3 2             T 4 
+A T 8 2             K Q 6 4             J 9                 7 5 3 
+K Q 2               T 9 3               A J 8 6             7 5 4 
 
  110.
-J                   K 9 8 6 3           7 5 4               A Q T 2 
-T 9 5 3             K                   A Q 8 7 6 4         J 2 
-A Q 9 7 6           8 3 2               J T 4               K 5 
-A K 3               J T 5 4             8                   Q 9 7 6 2 
+3                   Q 9 6               J T 7 5 2           A K 8 4 
+K 9 8 7 5           Q J T               A 3 2               6 4 
+J 9 6 4             7                   Q 8 3               A K T 5 2 
+Q 8 7               A K T 6 4 3         J 2                 9 5 
 
  111.
-A J 7               8 6 4               K 5 3 2             Q T 9 
-A T 9 8 7           3                   K 6 5 4             Q J 2 
-A T 9 2             Q J 8               6 5 4 3             K 7 
-8                   A Q J T 4 3         2                   K 9 7 6 5 
+A K T 6 4           8 3 2               7 5                 Q J 9 
+K                   A Q T 9 8 5 2       7 4 3               J 6 
+A Q T 7 2           3                   6 5 4               K J 9 8 
+J 8                 Q T                 A 9 7 6 4           K 5 3 2 
 
  112.
-A 5                 9                   K Q T 6 2           J 8 7 4 3 
-A K 8 4 2           Q J 9 6             5                   T 7 3 
-T 9 8 5             Q J 7 2             K 6 4 3             A 
-9 4                 8 7 3 2             Q T 5               A K J 6 
+Q 9 3 2             A K 6               J T 7 5 4           8 
+A 9 2               K J T 8 7 5         Q                   6 4 3 
+A K J 8             T 2                 Q 7 6 3             9 5 4 
+Q 8                 7 5                 A K 2               J T 9 6 4 3 
 
  113.
-7 4                 A K J T 9 2         Q 8 6 5             3 
-K T 8 5 4           7 2                 A Q J 6 3           9 
-J T 8 6             5                   4 2                 A K Q 9 7 3 
-A 9                 K 8 6 2             T 7                 Q J 5 4 3 
+9 7 5               A J T 8             K Q 4               6 3 2 
+A 9 6 2             K 4                 8 7                 Q J T 5 3 
+K 7 5               Q J 2               A T 6 4             9 8 3 
+A 9 8               K J 4 2             T 7 6 3             Q 5 
 
  114.
-A J 9 6             K Q 2               T 8 5 4             7 3 
-K J T 2             A 7 6               Q 9 8 4             5 3 
-A 6 5 4             T 2                 J 8 3               K Q 9 7 
-7                   K T 6 5 4           9 3                 A Q J 8 2 
+J T 5 3             7                   Q 8 6 4             A K 9 2 
+K 7 2               Q T 4               9 6 3               A J 8 5 
+K 7 5               Q J 8 6             A T 9 4 3           2 
+J 5 4               Q T 7 3 2           9                   A K 8 6 
 
  115.
-J T 8 7 5 4         A K 3               Q                   9 6 2 
-7 5 3               J 4                 Q 9 8               A K T 6 2 
-5                   T 9 3               A K 8 6 2           Q J 7 4 
-K Q 3               A T 7 6 4           J 9 5 2             8 
+J 3 2               A K T               8 7 5 4             Q 9 6 
+A K Q 9 5 3 2       7 4                 8 6                 J T 
+8 6                 K T 2               A J                 Q 9 7 5 4 3 
+K                   T 7 6 5 3           Q J 9 4 2           A 8 
 
  116.
-J T 9 8             K 7 4 2             A 5                 Q 6 3 
-T 4 2               Q                   A J 9 8 7 5 3       K 6 
-A J 6 3             Q 7 5 2             K 9 4               T 8 
-Q 9                 T 7 6 5             K                   A J 8 4 3 2 
+A 4                 9 6 5 3             K 8 7               Q J T 2 
+T 9 7 2             Q 8 3               A J 6 5 4           K 
+T 9 2               K 4 3               Q 7                 A J 8 6 5 
+A T 4 2             8 7 5               Q J 9               K 6 3 
 
  117.
-T 9 2               A K Q J 7 3         5                   8 6 4 
-T 9 8 7             4                   K Q J 5 3           A 6 2 
-A                   K T 2               6 5 4 3             Q J 9 8 7 
-9 8 6 5 4           J 7 3               A Q T               K 2 
+A Q 5 4 3           K J 7 6 2           T 9                 8 
+Q J 8               K 5 4 3             A 9 7 2             T 6 
+8 7 5               J                   A Q 3               K T 9 6 4 2 
+9 5                 J 6 2               A Q 8 7             K T 4 3 
 
  118.
-T 8                 J 9 5 4             A Q 7 6 2           K 3 
-6                   Q 9 3               K J 7 5 2           A T 8 4 
-A K 6 2             Q T 9 3             5 4                 J 8 7 
-K Q T 9 7 3         A 5                 6                   J 8 4 2 
+J                   A Q T 9 8 2         7 5 3               K 6 4 
+K Q                 4 3                 A T 9 7 5 2         J 8 6 
+A K Q 5 2           9 8 7               6                   J T 4 3 
+Q 9 7 6 4           J 5                 A K 2               T 8 3 
 
  119.
-A 4                 J T 8 5             K 6 2               Q 9 7 3 
-A Q 9 5             K J T 8             6                   7 4 3 2 
-Q 8                 9 3 2               A J 5 4             K T 7 6 
-Q T 7 3 2           6 4                 A K J 9 5           8 
+A Q 5               J T 2               9 8 6 4             K 7 3 
+Q J 5 3             9 8 7 4             T 6 2               A K 
+T 7 2               A K 9 5             Q 8                 J 6 4 3 
+K J 5               6 3                 Q 8 7 4             A T 9 2 
 
  120.
-A K J T 3 2         Q 7 4               9 6 5               8 
-6                   A K T 9             Q 7 3 2             J 8 5 4 
-9 8 6               7 5 4 2             K J                 A Q T 3 
-9 5 4               A T                 K J 3 2             Q 8 7 6 
+A 7 2               9 5 4               Q T 8 6             K J 3 
+9 7 3               J T 5 4 2           A K                 Q 8 6 
+A 7                 Q 4                 K J T 8 6 3         9 5 2 
+T 7 6 4 2           A Q 3               9                   K J 8 5 
 
  121.
-8                   Q 6 2               A K 7 5 3           J T 9 4 
-A K 3 2             T 6                 Q 5                 J 9 8 7 4 
-K T 6 4             Q J 8 5 2           A 9 7               3 
-K Q 8 2             7 5 3               J T 4               A 9 6 
+Q J 8               9 7 6 4             A K 5 3             T 2 
+T 8 7 3 2           Q 6                 K 9 5               A J 4 
+K Q T               9 7                 J 5 3 2             A 8 6 4 
+Q 2                 A K 8 6 5           7 4                 J T 9 3 
 
  122.
-A 7                 Q 9 3 2             K T 6 4             J 8 5 
-9 4                 T 6 2               7 3                 A K Q J 8 5 
-A 9 8 7 6 4         3                   Q 5 2               K J T 
-Q 6 5               A T 8 4 2           K J 9 7             3 
+Q 6 4 2             A 9 8               K J                 T 7 5 3 
+Q 4 2               K 9 5 3             A T 8 6             J 7 
+A T 4               Q 8 3 2             K 6 5               J 9 7 
+T 8 5               Q 3                 A J 9 2             K 7 6 4 
 
  123.
-J                   Q T 9 3             8 7                 A K 6 5 4 2 
-K 8 6               Q J T 9 7 3         5 2                 A 4 
-A 6 5               8 3                 K Q T 7             J 9 4 2 
-A Q J 9 8 5         T                   K 7 6 4 3           2 
+K Q 8 6 4           J 9 7 3             5                   A T 2 
+J 7 4               Q 3 2               K T 9 8 5           A 6 
+8 4 2               9 7 6               Q 3                 A K J T 5 
+K 5                 A T 3               Q J 9 8 6           7 4 2 
 
  124.
-K J 3 2             9 7 6               A T 8 5             Q 4 
-9                   J T 6 5             A K 4 3             Q 8 7 2 
-A K 6 3 2           9                   Q 4                 J T 8 7 5 
-K Q T               8 7 6 3 2           9 5 4               A J 
+T 7 6 4             K Q                 8 5                 A J 9 3 2 
+T 6 3 2             A 8 5 4             Q J 7               K 9 
+K 8 6 3             9 7 5 2             A 4                 Q J T 
+T                   K 7 5               Q 9 8 4 3 2         A J 6 
 
  125.
-K 9 4 3             6 5                 Q J T 8 2           A 7 
-A J 3 2             K 8 5 4             9 7                 Q T 6 
-A K 7               8 6 2               Q 9                 J T 5 4 3 
-J 4                 A T 9 3             8 7 5 2             K Q 6 
+K T                 A J 9 4             2                   Q 8 7 6 5 3 
+J T 9 6 5 3         Q                   A 7 4 2             K 8 
+K T 9 4             J 8 2               Q 7 3               A 6 5 
+A                   K T 8 6 4           Q J 7 5 2           9 3 
 
  126.
-9 7                 J 4 2               T 5                 A K Q 8 6 3 
-K 5 3 2             A 9 6               Q T 8               J 7 4 
-7 6 2               A K Q T             9 8 4               J 5 3 
-8 4 3 2             J T 5               A K Q 7 6           9 
+Q J T 8 4           2                   K 6 5               A 9 7 3 
+6                   A 9 4 3             Q 7                 K J T 8 5 2 
+6 5 2               A K 3               Q J T 8 7 4         9 
+A Q 9 5             J T 8 3 2           K 7                 6 4 
 
  127.
-A T 9               Q 7 6 4 3           J 8 5 2             K 
-Q 9 8 7             3                   J T 5 2             A K 6 4 
-Q T                 K 2                 8 7 5               A J 9 6 4 3 
-K Q 9 4             A J 8 7 5           T 6                 3 2 
+J 2                 A K 9 4 3           Q 8 7               T 6 5 
+A T 8 6             9                   K Q 5 2             J 7 4 3 
+J 6 5               9 8                 A 7 4 2             K Q T 3 
+A 8 5 3             K J T 7 6           4 2                 Q 9 
 
  128.
-7 5 4 2             K 6                 J T 9 8             A Q 3 
-T 8 4 3             K J                 6 5 2               A Q 9 7 
-8                   Q T 7 5 3 2         A K 6 4             J 9 
-T 9 6 4             J 3 2               Q 7                 A K 8 5 
+9 6                 7 4                 Q J 5 3 2           A K T 8 
+K 9 8 3             A T 7               Q J 6 2             5 4 
+9 4 2               A Q T 8             J 5 3               K 7 6 
+K Q 6 3             A T 9 2             J                   8 7 5 4 
 
  129.
-T 8 4               7                   A K Q J 9 3 2       6 5 
-K Q 9               T 8 7 6 5           A                   J 4 3 2 
-T 9 6               A K 4 2             Q J                 8 7 5 3 
-A K 5 3             J 7 2               T 9 4               Q 8 6 
+Q 9 7               J 8 2               A K 6 5             T 4 3 
+6                   K 3 2               A Q 7 4             J T 9 8 5 
+T 4 3               A J 9 7 6 2         Q                   K 8 5 
+Q T 9 6 4 2         8                   K J 7 5             A 3 
 
  130.
-Q 9 6               A K 8 4 3           7 5                 J T 2 
-J 6 5               K Q T 8 7           9                   A 4 3 2 
-K 9 7 2             A 3                 Q J 6 5 4           T 8 
-T 6 4               2                   K Q 9 8 7           A J 5 3 
+Q J 3               A 8 2               T 9 7 5 4           K 6 
+5                   A J                 Q 8 4 3             K T 9 7 6 2 
+8 5 4 3             J 9 7 6             Q T 2               A K 
+K T 9 8 4           Q J 7 6             2                   A 5 3 
 
  131.
-A 2                 K 9 4               Q J T 8 3           7 6 5 
-A T 9 7 5 3 2       K J                 8 6                 Q 4 
-Q 6                 K T 7 5 2           9                   A J 8 4 3 
-A 4                 7 3 2               K Q T 6 5           J 9 8 
+A                   7 5 2               Q 8 4 3             K J T 9 6 
+K 9 7               A Q J 5 2           4 3                 T 8 6 
+T 7 6 5 4 3         A 8                 Q J 2               K 9 
+K Q 9               A 8 7               J T 4 3             6 5 2 
 
  132.
-J T 4               9 8 5 3             A                   K Q 7 6 2 
-T 8 6 2             J 9 4 3             -                   A K Q 7 5 
-K J 9 8             Q T 4               A 7 6 5 3 2         - 
-K 4                 Q T                 A J 9 8 3 2         7 6 5 
+J 9 6               A 3                 Q 8 7 5 4           K T 2 
+K 3                 8 7 5               A J 9 6 4           Q T 2 
+A T 8 4 2           Q J 7 5             K 9                 6 3 
+Q T 8               K 6 5 3             J                   A 9 7 4 2 
 
  133.
-9 8 5 2             Q 4                 K 3                 A J T 7 6 
-6 3                 K Q 9 7 4 2         A 5                 J T 8 
-7 2                 T 6                 K Q 9 5 4 3         A J 8 
-K Q 8 6 4           J 7 5               T 9 2               A 3 
+Q J T 6 3           K 8 5               A 9 2               7 4 
+T 2                 K 5                 A J 9 8 6 4         Q 7 3 
+8 6 2               A Q 9 5             K 7                 J T 4 3 
+A K 5               Q T 8 2             9 4                 J 7 6 3 
 
  134.
-J 8 5 3             K Q                 A 9 6 4 2           T 7 
-Q 3                 J T 8 6             K 9 4               A 7 5 2 
-A T                 8 5 4               9 7 6 2             K Q J 3 
-A Q T 8 6           K 9 7 3             4                   J 5 2 
+6 3 2               T 9 7               A K Q               J 8 5 4 
+J 9 5 3             A Q 6 2             K 8 4               T 7 
+K 9                 A Q 8               T 7 6               J 5 4 3 2 
+6 5 4 3             K J 9               A Q 8 7             T 2 
 
  135.
-Q 4                 K T 8 6 5           A 9                 J 7 3 2 
-A K T 9 7 3         -                   Q 8 5 4             J 6 2 
-9 5                 A 7 6 4 3           Q J 8 2             K T 
-A T 8               K 6 2               Q 9 5               J 7 4 3 
+9 5 4               T 7                 K Q 3               A J 8 6 2 
+9 4 3               A K Q T 8 2         7 6                 J 5 
+-                   A K T               Q J 9 7 5           8 6 4 3 2 
+A T 7 6 5 4 3       Q 9                 K J 8               2 
 
  136.
-Q J T 9 8 4         6 5 3               2                   A K 7 
-Q 3                 9 8 5 4             A K 2               J T 7 6 
-Q                   3 2                 K J T 9 8 6 5       A 7 4 
-A K Q J             9 5 4 3             8 6                 T 7 2 
+Q 5 4               A 9 7 2             K J 6               T 8 3 
+J 8 7 6 5 2         K Q 4               T 9                 A 3 
+Q 5                 J 9                 8 6 4 2             A K T 7 3 
+K T                 8 7 5 4             A Q 9 6             J 3 2 
 
  137.
-9 8 7 6             T 4                 Q 5                 A K J 3 2 
-6 5 4 2             J 9 8 3             A K Q               T 7 
-T                   A 6 4               K J 8 5 3 2         Q 9 7 
-J 4 3 2             Q T 7 5             A 9                 K 8 6 
+7                   A 8 6 4 2           Q J T 9 5           K 3 
+A J T 5 4           Q 3                 8 6 2               K 9 7 
+A T 5               K 8 4 2             9                   Q J 7 6 3 
+Q 8 7 5             J 4                 A T 9 3             K 6 2 
 
  138.
-K J 9 2             8 4                 Q T 6 5             A 7 3 
-A Q 6               K T 8 7 5           4                   J 9 3 2 
-T 8 6 3             A K 7 5 2           9 4                 Q J 
-5 2                 Q                   K J T 7 6 3         A 9 8 4 
+A J 6 5 3           Q 7                 K 9 8 4             T 2 
+A 8 3 2             Q 7 6               J 5                 K T 9 4 
+A J 3               K 7 6               Q                   T 9 8 5 4 2 
+4                   Q 8 7 5 3           A K J T 9 2         6 
 
  139.
-Q 9 7 2             K J 6 4             T                   A 8 5 3 
-7 6                 Q                   A T 9 8 5 4 3 2     K J 
-A K 8 3             T 7                 J 9                 Q 6 5 4 2 
-A J 3               K Q T 9 7 5         4 2                 8 6 
+K 8 2               J 9 7 6 3           Q T 5 4             A 
+T 4 2               Q 5 3               A K 7 6             J 9 8 
+A K T 8 4 3         Q                   J 6 5               9 7 2 
+Q                   8 6 5 4             K 9                 A J T 7 3 2 
 
  140.
-2                   T 3                 A Q 7 6 5 4         K J 9 8 
-A Q 6 4             8 5 2               9 7 3               K J T 
-K Q 9 2             J 7 6 4 3           8 5                 A T 
-A 8 5 3             T 7 6               K 4                 Q J 9 2 
+J 3 2               K Q T 7             9 6 5               A 8 4 
+Q                   7 5 4 3             A T 9 8 6           K J 2 
+K Q 9 6 5 4         A 7 3               J                   T 8 2 
+A 6 3               T 2                 K Q 5 4             J 9 8 7 
 
  141.
-Q 2                 A T 4 3             K 7 6 5             J 9 8 
-Q J 6 2             K 7 5               A T 9 8 3           4 
-K 5 3 2             9 7                 Q 8                 A J T 6 4 
-K 5 3               J 9 8 4             T 6                 A Q 7 2 
+K 4                 Q T 7 6 5 3         J 9 2               A 8 
+A T 9 6 5           K J 3               Q 7 2               8 4 
+Q 8 6               J 4                 9 7                 A K T 5 3 2 
+9 6 2               K 5                 A T 7 4 3           Q J 8 
 
  142.
-J T                 A K 4 3             9 8 7               Q 6 5 2 
-K T 9 5 4           Q 7 6 2             J                   A 8 3 
-A 6 2               K 9 8 3             J T 5 4             Q 7 
-8 3 2               4                   K Q J T 5           A 9 7 6 
+9 6 4               K J 3               A Q 8               T 7 5 2 
+J T 6 4             K 3                 Q 9 8 5 2           A 7 
+Q T                 A K 8 5 2           3                   J 9 7 6 4 
+K J 8 2             A Q 4               T 7 6 5             9 3 
 
  143.
-Q 4                 J 9 5 3             T 8 7 6 2           A K 
-T 8 5 3 2           Q J                 9                   A K 7 6 4 
-K 8 6               T 3 2               A 9 7 5 4           Q J 
-8 7 3               J T 5 4             A K                 Q 9 6 2 
+K J T 6             A 4                 Q 8 2               9 7 5 3 
+A Q J T 7 6         K 5 2               9 4                 8 3 
+-                   A 6                 K Q J 7 5 4 3       T 9 8 2 
+Q J T               A K 7 5 4 3         9                   8 6 2 
 
  144.
-Q 9 7 5 2           A T 4               -                   K J 8 6 3 
-J 5                 A Q 7 2             K T 6 4             9 8 3 
-A T 2               K Q 7 4             J 8 3               9 6 5 
-T 6 2               K 7                 A Q 8 5 4 3         J 9 
+T                   A Q J 8 6           K 7 4               9 5 3 2 
+Q 6                 8 7 4               J T 9               A K 5 3 2 
+Q 6 5 4 3           K J 8               A 7 2               T 9 
+J T 9 6 5           Q 8                 K 4 3 2             A 7 
 
  145.
-9 8 2               Q 3                 A T 6 4             K J 7 5 
-K Q 2               A T 7               9 8 6 4 3           J 5 
-K T 7 3             A Q 6 5             9 4                 J 8 2 
-9 8 2               A J T 4             K 6                 Q 7 5 3 
+J 4 3               K T 6 5             A 9 7 2             Q 8 
+T 9 8 5             7 2                 A K Q               J 6 4 3 
+K 6 4               9 8 5               Q J 3 2             A T 7 
+A 7 2               J 8 5 4             6 3                 K Q T 9 
 
  146.
-A 2                 Q J T 4 3           8 7 6               K 9 5 
-A 8 6 5 3           T 7 4               Q 2                 K J 9 
-4 2                 9 3                 A K J 8 6 5         Q T 7 
-A T 4 2             K 6 3               J 7                 Q 9 8 5 
+T 7                 A 5 2               K Q J 9 6 4         8 3 
+T 7 6               K 4 2               Q 8 5               A J 9 3 
+A K 9 2             J 7 5 4             Q T 6               8 3 
+T 8 3 2             A K J               Q                   9 7 6 5 4 
 
  147.
-K T 7 6 5 3 2       A J                 8                   Q 9 4 
-9 8                 K J 5 3 2           Q T 6 4             A 7 
-7 3                 K 6 4               9 5 2               A Q J T 8 
-K 7                 J 5 2               A Q T 8 3           9 6 4 
+A Q J 9 5 2         K 3                 T 4                 8 7 6 
+Q 5                 A K 8 7 4           6 3                 J T 9 2 
+J 6 5               K T 9               Q 7 3               A 8 4 2 
+T 3                 A 8 7               K J 9 6 5 2         Q 4 
 
  148.
-8 6 2               A K Q J 5 3         T                   9 7 4 
-T 9                 K 8 5               A Q 4 3 2           J 7 6 
-A Q 3               2                   K T 9 7 5           J 8 6 4 
-A J T 4 3           7 6 5               K 8                 Q 9 2 
+A Q 9 3             T 8 4               K J 6 5 2           7 
+K T 7 5 3           Q J 2               A 9                 8 6 4 
+J                   5 2                 K 9 4 3             A Q T 8 7 6 
+K 8 5               J 9 7 3 2           A 6                 Q T 4 
 
  149.
-8                   K J 9 5             A T 7 2             Q 6 4 3 
-K 8 6 5 4 3         A 2                 Q J T 9 7           - 
-Q J 3 2             K 8                 4                   A T 9 7 6 5 
-K Q                 A J 9 8 5           6 3 2               T 7 4 
+J 4 2               T 9 5 3             K 7 6               A Q 8 
+A Q 9 8 6           K 2                 7 4 3               J T 5 
+A T 3               9 6 5 4 2           K J 8 7             Q 
+8 7                 T 9                 A Q 3               K J 6 5 4 2 
 
  150.
-K Q 9 3             A 8 4 2             6 5                 J T 7 
-A K 8               T 6 3               9 7 4               Q J 5 2 
-K J                 Q 8 2               T 9 6 5 4           A 7 3 
-9 8 5 3             A Q T               J 6 4               K 7 2 
+K 7                 Q 8 5 4             A T 2               J 9 6 3 
+K T 6 3             Q J 9 7 2           A 8 4               5 
+A J 7 6 5           K                   Q T 8 2             9 4 3 
+T 6                 Q J 4               A K 8               9 7 5 3 2 
 
  151.
-J 9 8 5             7 4 3 2             A T 6               K Q 
-A T 9 7 6 3         Q 8 5 2             K                   J 4 
-K                   Q T 5               J 7 4 2             A 9 8 6 3 
-A J                 7 6                 K Q 4 3 2           T 9 8 5 
+-                   A J 9 4             T 8 6 5 3           K Q 7 2 
+T 9 7 4 2           A Q                 K J 3               8 6 5 
+K Q 8 4             9 6                 T 7 5               A J 3 2 
+Q T 4 2             J 9 8 5 3           A K                 7 6 
 
  152.
-8 3                 T 7 6               Q 5                 A K J 9 4 2 
-A K J T 9 4 2       Q 5 3               7                   8 6 
-9                   A T 2               Q 8 7 6 4 3         K J 5 
-J 6 3               T 9 8 4             A K Q 5             7 2 
+Q 5 3               K T 7 4 2           9 8 6               A J 
+9 8 6               J                   K T 3 2             A Q 7 5 4 
+Q J 5 4             A T 2               8 7 3               K 9 6 
+7 4 3               A Q 8 6             9 5 2               K J T 
 
  153.
-Q 8                 5 2                 K 7                 A J T 9 6 4 3 
-A Q J               K 7 5 3             T 9 8 4 2           6 
-T 9 6 4 2           K 3                 Q J 8 7             A 5 
-K J 8               Q T 9 6 4           A 3                 7 5 2 
+A K Q               T 6 3 2             J 7 5               9 8 4 
+J 4 3               K 9 7 2             A Q T 8 6 5         - 
+A K 6 5             7 3                 J                   Q T 9 8 4 2 
+J 6 2               Q 8 7               A K 4               T 9 5 3 
 
  154.
-Q 9 7               K 2                 A J T 8 6 5 4       3 
-K 4                 A T 9 8 5           J 7                 Q 6 3 2 
-J T 9 6 4           A Q 8 3             7 5 2               K 
-8 7 4               A Q                 2                   K J T 9 6 5 3 
+J 7                 A 6 2               Q 9 8 5 4           K T 3 
+Q J 6 3             K 9 8 5             A T                 7 4 2 
+A 7                 K J 5 2             T 9 8 4 3           Q 6 
+T 9 8 7 5           J 4                 K                   A Q 6 3 2 
 
  155.
-A K J 7             9 6 2               Q 8 4 3             T 5 
-K T                 A Q 9 7 6 4         5 3                 J 8 2 
-A T 9 6             5                   J 7 4 3 2           K Q 8 
-T 8 7               A J 5               K 9                 Q 6 4 3 2 
+A T 7 6 4           Q J 9 3             K 5 2               8 
+A 6 2               7 5 4 3             K T 8               Q J 9 
+9 3                 6                   Q T 8 7 5           A K J 4 2 
+A J 2               Q 6 5 3             K T                 9 8 7 4 
 
  156.
-A Q J               K T 8 6             9 3                 7 5 4 2 
-K 8 5               A Q 6 2             7 3                 J T 9 4 
-A Q J               6 2                 T 9 7 5 4           K 8 3 
-K T 9 8             7 6 5               A Q J 2             4 3 
+8 7                 A T 6 2             K Q J 3             9 5 4 
+A J 8 7             Q 9 5 3             K 2                 T 6 4 
+7 2                 T 6 4               A K 9 8             Q J 5 3 
+K J 7 6 4           T 5                 A 9 8               Q 3 2 
 
  157.
-A 9 7               8                   K Q 4               J T 6 5 3 2 
-9                   A Q 8 7             J 3 2               K T 6 5 4 
-7 2                 A Q T 9 8 5 4       K J 6 3             - 
-K Q 9 7 6 4 3       A                   J T 8               5 2 
+A Q J 6             9 4                 T 5 3 2             K 8 7 
+-                   J 8                 9 7 3 2             A K Q T 6 5 4 
+T 5 4 2             A Q J 8 3           K 6                 9 7 
+K J 9 8 3           7 6 4 2             Q T 5               A 
 
  158.
-4 3 2               A T 8 7             9                   K Q J 6 5 
-T 5 4 2             8 7 6               A K J 3             Q 9 
-K J 4               A 3                 Q T 5 2             9 8 7 6 
-T 8 7               Q 9 5 3             A K J 2             6 4 
+K T 3               8 7 4               9 5                 A Q J 6 2 
+Q 8 3 2             A J T               K 7 6 5             9 4 
+8 7 2               K J 9 4             Q 6 5               A T 3 
+A 3 2               K 9 4               Q J T 8             7 6 5 
 
  159.
-A Q 7 4             -                   K 6                 J T 9 8 5 3 2 
-K Q 3 2             A 7 5               J T 9 8             6 4 
-K Q 4               A J 9 8 5 2         6 3                 T 7 
-K 5                 J 4 3 2             A Q T 9 7           8 6 
+7 2                 K T 9 4             A J 5 3             Q 8 6 
+8 2                 K 9                 A 5 4 3             Q J T 7 6 
+Q J T 8 2           A K 4               9 7 3               6 5 
+9 7 3 2             A K 6 5             J 4                 Q T 8 
 
  160.
-7                   K T 9               A J 6 5 3           Q 8 4 2 
-A K 8 7 2           -                   T 5 4 3             Q J 9 6 
-Q J 4 3             T 6 5               7 2                 A K 9 8 
-Q 7 2               K T 9 8 6 5 4       J 3                 A 
+A Q 6               8 7 2               K J 9 5             T 4 3 
+J 7 6 5             -                   A K T 8 3 2         Q 9 4 
+A 8 6 5             J T 7 2             K Q                 9 4 3 
+9 8                 K J T 7 3 2         Q                   A 6 5 4 
 
  161.
-T 7                 9 8 6 5             A J 2               K Q 4 3 
-Q T                 K 9 7               J 6 5 4 2           A 8 3 
-9 7 4               K Q 2               8 6                 A J T 5 3 
-A K Q 7 4 3         J 5 2               9 8 6               T 
+7 6 3               K Q T 9             J 8 4               A 5 2 
+Q 5                 K 8 7 3 2           T 6 4               A J 9 
+Q 8 4 3             K 9                 A 7 6 2             J T 5 
+T 7 5 4             8 2                 A Q 9               K J 6 3 
 
  162.
-K 9 8 5             -                   Q 7                 A J T 6 4 3 2 
-A 7 6 2             K Q J T 3           8 5 4               9 
-Q 9 8 5             T 7 6               A K 4 2             J 3 
-K                   J 9 7 3 2           T 8 6 4             A Q 5 
+A 9 3               Q J T 5             7 6                 K 8 4 2 
+J 8 6               7 5                 K Q T 9 3 2         A 4 
+7 6 4 3             K J 8 2             T 9                 A Q 5 
+A T 8               Q 4 2               9 6 5               K J 7 3 
 
  163.
-T 6 4               A Q 9 8 7           5 3                 K J 2 
-K Q T 9 7 5         4 2                 A J                 8 6 3 
-6                   K Q 7               A J T 9 8 5         4 3 2 
-J T 3               7 4 2               Q 9 5               A K 8 6 
+A                   K J                 Q 6 5 4 3           T 9 8 7 2 
+T 8 5 3             7                   K Q 9 6 4           A J 2 
+Q 8 4 3             A T 9 6 5           2                   K J 7 
+A Q J 9             8 6 5 3 2           K T                 7 4 
 
  164.
-J 7 6 4             A 5                 K Q T 8 2           9 3 
-A J 8               T 5 4               K Q                 9 7 6 3 2 
-9                   A 6 5 2             J T 8 7 3           K Q 4 
-J T 6 4 3           9 8 7 5             Q                   A K 2 
+K Q 6 5 4           T                   A J 8 7 3           9 2 
+8                   K Q J 9 7 4 3       6                   A T 5 2 
+7 5 3               9 8                 J T 6 4             A K Q 2 
+A Q 8 7             6 3 2               K J T               9 5 4 
 
  165.
-K T 5               J 9 8 7 2           A Q 6 4             3 
-K Q J T 4           A 5                 8 6 2               9 7 3 
-T 9 7               K 5                 A J 4               Q 8 6 3 2 
-K 6                 J 7 4 2             Q T 5               A 9 8 3 
+9 7 6               A Q J 8 5           K 4 3               T 2 
+A Q 3               8 6 5               K T 2               J 9 7 4 
+K 8 4 3             9 6                 A J T 2             Q 7 5 
+Q 6 3               T 8 2               A K J               9 7 5 4 
 
  166.
-A Q J 9             7                   5 4 2               K T 8 6 3 
-Q                   9 8 7 6 5           J T 3 2             A K 4 
-A 8 3               K J 9 5             7 6                 Q T 4 2 
-A J 9 8 4           K Q 7               6 5 3 2             T 
+K Q J T 8 2         9 5 3               A 7                 6 4 
+Q 3 2               8 6                 A K 7 5 4           J T 9 
+Q                   8 6 4               T 9                 A K J 7 5 3 2 
+K 8 5               A J T 7 2           Q 6 4 3             9 
 
  167.
-Q 7 6 3             9 8 2               A K T 5             J 4 
-5                   7 3 2               A Q J 9 8 6         K T 4 
-J T 7 5 3           Q 9 8               4 2                 A K 6 
-Q 8 3               J 7 6 4             2                   A K T 9 5 
+A 9 5 2             J 7 6 4 3           8                   K Q T 
+K 2                 A 9                 Q J 8 7 5           T 6 4 3 
+J 7                 8 6 4               A T 9 2             K Q 5 3 
+A 8 7 5 3           K 6 4               J T 2               Q 9 
 
  168.
-T 6 2               Q 7 5 4             K 9 3               A J 8 
-K 6                 9 8 4               A J T 7 5 2         Q 3 
-Q J 9 8 2           T 6 3               K                   A 7 5 4 
-J 6 3               T 8 5               K Q 7               A 9 4 2 
+K 8 6 5             3 2                 Q J 9 7 4           A T 
+T 7 4               J 6                 A 5                 K Q 9 8 3 2 
+J 9 7 5 2           Q 8                 T 6 4 3             A K 
+5                   K J T 8 7 4 2       Q 6                 A 9 3 
 
  169.
-Q T 9 6 5           J 7 3               8 2                 A K 4 
-9                   A K 6 2             Q J T 8 5 4         7 3 
-T 9 6 2             A 7 4               J 3                 K Q 8 5 
-T 6 3               A Q J               K 8 4               9 7 5 2 
+K 9 5               Q 8 7 4             A 6 3               J T 2 
+K J T 3             A 9                 Q 7 6 5 2           8 4 
+Q J 8 4             T 2                 A K 7 6 5           9 3 
+4 3                 A K J T 7           -                   Q 9 8 6 5 2 
 
  170.
-J T 9               Q 7 5 4             K 6 3               A 8 2 
-7 5 4 2             Q 9 8               J 3                 A K T 6 
-A T 9               8 7 6 4 2           K J 5               Q 3 
-Q J T               4                   A K 8 7 6           9 5 3 2 
+K 7 6 5             T 8 4               Q J 9 2             A 3 
+A 6 5 4             8 7                 9 3                 K Q J T 2 
+A K 4               J T 7 3             6 2                 Q 9 8 5 
+J 5                 T 7 4 2             K Q 9 6 3           A 8 
 
  171.
-A Q 7               J 4 3               K T 8 6 2           9 5 
-5 3                 A J T 9 8 2         -                   K Q 7 6 4 
-K 9 6 4 3           7                   T 5 2               A Q J 8 
-K 4 3               A 7 5               Q T 8 6 2           J 9 
+T 7                 J 6 5 4             K 9 3               A Q 8 2 
+T 9 8 7 6 4         A 2                 K J 5               Q 3 
+K 5 2               A 8                 Q T 9 6             J 7 4 3 
+8 6                 Q T 7 4 2           K J 5               A 9 3 
 
  172.
-K 9 8 4 2           J                   A Q 5               T 7 6 3 
-A J 9               T 5 3               6 2                 K Q 8 7 4 
-A Q 8               K 4 3               J T 9 6 2           7 5 
-8 5                 J T 9 7 6 3         A K 2               Q 4 
+J 3                 K 9 8 6             5 4 2               A Q T 7 
+Q 9                 8 7 6               K 5 3               A J T 4 2 
+A Q T 8 4           K 9                 7 3 2               J 6 5 
+A K 7 5             T 9 8 2             Q J 4 3             6 
 
  173.
-A                   Q 6 3               K 8 7 5 2           J T 9 4 
-J 9 8               T 4 2               A Q 6 5 3           K 7 
-9 7                 A K Q 5 4 2         J 8                 T 6 3 
-J T 8 7 5 4 3       2                   9                   A K Q 6 
+J T 9 5             A 8 6 4             K 7                 Q 3 2 
+Q 9 8               K 7                 J T 6 3 2           A 5 4 
+A 3 2               8 7                 6 5                 K Q J T 9 4 
+9 6 2               A K Q T 5           8 7 4 3             J 
 
  174.
-K 7                 6 4                 A T 8 5             Q J 9 3 2 
-A K 6 2             Q J T 7 5 4 3       9                   8 
-K T                 A Q 3 2             J 8 6 5 4           9 7 
-J 6 4 3 2           -                   K T 8               A Q 9 7 5 
+A K Q J 9 3         T 5                 8 7 4 2             6 
+-                   A K Q J T 9 5 4     7                   8 6 3 2 
+A 9 7 6             4 3                 K Q 8 2             J T 5 
+A Q 5               8                   7 6 4 3             K J T 9 2 
 
  175.
-A T 9               K 8                 Q J 3 2             7 6 5 4 
-A T 8               J 6 3 2             Q 9 5 4             K 7 
-Q T 7               K 9 8 4             A 6 5 2             J 3 
-9 6 4 2             A J 3               T                   K Q 8 7 5 
+T 7 6 5             9 3 2               K Q 4               A J 8 
+Q                   K T 6 5             A 8 4 2             J 9 7 3 
+A J 4 2             K T 8               9 7 6 3             Q 5 
+Q 9 5 2             J T 3               8 6                 A K 7 4 
 
  176.
-9 4                 K Q T 5 3           J 8 6               A 7 2 
-8 4                 A K Q 5 3           J 6                 T 9 7 2 
-A Q 5 2             T 8                 7 6 3               K J 9 4 
-K 7 6 5 3           2                   J T 9 8 4           A Q 
+A 7 3               T 9 5               K 6 4 2             Q J 8 
+2                   A 7 5 4             9 6                 K Q J T 8 3 
+A 6 5 2             K T 9 8 4           J 3                 Q 7 
+A K 9 6 3           8                   Q J T 7 4           5 2 
 
  177.
-8 5                 Q J T 9 7           3 2                 A K 6 4 
-K Q 4 3 2           A T 7               9 8 5               J 6 
-A 7 3               K 2                 Q J T 9 5           8 6 4 
-J 5 2               T 8 7               A 6 4               K Q 9 3 
+K Q T 5 2           8 6                 9 7                 A J 4 3 
+A J 9 8 7           5 3                 K 4 2               Q T 6 
+A K J               8 6 5 2             9 7 4 3             Q T 
+-                   K Q 9 6 3           J 8 7 2             A T 5 4 
 
  178.
-8 4                 A Q T 9 7 5 2       K                   J 6 3 
-K J 5 3             9 6                 A 8 7 2             Q T 4 
-A K Q               7 5                 T 9 6 2             J 8 4 3 
-J T 9 2             K 6                 Q 8 5 3             A 7 4 
+Q 9 3               5 4                 A J 6               K T 8 7 2 
+J T 9               Q 3 2               A 8 7 6 5           K 4 
+A Q T               9 3 2               J 6 4               K 8 7 5 
+K T 9 2             Q 8 7 5 4           J 6                 A 3 
 
  179.
-K 9 7               J T                 8 3                 A Q 6 5 4 2 
-K J 8               T 9 5 2             Q 7 6 4             A 3 
-T 9 2               8 7 5               K Q J 4             A 6 3 
-Q T 9 6             K 8 7 5             A 3 2               J 4 
+K T 9 5 4           A 6 2               J 7                 Q 8 3 
+Q J 8               9 7 2               A K T 4             6 5 3 
+4                   A J 5 2             T 8 6 3             K Q 9 7 
+K Q 6 2             A 5 4               J T 8               9 7 3 
 
  180.
-A K                 Q J 6               T 9 8 7 3 2         5 4 
-9 7 5 4             A K T 8 6           Q 2                 J 3 
-K J 2               Q T 8               7 6 5 3             A 9 4 
-J 8 3 2             Q 7                 5                   A K T 9 6 4 
+9 7 5 4             A T                 K J 8 3             Q 6 2 
+A Q J 9 8 3 2       K T 5               4                   7 6 
+3                   K Q J T 8 5         A 6 2               9 7 4 
+2                   T 3                 A K 8 7 6           Q J 9 5 4 
 
  181.
-Q T 9 3             A 8 7 5 4           K                   J 6 2 
--                   9 3 2               A K T 8 7 6         Q J 5 4 
-5 3                 A J 6               Q 8 7 4 2           K T 9 
-J T 9 5 4 3 2       K Q                 8                   A 7 6 
+K T 7 6 5 3         J                   A 2                 Q 9 8 4 
+K 5                 J 9 4               A Q T 8 2           7 6 3 
+A 3                 K J T 9 6           Q 5 2               8 7 4 
+J 4 3               A K 8 2             T 9 5               Q 7 6 
 
  182.
-K J 2               8 7 5               9 6                 A Q T 4 3 
-8 7 6 3             Q J 4               A K 9 5             T 2 
-Q T 9 3             A J 6               8 5 4 2             K 7 
-J 3                 A Q 9 5             8 6 2               K T 7 4 
+Q T 6 5 4           A 3                 K 8                 J 9 7 2 
+9 7 2               A Q J 4             6 5 3               K T 8 
+K 9                 J T 3               A 8 7 6 4           Q 5 2 
+5 4 3               Q T 9 6             A 8 2               K J 7 
 
  183.
-Q T 9 6 3           A 4                 J 7                 K 8 5 2 
-A K 8 6             Q 7 3 2             5 4                 J T 9 
-Q 5 3               K 6                 A T 7 2             J 9 8 4 
-2                   Q T 8 7 6           A K J 5 3           9 4 
+J                   A K Q T             8 7 6 4             9 5 3 2 
+T 9 7 5             2                   A K 3               Q J 8 6 4 
+Q T 8 3             A K 9               7 4 2               J 6 5 
+K 9 7 4             Q J 8 6 3           T 5 2               A 
 
  184.
-A J T 9             K 8 7               Q 6 4 2             5 3 
-K J 9 3             Q 7 5 2             T                   A 8 6 4 
--                   Q J T 2             A 9 8 6 5 3         K 7 4 
-K J 7 6 2           Q 8                 9 4                 A T 5 3 
+A J                 T 8 6 4 3 2         K 7 5               Q 9 
+Q T 7 6 4           A 5                 K J 8 3 2           9 
+A T 9 2             K 4                 7 6 5               Q J 8 3 
+9 4                 K J 3               T 7                 A Q 8 6 5 2 
 
  185.
-8 6                 Q T 9 2             K J 5               A 7 4 3 
-Q 7 5               A T 8               J 9 6 4 3 2         K 
-J T 8 4 2           Q 9                 A K 7               6 5 3 
-7 6 3               K Q T 8             9                   A J 5 4 2 
+A T 2               6                   K J 9 7 5 3         Q 8 4 
+Q 8 7               T 4                 K J 9 3             A 6 5 2 
+Q T 8 3             J 9 6 5 2           7                   A K 4 
+A T 3               Q 9 8 6 4           5 2                 K J 7 
 
  186.
-Q J 7 6 5 4         T                   A K 8 3 2           9 
-Q                   T 9 5 4             K 6 3 2             A J 8 7 
-T 9 8 7 5           A Q 2               K J                 6 4 3 
-7                   A 8 4 3 2           K Q                 J T 9 6 5 
+K 6                 A J                 8 5 3 2             Q T 9 7 4 
+J T 3 2             8 7 6 4             A 5                 K Q 9 
+9 7 6 2             J 4 3               A Q T 8             K 5 
+Q 8 3               A K 6 2             J 5 4               T 9 7 
 
  187.
-K T                 5 3                 A Q J 6 4 2         9 8 7 
-A J 9 2             Q 4 3               6                   K T 8 7 5 
-Q J                 K T 8 7 6 5 3       A 9                 4 2 
-K Q 9 8 7           3                   T 6 5 2             A J 4 
+T 9 7               A K 4 3 2           Q 6 5               J 8 
+8 4                 9 3 2               A Q 7               K J T 6 5 
+T 8                 9                   K Q 7 6 5 3         A J 4 2 
+K 9 6 5 4 3         Q J 8 2             T                   A 7 
 
  188.
-J 5                 A T 8 4             K 9 7 6             Q 3 2 
-Q J T 3 2           A 6                 K 9 7 4             8 5 
-9 2                 A 7 5 3             K Q 6               J T 8 4 
-K T 8 4             7 5 3               J 2                 A Q 9 6 
+A K 4               -                   8 6 2               Q J T 9 7 5 3 
+K 7                 J T 6               A Q 9 5 4 3         8 2 
+K T 8 7 3           A 6 5               Q 2                 J 9 4 
+A J 8               K Q 6 5 4 3 2       T 9                 7 
 
  189.
-K T 9 4             Q                   A 7 3               J 8 6 5 2 
-A K Q 3             8 6 5 4             9 7                 J T 2 
-A 6                 J T 9 8 7 4 3       Q 5                 K 2 
-9 8 4               J                   Q T 7 6 5 3         A K 2 
+7                   K 6 4 3             A Q                 J T 9 8 5 2 
+5 2                 K Q J T             A 8 4               9 7 6 3 
+A J 4               K Q 9 5             T 8 2               7 6 3 
+A Q J T 9 6 5       8                   K 7 4 3 2           - 
 
  190.
-8 2                 A K 7 6 3           Q J 5 4             T 9 
-A K 9               J 6                 Q 4 3               T 8 7 5 2 
-8 3                 A J 2               Q T 9 7 4           K 6 5 
-Q T 9 8 7 6         K J 5               A                   4 3 2 
+K J 5               Q 7 6 3             T 9 8 4             A 2 
+T 8 5 2             J 7                 4                   A K Q 9 6 3 
+A J T 8 6           5 3                 K 9 7 4 2           Q 
+A                   K J T 7 4           Q 5 2               9 8 6 3 
 
  191.
-T 6 2               K 8 7 5 4           A Q J               9 3 
-K Q J 7 6           8 5 4               T 9 3               A 2 
-A K 8 7             T 6 3               J 4 2               Q 9 5 
-6                   Q 4                 A K T 8             J 9 7 5 3 2 
+5 4                 K T 7 2             Q J 9 8 6           A 3 
+J 7                 Q 8                 6 2                 A K T 9 5 4 3 
+J 8 7 6 4 3         2                   K Q 9               A T 5 
+9 7 4               A Q J 8 5 3         T 6 2               K 
 
  192.
-Q 8 4 2             A T 6 5 3           K 9                 J 7 
-J 9 6 5 4           T 3                 A Q 8 7             K 2 
-Q 2                 A K 5 3             J 4                 T 9 8 7 6 
-7 3                 A J                 K Q 8 4 2           T 9 6 5 
+9 8                 Q 6 5               A 7 4 3             K J T 2 
+J T                 Q 9 8 6 5           A 3                 K 7 4 2 
+J 9 8               A Q 5 3             K T 7               6 4 2 
+A Q J 7 4 2         6                   K T 9 3             8 5 
 
  193.
-Q T                 9                   K J 8 6 4           A 7 5 3 2 
-A K Q J T 4         8 6 3               9 7 5               2 
-J T 2               A Q 3               8 7 6               K 9 5 4 
-Q J                 A K T 9 7 2         8 6                 5 4 3 
+A Q 8 5             K 4 2               T 9 7 6             J 3 
+J T 5 4 3           A K 9 8             7                   Q 6 2 
+J 4                 A K 7 6             Q T 5 3             9 8 2 
+A J                 K 2                 T 8 5 4             Q 9 7 6 3 
 
  194.
-Q 4                 A T 5 3             K J 9 2             8 7 6 
-7 4 3 2             8                   A K                 Q J T 9 6 5 
-A 6 5 4 3           K Q J 7 2           T 8                 9 
-9 5                 8 6 3               A K Q J 2           T 7 4 
+K Q J 6 5 4         T 7 3 2             A 9 8               - 
+A Q 4               K 9                 T 8 7               J 6 5 3 2 
+A 9 6               Q T 8 7 4           K J                 5 3 2 
+9                   6 3                 A J T 5 2           K Q 8 7 4 
 
  195.
--                   9 8 3 2             A K Q J 6 4         T 7 5 
-4 2                 A 9 6 3             Q T                 K J 8 7 5 
-9 8 7 5 4           A Q 6               J T 3 2             K 
-A K 9 5 4 3         8 6                 Q                   J T 7 2 
+A                   K 7 6               J 3                 Q T 9 8 5 4 2 
+8 7 4               Q J T 9 6 5         A                   K 3 2 
+K J T 5 2           -                   A 8 7 6 4 3         Q 9 
+A 9 6 4             Q J 8 5             K T 3 2             7 
 
  196.
-Q 8 6               J 7 5 3 2           K 4                 A T 9 
-T 8 7 6 4           A Q                 J 9 5               K 3 2 
-A T 8 7 3           6                   K Q 9               J 5 4 2 
--                   A 8 7 6 2           K Q J 5 4           T 9 3 
+A 4                 7                   Q J T 3 2           K 9 8 6 5 
+Q T 6               A K 9 4 2           J                   8 7 5 3 
+K 7 4               A Q J 6             8 5 3 2             T 9 
+9 8 7 6 3           Q J 5               T 4 2               A K 
 
  197.
-T 8 5               A K Q J 6 2         9 4                 7 3 
-T 9                 Q 2                 K J 8 4             A 7 6 5 3 
-5 4 2               A J 9 7             K Q T               8 6 3 
-K T 5 3 2           7                   A Q J 8             9 6 4 
+K 8 5 3             Q T 9 7             J 2                 A 6 4 
+A 8 7 6             Q 5                 K 4 3 2             J T 9 
+-                   J 9 6 5 2           Q T 7 4             A K 8 3 
+A 9 5 4 2           8 6                 K J 7               Q T 3 
 
  198.
-A J 6 5             K Q 9 8 7           4                   T 3 2 
-A K 7 6             T 2                 Q 8 3               J 9 5 4 
-8                   K 5 2               J 9 7 6             A Q T 4 3 
-A T 8 2             Q 7 3               K 9 6 5 4           J 
+A 9 6 3 2           K J 7               Q 8 5               T 4 
+T 7 6 4 2           K                   A Q J 8 5           9 3 
+7 2                 Q T 9 8 5           4                   A K J 6 3 
+7                   J T 8 6             K Q 5 3             A 9 4 2 
 
  199.
-9 4                 A Q 8 2             K T 6 3             J 7 5 
-T 8 7 4 3           J 5                 A Q 2               K 9 6 
-A 8 3               K J 2               9 6 5               Q T 7 4 
-K 8 7               J 9 6 5             Q T 3               A 4 2 
+K J 7 3             Q 9 5 2             A T 8 4             6 
+J 8 4 2             A 5                 Q 9 7               K T 6 3 
+6 2                 K J 3               A Q 9 7             T 8 5 4 
+J 9 7               Q T 6 2             8 3                 A K 5 4 
 
  200.
-9                   A J 8 7 6 5         K Q                 T 4 3 2 
-A 9 8 2             7                   K Q 4 3             J T 6 5 
-A J 4 3 2           K Q 5               T 9 8 6             7 
-Q 6 3               J T 9               A 8 7               K 5 4 2 
+A J                 K Q T 9 2           7 6 5 4             8 3 
+A Q 6               K T 8               9 7 4               J 5 3 2 
+A T 6 4             J 8 7               K Q 5               9 3 2 
+Q 9 7 2             K 8                 J T 6               A 5 4 3 
 
 Generated 200 hands
 Produced 200 hands
 Initial random seed 1
-Time needed    0.003 sec
+Time needed    0.004 sec
 -s 1 -g 2 Descr.test_defaults
    1.
-A K Q T 3           6 5 2               J 7 4               9 8 
-J 6                 A K 4 2             Q T 9 5             8 7 3 
-K J 4 2             A Q 8 7             T                   9 6 5 3 
-9 5                 T 4                 A K 8 6 3           Q J 7 2 
+A 4                 J T 9 8 6           K Q 5 3             7 2 
+J T 9 2             4                   A Q 8 6 3           K 7 5 
+K Q J               A 9 5 3             7 4                 T 8 6 2 
+A Q 5 4             K J T               7 3                 9 8 6 2 
 
    2.
-A 7 5 4             Q T                 K 9 3               J 8 6 2 
-7 6 4 2             A K 9 5             J 8 3               Q T 
-K J 2               8 7                 Q T 6 5 4 3         A 9 
-A 9                 K 8 6 5 2           T                   Q J 7 4 3 
+A 8 7 4             K 6 2               J 5                 Q T 9 3 
+T 8 6 4             Q J 5               9 7 3               A K 2 
+Q T 9 3             A K 5               7 4                 J 8 6 2 
+3                   9 7 5 2             A Q J 8 6 4         K T 
 
 Generated 2 hands
 Produced 2 hands
@@ -1712,16 +1712,16 @@ Initial random seed 1
 Time needed    0.000 sec
 -s 1 -p 2 Descr.test_defaults
    1.
-A K Q T 3           6 5 2               J 7 4               9 8 
-J 6                 A K 4 2             Q T 9 5             8 7 3 
-K J 4 2             A Q 8 7             T                   9 6 5 3 
-9 5                 T 4                 A K 8 6 3           Q J 7 2 
+A 4                 J T 9 8 6           K Q 5 3             7 2 
+J T 9 2             4                   A Q 8 6 3           K 7 5 
+K Q J               A 9 5 3             7 4                 T 8 6 2 
+A Q 5 4             K J T               7 3                 9 8 6 2 
 
    2.
-A 7 5 4             Q T                 K 9 3               J 8 6 2 
-7 6 4 2             A K 9 5             J 8 3               Q T 
-K J 2               8 7                 Q T 6 5 4 3         A 9 
-A 9                 K 8 6 5 2           T                   Q J 7 4 3 
+A 8 7 4             K 6 2               J 5                 Q T 9 3 
+T 8 6 4             Q J 5               9 7 3               A K 2 
+Q T 9 3             A K 5               7 4                 J 8 6 2 
+3                   9 7 5 2             A Q J 8 6 4         K T 
 
 Generated 2 hands
 Produced 2 hands
@@ -1738,244 +1738,244 @@ $Author: henk $
 -s 1 -i ♣J♣3♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
 Initial pack order: ♣J♣3♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6
    1.
-K Q 5 2             A 7                 J 9 8 4             T 6 3 
-K 6 4 3             Q 5 2               A T                 J 9 8 7 
-J 8 4               A K 6 3             9 7                 Q T 5 2 
-6 4                 T 9 5 2             A K Q 7 3           J 8 
+Q 9 7 5 4           J 8                 K 6                 A T 3 2 
+K                   Q J 8 5 4           9 7 6 3             A T 2 
+8 3 2               A Q T 6 5           K J 7 4             9 
+A 7 6 5             8                   T 9 3               K Q J 4 2 
 
    2.
-T 2                 J 9 5               K Q 6 3             A 8 7 4 
-K 6                 T 4 3 2             A 8 7 5             Q J 9 
-K 8 6 3             9                   J 5 4               A Q T 7 2 
-A K 7 6 4           Q J T 9 2           8 5                 3 
+6 4                 A K Q 5 2           T 9 8 7             J 3 
+A J 6               Q T 9               7                   K 8 5 4 3 2 
+Q 6                 A 8 7 5             K J T 9 2           4 3 
+K 8 7 6 5 3         J                   A Q T               9 4 2 
 
    3.
-6 5 4 3             A                   K J T 8             Q 9 7 2 
-K Q 9 5 4 2         T 7                 A 8 6 3             J 
-A                   J T 7 6 3           K 8 4 2             Q 9 5 
-A T                 9 8 6 4 2           3                   K Q J 7 5 
+K J T 9 8           A 6                 5 3 2               Q 7 4 
+7 4                 9 5                 K Q J 6 3           A T 8 2 
+T 2                 A K 7 6 4           Q                   J 9 8 5 3 
+Q T 9 4             A K 5 3             J 8 7 6             2 
 
    4.
-6 5 3               J 8                 A K Q T 9           7 4 2 
-A Q 4               K 9 7 5             J T 6               8 3 2 
-K 6 3               A 8 7               9 4                 Q J T 5 2 
-K J 8 7             Q 9 6 2             T 4 3               A 5 
+A 8 6 3 2           K                   T 5                 Q J 9 7 4 
+9 3                 6 4                 Q J T 5             A K 8 7 2 
+J 7                 A K Q 6 5 3         8 4                 T 9 2 
+T 6 4 2             Q J 9 5             A K 8 7 3           - 
 
    5.
-A K 8 7             J 9                 5 4 3 2             Q T 6 
-A 8 6 4 3           K Q 7               9 2                 J T 5 
--                   J 6 5 3 2           Q T 9 8 4           A K 7 
-J 8 6 5             Q T 9               7 3                 A K 4 2 
+Q J 9 4 2           A T 8               K 6                 7 5 3 
+K Q J 9 3           A 6                 T 7 2               8 5 4 
+9                   A 6 4               K Q J T 7           8 5 3 2 
+J 6                 K 8 7 4 2           A 9 3               Q T 5 
 
    6.
-A K T 9 7 3         6 2                 Q J 8               5 4 
-J 4                 A Q 9 8 6 5         7                   K T 3 2 
-K T 9 5             J 6                 Q 2                 A 8 7 4 3 
-6                   T 9 8               A K J 7 5 3 2       Q 4 
+9 7 6 4             A K J T 2           Q 5 3               8 
+A T 9 7             J 5                 6 3                 K Q 8 4 2 
+J 6                 3                   A K Q 8 7 5 2       T 9 4 
+Q 8 3               A J 9 6 4           7                   K T 5 2 
 
    7.
-A K Q T             9 8 6 4 3 2         5                   J 7 
-9 5 4               2                   A T 7 3             K Q J 8 6 
-A J 9 5             4                   Q T 8 6             K 7 3 2 
-8 2                 9 7 6 5 4           A Q J T             K 3 
+Q 7 5 4             A J 8 2             K 9 3               T 6 
+J T                 K 9 8 7 5           Q 6 4 2             A 3 
+Q                   8 2                 K 6                 A J T 9 7 5 4 3 
+A K T 9 7 3         8 5                 Q J 6 4             2 
 
    8.
-Q 5 2               J 9 8 6 4           A K 3               T 7 
-Q J T 9             5 4                 A 6 3               K 8 7 2 
-T 6 3               A J 2               K Q 9 8 5           7 4 
-A 7 2               J 4 3               K 5                 Q T 9 8 6 
+J T 6 5             8 4 3               A Q                 K 9 7 2 
+Q 3                 A T 8 7             K J 9 4             6 5 2 
+Q T 7               5 4 3 2             9 8                 A K J 6 
+A T 8 2             9 5                 K Q 7 6 4           J 3 
 
    9.
-J T 8 7 6 5         4 3                 A                   K Q 9 2 
-Q T                 6 5 4 2             K J 9 7 3           A 8 
-7 3                 Q J 9 5             K T 6 4             A 8 2 
-K J 3               A Q 5               9 8 6               T 7 4 2 
+A 7 6 4             Q J 8               9 5                 K T 3 2 
+K J T 9 5           A 6 2               8 4                 Q 7 3 
+8                   A J T               K Q 9 4 3           7 6 5 2 
+8 6 2               J 5 4 3             A K Q T             9 7 
 
   10.
-T                   A J 9 7 6 4 2       8 5 3               K Q 
-Q T                 9 5                 K J 7 6 3 2         A 8 4 
-Q J T 4 3           9 2                 K                   A 8 7 6 5 
-J 7 6 5 3           A T                 K 8 4               Q 9 2 
+Q 9                 8 7 5 3             J 6                 A K T 4 2 
+A J 7 5 4           -                   Q T 8 6             K 9 3 2 
+5                   K Q J 7 6 4 3 2     T 9                 A 8 
+A J 9 4 3           T                   K Q 8 7 6           5 2 
 
   11.
-K Q J 9 7 6         T 8 2               5                   A 4 3 
-3                   J 9 7 2             A T 8               K Q 6 5 4 
-7 3 2               A K T 5 4           8 6                 Q J 9 
-A 7 3               9                   Q J T 8 5 4 2       K 6 
+8 5 2               Q T 6               A 3                 K J 9 7 4 
+8 5                 K T 4 3             Q 9 6 2             A J 7 
+A K 9 7             T                   Q J 5 3             8 6 4 2 
+9 8 6 2             K Q T 5 3           A J 4               7 
 
   12.
-Q 5 4               K 8 6 2             A 7                 J T 9 3 
-K J                 T 9 5               A 4 2               Q 8 7 6 3 
-A Q J 9 6 5         7                   K T 8 2             4 3 
-A 9                 Q J T 7 5           8 6 4 3             K 2 
+K 9 5 4 2           A Q J 7 6 3         T                   8 
+6                   8 7 2               K T 5 4 3           A Q J 9 
+8 7 5 2             -                   K Q J 9 6 4         A T 3 
+J 9 2               T 8 6 4             K                   A Q 7 5 3 
 
   13.
-T 9 5               A J 8 4             Q 2                 K 7 6 3 
-J                   A 6 2               K Q 9 4 3           T 8 7 5 
-J T 7               A K 9 6             8 4 3 2             Q 5 
-A K 8 7 5 4         J T                 6 2                 Q 9 3 
+6 5                 7 2                 A J 8 4             K Q T 9 3 
+7                   K Q J 2             T 9 8 6             A 5 4 3 
+T 8 5 4             6 3 2               A Q J               K 9 7 
+K Q 8 5 3 2         A 9 7 4             J T                 6 
 
   14.
-A 9 7               J T 5               K Q 8 3 2           6 4 
-3                   K 2                 7 5                 A Q J T 9 8 6 4 
-A T 8 6 3           J 4 2               K 9 7 5             Q 
-A Q 6 5             K J T 4 3           8 7                 9 2 
+A                   K Q J 8 5           T 7 4 2             9 6 3 
+A Q 8 6             K T 5 4             3                   J 9 7 2 
+9 6 2               5 4 3               A K T 8             Q J 7 
+J 9 7 6 5           K                   A Q T 4             8 3 2 
 
   15.
-J 7 2               A T 6 5 3           Q 9 4               K 8 
-A 8 7 6             3 2                 Q 9 5 4             K J T 
-A Q J 6             5                   T 9 8 7 2           K 4 3 
-J 2                 K Q T 9 4           5                   A 8 7 6 3 
+K T 4               J 8 5               A Q 3               9 7 6 2 
+Q 9 8 2             K 3                 J 7 5 4             A T 6 
+A                   Q J 8 7 5           T 3                 K 9 6 4 2 
+K T 7 5 4           9 6 3               A Q J 8             2 
 
   16.
-K 7                 Q T 9 3             8 6 4 2             A J 5 
-K 7 6               Q T 4 2             -                   A J 9 8 5 3 
-J 7                 A Q T 6 2           K 8 4 3             9 5 
-K Q J T 7 5         -                   A 9 8 6 2           4 3 
+K Q T 8 6           A 9                 7 5                 J 4 3 2 
+K                   J 9 7 4 2           Q T 8               A 6 5 3 
+A T 2               Q 6 4               J 9 7 3             K 8 5 
+A 9 6 5             Q T 4               K 8 7 3             J 2 
 
   17.
-J 5 4               K Q 7 6             A T 8 3 2           9 
-J 4 3 2             K Q T               A 7 5               9 8 6 
-4 3                 K J 8 7             A                   Q T 9 6 5 2 
-9 8 7 5             K 2                 J T 6 4             A Q 3 
+Q T 9 2             A J 8 5             K 7                 6 4 3 
+A Q J 2             9 8 5               T 6 4 3             K 7 
+Q T                 A 8 3               5 2                 K J 9 7 6 4 
+Q T 6               J 8 2               K 9 7 5 3           A 4 
 
   18.
-Q 8                 6 5 3               9 7 4               A K J T 2 
-J 9 5 2             K Q 7 6 3           8                   A T 4 
-A T 7               J                   K 8 4 3             Q 9 6 5 2 
-9 7 5 4             K Q T 3             A J 8 6 2           - 
+J T 9 4 2           A 8                 7 6                 K Q 5 3 
+Q 9 8 2             K 7 6 4             J 5 3               A T 
+5                   K Q 7 4 2           T 8 6 3             A J 9 
+T 5 4               8 2                 A Q 6 3             K J 9 7 
 
   19.
-Q J T 2             6 5                 A 9 8 7             K 4 3 
-7 4                 A 9 8               K J 6 5 2           Q T 3 
-A T 2               J 8 7 6 4 3         K 5                 Q 9 
-A J T 7             3 2                 9 5                 K Q 8 6 4 
+4                   T 7 2               K J 9 6 5           A Q 8 3 
+A K T 7             6 4 2               Q 9 5               J 8 3 
+Q 7 6 2             A K J 4             9 3                 T 8 5 
+Q J T 9             A 8 5               7 3 2               K 6 4 
 
   20.
-A Q T 8 7           K J 9 6             5 4                 3 2 
-7 6 4 3 2           J T 8               Q 9 5               A K 
-5                   7                   K Q T 8 4 3 2       A J 9 6 
-8 7                 K 9 6 5 2           Q                   A J T 4 3 
+K 9 6 3             Q 8                 A J 5 2             T 7 4 
+Q T 8               9 5 4               A K 3               J 7 6 2 
+A J                 Q 9 6 4 3           K T 7 2             8 5 
+K 7 6 4             A T 9               8 3                 Q J 5 2 
 
   21.
-J                   K T 7 6             Q 8 5 3             A 9 4 2 
-T 9 8 5 4           -                   A Q 6 3 2           K J 7 
-T 7 6               A J 9               4 3 2               K Q 8 5 
-A J 5 2             Q T 9 8 7 6         4                   K 3 
+J 4                 A T 8 7 6           3 2                 K Q 9 5 
+K 9 5 4             Q 6                 A J T 3 2           8 7 
+A 8 7 4             3 2                 K Q T 6             J 9 5 
+J 7 2               A K 5 3             Q 6                 T 9 8 4 
 
   22.
-3 2                 9 5                 A K Q T 8 7         J 6 4 
-6 4                 A K Q T 7           8 5                 J 9 3 2 
-A K Q 9 4           6 5 3               T 8 2               J 7 
-A 9 6 2             T 7 3               J 4                 K Q 8 5 
+A T 8               Q J 2               K 7 4 3             9 6 5 
+7 3                 8 6 5               A Q J               K T 9 4 2 
+J 8 3               K T 9 6 2           Q 7 4               A 5 
+A J 9 5 2           8 4                 7 6 3               K Q T 
 
   23.
-J 8 2               A Q 3               K T 9 7 6           5 4 
-T 5 2               Q 4                 6                   A K J 9 8 7 3 
-Q T 4 2             K 9 8 6 3           7 5                 A J 
-9 6 2               J T 5               A K Q 8 7           4 3 
+9 7 4               A J 2               K Q 6 5             T 8 3 
+7                   6 5 4 2             K T 9 8 3           A Q J 
+A T 4               Q 8 2               J 5                 K 9 7 6 3 
+A Q J 6 5 2         T 4 3               9 8                 K 7 
 
   24.
-Q                   8 6 5 4 3           K T                 A J 9 7 2 
-A J 9 3 2           7 6                 K Q T 5 4           8 
-A 6 3               5                   K 8 4 2             Q J T 9 7 
-Q 4 3 2             A J T 9 5           8 7                 K 6 
+J                   K 9 6 3             Q T 8 7             A 5 4 2 
+9 4 2               A Q T 7 3           K 8                 J 6 5 
+Q J 9 4             7 2                 6 3                 A K T 8 5 
+K Q T 9 3           7 4                 A J 8 6 2           5 
 
   25.
-A 9 8 7             K 4 3 2             Q T 5               J 6 
-J T 2               K Q 7 6             A 5 4               9 8 3 
-7 5 3               K 9                 A Q T 4             J 8 6 2 
-5 4 2               Q J 6               A 9 7               K T 8 3 
+A J 7 2             T 6 3               9 8 5               K Q 4 
+9 8 7 4             K J 3 2             A T 6 5             Q 
+4 2                 K Q                 T 7 6 5             A J 9 8 3 
+J 6 3               A T 8 7             Q 4                 K 9 5 2 
 
   26.
-K T                 9 7                 A Q J 5 3           8 6 4 2 
-K T 6               8 7 5               A J 3 2             Q 9 4 
-K T 7 4 3           9 5                 Q 2                 A J 8 6 
-J 6 3               K Q 8 7 5 4         T 2                 A 9 
+4                   Q T 7 6 3           A K 5               J 9 8 2 
+A Q J               T 7                 8 6 4 2             K 9 5 3 
+Q T 9 6 5           8 7 4               A J 3               K 2 
+K 4 3 2             8 7 5               A T 9               Q J 6 
 
   27.
-A T 9 4 2           K Q 8 7             3                   J 6 5 
-K T                 -                   Q 9 7 3             A J 8 6 5 4 2 
-A 9                 K Q J T 5           8 7 6 4 3           2 
-A K T 6             J 8 7 3             Q 9 5               4 2 
+A 7                 Q 8 4 3 2           J T 5               K 9 6 
+Q 6                 T 9 7 3             K J 8 5             A 4 2 
+A J T 9 2           8                   Q 5 3               K 7 6 4 
+A 8 5 4             K 6 2               Q J 7               T 9 3 
 
   28.
-K T                 A Q 8 2             J 7 6 5 4           9 3 
-4 3                 A J                 6 5                 K Q T 9 8 7 2 
-A K J 5 2           7 6 4               9 3                 Q T 8 
-J T 7 6             K 5 3 2             Q 9 8 4             A 
+A K                 Q T 8 4             9 7 3 2             J 6 5 
+K T 7 4             Q 8                 A J 9 2             6 5 3 
+8 3                 A J T 6             Q 7                 K 9 5 4 2 
+K T 6 4 3           J 9 5               A 7 2               Q 8 
 
   29.
-A Q 5 2             K 8 4               J 9 7 6 3           T 
-8 6                 Q 7 4 3             K J 2               A T 9 5 
-J 9 6               8 7 4 2             T                   A K Q 5 3 
-Q J 4 2             T 5                 9 8 6 3             A K 7 
+2                   9 8 7               Q J T 6 5 4         A K 3 
+Q J 8 7 5           K                   9 4                 A T 6 3 2 
+Q 6 2               A T 9 7 4 3         J 5                 K 8 
+7 5 3 2             J T 9               K 8 6               A Q 4 
 
   30.
-A 8 7               Q 6 3               5                   K J T 9 4 2 
-T                   Q 8 7 4             A K J 5 2           9 6 3 
-K 9 8 6 2           A J T 4 3           7                   Q 5 
-K Q 8 7             4                   A T 9 6 3 2         J 5 
+Q 9 8 5 4 3         K J 2               A T 6               7 
+A 9                 T 7 5               K 6 4 2             Q J 8 3 
+A 7 3               K J 6               4 2                 Q T 9 8 5 
+J 6                 9 8 4 3             Q T 7 2             A K 5 
 
   31.
-Q J 9 7 6 4         A T 8               -                   K 5 3 2 
-K 8                 9 4                 A Q J T 7 6 5 3     2 
-A Q                 9 8 6 2             J                   K T 7 5 4 3 
-A 8 3               6 5 4 2             K J T 7             Q 9 
+J 6 5 2             A K 8 3             T 9 7               Q 4 
+T                   A K 7 5             J 9 4 3             Q 8 6 2 
+A K T 8 6 4 3 2     5                   J 7                 Q 9 
+-                   K J 4 3             Q 9 7 6             A T 8 5 2 
 
   32.
-K 9 8               T 5                 A J 6 2             Q 7 4 3 
-K 6 4               A J T 8 5           9 3                 Q 7 2 
-A Q 9 8 6           K 7                 J 5 4 2             T 3 
-J 5                 K T 7 6             9 3 2               A Q 8 4 
+K 9 6               A 2                 Q T                 J 8 7 5 4 3 
+T 7 5 4 2           A 9 6 3             K Q 8               J 
+9                   A 3 2               Q J T 8 7 5         K 6 4 
+A 9 8 4             T 5 3 2             J 7                 K Q 6 
 
   33.
--                   A T 8 6 5           K Q 9 7 4 2         J 3 
-A K J T 9 8 6 3     5 2                 7                   Q 4 
-A 9 4               K 5                 J T 7 6             Q 8 3 2 
-4 2                 J 8 6 5             A Q                 K T 9 7 3 
+J 8                 Q T 4               K 3 2               A 9 7 6 5 
+A J T 7 4           K 8 6 5 3 2         Q 9                 - 
+A J 7 3             8 5                 9 4 2               K Q T 6 
+T 8                 4 3                 A J 9 7 2           K Q 6 5 
 
   34.
-K T                 Q J 6 2             9 5 4 3             A 8 7 
-7 3                 A K 8 6 4           2                   Q J T 9 5 
-A 7 4 2             J T 5               K Q 6 3             9 8 
-8 6 5 3 2           J                   A K Q 4             T 9 7 
+Q 4                 A K 7 2             J 9 8 3             T 6 5 
+Q 9 6               K J 2               A T 8 5 3           7 4 
+6 4 3               A J 5               7 2                 K Q T 9 8 
+J 8 7 5 4           9 6 2               T 3                 A K Q 
 
   35.
-T 6                 8 5 4               Q 7 3 2             A K J 9 
-A K 8 7             J 4 3 2             9                   Q T 6 5 
-Q 8 7               A K 6 3             J T 9 5             4 2 
-A J 9 3             6 2                 T 8 7 4             K Q 5 
+A T                 K 7 6 2             J 9 8 5 4           Q 3 
+A K 8 2             T 7 6 4 3           J 9 5               Q 
+K T 8 4 3           9                   7 5 2               A Q J 6 
+9 3                 8 7 5               J 2                 A K Q T 6 4 
 
   36.
-A Q 9 5 4           J 8                 K T 7 2             6 3 
--                   Q 7 6 4             K J 2               A T 9 8 5 3 
-K J 8 3             9 7 4 2             A T 5               Q 6 
-A 8 5 4             Q 3 2               K T 9               J 7 6 
+A T 9 5             K 8                 Q J 7 6 4 3 2       - 
+K Q 8 3 2           A 9 5 4             6                   J T 7 
+T                   Q 6 5 4             A K 9 2             J 8 7 3 
+K 6 4               Q 8 2               7                   A J T 9 5 3 
 
   37.
-8 5                 Q J 7 6 4           2                   A K T 9 3 
--                   6 2                 Q T 9 8 4 3         A K J 7 5 
-A K J T 3           8 7 5 4 2           Q 9 6               - 
-A J 9 8 7 5         2                   K T 4               Q 6 3 
+Q 9 7 6             8 5 4 2             K J 3               A T 
+A J 9 8             Q                   K T 7 6             5 4 3 2 
+T 9 7               K Q 2               8 6 3               A J 5 4 
+J 4                 T 7 6 5 3           K Q 2               A 9 8 
 
   38.
-8 2                 A Q 7 5             K T 9 6 3           J 4 
-A 2                 K J T 7             Q 5                 9 8 6 4 3 
-A Q 8 7 4 2         J T                 6 5 3               K 9 
-5 3 2               K Q T               8 7 4               A J 9 6 
+K 6 5 2             Q T 9 8 4           A 3                 J 7 
+A 6 3               -                   Q J 7 4 2           K T 9 8 5 
+K                   Q 6 3               A J T 7 5 4         9 8 2 
+Q J 9 6 3           K 8 7 5 2           -                   A T 4 
 
   39.
-6 5 2               A K J 7 4           Q T 8 3             9 
-A 7 6               J T 4               Q                   K 9 8 5 3 2 
-Q J 7 3             5 4                 K T 8 6             A 9 2 
-A 6 4               Q T 2               J 8 7 3             K 9 5 
+Q T 8               K 7 6 3             5 4 2               A J 9 
+Q 9 8 4 3           6                   J T 7 5 2           A K 
+A 4                 J 9 7 5             T 3                 K Q 8 6 2 
+Q J 8               A 7 5 3             K T 4               9 6 2 
 
   40.
-A 8 7 6             K                   5 3                 Q J T 9 4 2 
-J 8 4               A T 7 5             Q 3 2               K 9 6 
-J T 8 4             A K 9 7             Q 6 5 3 2           - 
-A 5                 K J T 2             Q 9 4               8 7 6 3 
+5 3                 4 2                 Q J T 8 7 6         A K 9 
+K Q 5 4             9 8 3               A T                 J 7 6 2 
+K Q T 4 3           J 5 2               6                   A 9 8 7 
+5 3                 A 8 7 4 2           K Q J T             9 6 
 
 Generated 40 hands
 Produced 40 hands

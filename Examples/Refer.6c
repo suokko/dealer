@@ -1,16 +1,16 @@
 -s 1 Descr.6c
-king drops: 0.573465
-finesse: 0.749792
-score king drops: 751.144
-score king drops nv: 514.412
-score finesse: 1002.19
-score finesse nv: 677.298
-finesse gains IMPs: 2.41369
-finesse gains IMPs nv: 2.06104
+king drops: 0.572163
+finesse: 0.74624
+score king drops: 749.162
+score king drops nv: 513.08
+score finesse: 996.973
+score finesse nv: 673.853
+finesse gains IMPs: 2.38115
+finesse gains IMPs nv: 2.033
 Generated 1000000 hands
-Produced 110556 hands
+Produced 110652 hands
 Initial random seed 1
-Time needed    0.883 sec
+Time needed    0.438 sec
 -e -s 1 Descr.6c
 king drops: 0.573532
 finesse: 0.747711
@@ -23,4 +23,4 @@ finesse gains IMPs nv: 2.03196
 Generated 705432 hands
 Produced 77966 hands
 Initial random seed 1
-Time needed    0.435 sec
+Time needed    0.123 sec
