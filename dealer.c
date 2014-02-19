@@ -1029,21 +1029,23 @@ static void exh_map_cards (struct board *b) {
   int p1cnt = 13 - hand_count_cards(predealt.hands[exh_player[1]]);
 
   exh_vect_length = bit_pos;
-  /* Set N upper bits that will be moved to low bits */
-  for (i = 0; i < p1cnt; i++) {
-    vectordeal |= 1 << (bit_pos - i - 1);
-    p1 |= exh_card_at_bit[bit_pos - i - 1];
+  /* Set N lower bits that will be moved to high bits */
+  for (i = 1; i < p1cnt; i++) {
+    vectordeal |= 1 << i;
+    p1 |= exh_card_at_bit[i];
   }
-  for (i = 1; i < bit_pos - p1cnt; i++)
-    p0 |= exh_card_at_bit[i];
+  for (i = 0; i < bit_pos - p1cnt; i++)
+    p0 |= exh_card_at_bit[i + p1cnt];
   /* Lowest bit goes to wrong hand so first shuffle can flip it. */
-  if (bit_pos - p1cnt > 0)
-    p1 |= exh_card_at_bit[0];
-  else
+  if (p1cnt > 0) {
+    vectordeal |= 1 << 0;
     p0 |= exh_card_at_bit[0];
+  } else {
+    p1 |= exh_card_at_bit[0];
+  }
 
-  assert(hand_count_cards((p1 | b->hands[exh_player[1]]) ^ exh_card_at_bit[0]) == 13);
-  assert(hand_count_cards((p0 | b->hands[exh_player[0]]) ^ exh_card_at_bit[0]) == 13);
+  assert(hand_count_cards(((p1 | b->hands[exh_player[1]])) ^ exh_card_at_bit[0]) == 13);
+  assert(hand_count_cards(((p0 | b->hands[exh_player[0]])) ^ exh_card_at_bit[0]) == 13);
   b->hands[exh_player[0]] |= p0;
   b->hands[exh_player[1]] |= p1;
 }
@@ -1109,32 +1111,23 @@ static void exh_shuffle (int vector, int prevvect, struct board *b) {
 
 static int bitpermutate(int vector)
 {
-  int nextvector, shadow;
-  int bits_to_move_back = 0, move_back_count = 0;
-  /* Find the lowest set bit that have zeros lower to it */
-  if ((vector & 1) == 0) {
-    shadow = vector - 1;
-    nextvector = vector & shadow;
-    shadow = vector & ~shadow;
-    return nextvector | (shadow >> 1);
-  }
-  /* Find all set bits in lower most bits */
-  shadow = vector + 1;
-  nextvector = vector & shadow;
-  if (nextvector == 0)
-    return 0;
-  bits_to_move_back = vector & ~shadow;
-  /* find the lowest set bit from reminding bits */
-  shadow = nextvector - 1;
-  vector = nextvector;
-  nextvector = vector & shadow;
-  shadow = vector & ~shadow;
-  /* Figure out position where to but bits back in the vector */
-  move_back_count = __builtin_ctz(~bits_to_move_back);
-  /* Figure out how much to shift the move back bits */
-  int positiontomove = __builtin_ctz(shadow >> 1) - move_back_count;
-  nextvector |= (shadow >> 1) | (bits_to_move_back << positiontomove);
-  return nextvector;
+  /* set all lowest zeros to one */
+  int bottomones = vector | (vector - 1);
+  /* Set the lowest zero bit in original */
+  int nextvector = bottomones + 1;
+  /* flip bits */
+  int moveback = ~bottomones;
+  /* select the lowest zero bit in bottomones */
+  moveback &= 0 - moveback;
+  /* set to ones all low bits that are ones in bottomones */
+  moveback--;
+  /* move back set bits the number of trailing zeros plus one in original
+   * number. This removes the lowest set bit in original vector and moves
+   * all ones next to it to bottom.
+   */
+  moveback >>= __builtin_ctz(vector) + 1;
+  /* combine the result vector to get next permutation */
+  return nextvector | moveback;
 }
 
 /* End of Specific routines for EXHAUST_MODE */
@@ -1607,10 +1600,10 @@ int main (int argc, char **argv) {
 
   struct timeval tvstart, tvstop;
 
-  assert(0xfe80 == bitpermutate(0xff00));
-  assert(0xfd80 == bitpermutate(0xfe01));
-  assert(0xfb80 == bitpermutate(0xfc03));
-  assert(0x0000 == bitpermutate(0x00ff));
+  assert(0x107f == bitpermutate(0x0ff0));
+  assert(0xfe02 == bitpermutate(0xfe01));
+  assert(0xf061 == bitpermutate(0xf058));
+  assert(0x017f == bitpermutate(0x00ff));
 
   verbose = 1;
 
@@ -1720,7 +1713,7 @@ int main (int argc, char **argv) {
         exh_get2players ();
         exh_map_cards (curdeal);
         int prevvect = vectordeal ^ 1;
-        for (; vectordeal; vectordeal = bitpermutate(vectordeal)) {
+        for (; vectordeal < (1 << exh_vect_length); vectordeal = bitpermutate(vectordeal)) {
           ngen++;
           exh_shuffle (vectordeal, prevvect, curdeal);
           prevvect = vectordeal;
