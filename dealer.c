@@ -523,14 +523,16 @@ static int hcp (const struct board *d, struct handstat *hsbase, int compass, int
 
       struct handstat *hs = &hsbase[compass];
 
-      if (hs->hs_points[suit] == -1) {
+      /* Cache interleaves generation and actual value */
+      if (hs->hs_points[suit*2] != ngen) {
         /* No cached value so has to calculate it */
         const hand h = suit == 4 ? d->hands[compass] :
                                    d->hands[compass] & suit_masks[suit];
 
-        hs->hs_points[suit] = getpc(idxHcp, h);
+        hs->hs_points[suit*2]   = ngen;
+        hs->hs_points[suit*2+1] = getpc(idxHcp, h);
       }
-      return hs->hs_points[suit];
+      return hs->hs_points[suit*2+1];
 }
 
 static int control (const struct board *d, struct handstat *hsbase, int compass, int suit)
@@ -540,14 +542,15 @@ static int control (const struct board *d, struct handstat *hsbase, int compass,
 
       struct handstat *hs = &hsbase[compass];
 
-      if (hs->hs_control[suit] == -1) {
+      if (hs->hs_control[suit*2] != ngen) {
         /* No cached value so has to calculate it */
         const hand h = suit == 4 ? d->hands[compass] :
                                    d->hands[compass] & suit_masks[suit];
 
-        hs->hs_control[suit] = getpc(idxControls, h);
+        hs->hs_control[suit*2]   = ngen;
+        hs->hs_control[suit*2+1] = getpc(idxControls, h);
       }
-      return hs->hs_control[suit];
+      return hs->hs_control[suit*2+1];
 }
 
 /**
@@ -570,12 +573,13 @@ static int distrbit (const struct board *d, struct handstat *hsbase, int compass
   assert(compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
   struct handstat *hs = &hsbase[compass];
 
-  if (hs->hs_bits == -1) {
-    hs->hs_bits = distrbitmaps[suitlength(d, hsbase, compass, SUIT_CLUB)]
+  if (hs->hs_bits[0] != ngen) {
+    hs->hs_bits[0] = ngen;
+    hs->hs_bits[1] = distrbitmaps[suitlength(d, hsbase, compass, SUIT_CLUB)]
       [suitlength(d, hsbase, compass, SUIT_DIAMOND)]
       [suitlength(d, hsbase, compass, SUIT_HEART)];
   }
-  return hs->hs_bits;
+  return hs->hs_bits[1];
 }
 static int loser (const struct board *d, struct handstat *hsbase, int compass, int suit)
 {
@@ -584,12 +588,13 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
 
       struct handstat *hs = &hsbase[compass];
 
-      if (hs->hs_loser[suit] == -1) {
+      if (hs->hs_loser[suit*2] != ngen) {
         /* No cached value so has to calculate it */
+        hs->hs_loser[suit*2] = ngen;
         if (suit == 4) {
-          hs->hs_loser[4] = 0;
+          hs->hs_loser[4*2+1] = 0;
           for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
-            hs->hs_loser[4] += loser(d, hsbase, compass, suit);
+            hs->hs_loser[4*2+1] += loser(d, hsbase, compass, suit);
         } else {
           const int length = suitlength(d, hsbase, compass, suit);
           const hand h = d->hands[compass] & suit_masks[suit];
@@ -599,14 +604,14 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
           switch (length) {
           case 0:
             /* A void is 0 losers */
-            hs->hs_loser[suit] = 0;
+            hs->hs_loser[suit*2+1] = 0;
             break;
           case 1:
             {
               /* Singleton A 0 losers, K or Q 1 loser */
               int losers[] = {1, 1, 0};
               assert (control < 3);
-              hs->hs_loser[suit] = losers[control];
+              hs->hs_loser[suit*2+1] = losers[control];
               break;
             }
           case 2:
@@ -614,84 +619,17 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
               /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
               int losers[] = {2, 1, 1, 0};
               assert (control <= 3);
-              hs->hs_loser[suit] = losers[control];
+              hs->hs_loser[suit*2+1] = losers[control];
               break;
             }
           default:
             /* Losers, first correct the number of losers */
-            hs->hs_loser[suit] = 3 - winner;
+            hs->hs_loser[suit*2+1] = 3 - winner;
             break;
           }
         }
       }
-      return hs->hs_loser[suit];
-}
-
-static void analyze (const struct board *d, struct handstat *hsbase) {
-
-  /* Analyze a hand.  Modified by HU to count controls and losers. */
-  /* Further mod by AM to count several alternate pointcounts too  */
-
-  int player, s;
-  struct handstat *hs;
-
-  /* for each player */
-  for (player = COMPASS_NORTH; player <= COMPASS_WEST; ++player) {
-    /* If the expressions in the input never mention a player
-       we do not calculate his hand statistics. */
-    if (use_compass[player] == 0) {
-
-#ifdef _DEBUG
-      /* In debug mode, blast the unused handstat, so that we can recognize it
-         as garbage should if we accidently read from it */
-      hs = hsbase + player;
-      memset (hs, 0xDF, sizeof (struct handstat));
-#endif /* _DEBUG_ */
-
-      continue;
-    }
-    /* where are the handstats for this player? */
-    hs = hsbase + player;
-
-#ifdef _DEBUG
-    /* To debug, blast it with garbage.... */
-    memset (hs, 0xDF, sizeof (struct handstat));
-
-    /* then overwrite those specific counters which need to be incremented */
-    for (t = idxHcp; t < idxEnd; ++t) {
-      /* clear the points for each suit */
-      for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-        hs->hs_counts[t][s] = 0;
-      }
-      /* and the total points as well */
-      hs->hs_totalcounts[t] = 0;
-    }
-
-    /* clear the total losers */
-    hs->hs_totalloser = 0;
-#endif /* _DEBUG_ */
-
-    /* Initialize values summed */
-    hs->hs_loser[4] = -1;
-    hs->hs_points[4] = -1;
-    hs->hs_control[4] = -1;
-
-    /* start from the first card for this player, and walk through them all -
-       use the player offset to jump to the first card.  Can't just increment
-       through the deck, because we skip those players who are not part of the
-       analysis */
-
-    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-      /* Now, using the values calculated already, load those pointcount
-         values which are common enough to warrant a non array lookup */
-      hs->hs_points[s] = -1;
-      hs->hs_control[s] = -1;
-      hs->hs_loser[s] = -1;
-
-    } /* end for each suit */
-
-    hs->hs_bits = -1;
-  } /* end for each player */
+      return hs->hs_loser[suit*2+1];
 }
 
 static void fprintcompact (FILE * f, deal d, int ononeline, int disablecompass) {
@@ -869,6 +807,9 @@ static void initprogram () {
   struct pack temp;
 
   initpc();
+
+  /* clear the handstat cache */
+  memset(hs, -1, sizeof(hs));
 
   newpack(&temp);
 
@@ -1130,9 +1071,9 @@ static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   int s;
   for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
     printf ("  Suit %d: ", s);
-    printf ("Len = %2d, Points = %2d\n", hs_length[s], hs->hs_points[s]);
+    printf ("Len = %2d, Points = %2d\n", hs_length[s], hs->hs_points[s*2+1]);
   }
-  printf ("  Totalpoints: %2d\n", hs->hs_points[s]);
+  printf ("  Totalpoints: %2d\n", hs->hs_points[s*2+1]);
 }
 
 static inline void exh_print_vector (struct handstat *hs) {
@@ -1779,7 +1720,6 @@ int main (int argc, char **argv) {
       setup_deal ();
       for (ngen = nprod = 0; ngen < maxgenerate && nprod < maxproduce; ngen++) {
         shuffle (curdeal);
-        analyze (curdeal, hs);
         if (interesting ()) {
           action ();
           nprod++;
@@ -1801,7 +1741,6 @@ int main (int argc, char **argv) {
           ngen++;
           exh_shuffle (vectordeal, prevvect, curdeal);
           prevvect = vectordeal;
-          analyze(curdeal, hs);
           if (interesting ()) {
             /*  exh_print_vector(hs); */
             action ();

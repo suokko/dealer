@@ -28,10 +28,10 @@ struct context {
 int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);
 
 struct handstat {
-    int hs_points[NSUITS + 1];  /* 4321 HCP per suit or total */
-    int hs_bits;                /* Distribution bit position */
-    int hs_loser[NSUITS + 1];   /* Losers in a suit */
-    int hs_control[NSUITS + 1]; /* Controls in a suit or total */
+    int hs_points[(NSUITS + 1)*2];  /* 4321 HCP per suit or total */
+    int hs_bits[2];                 /* Distribution bit position */
+    int hs_loser[(NSUITS + 1)*2];   /* Losers in a suit */
+    int hs_control[(NSUITS + 1)*2]; /* Controls in a suit or total */
 } ;
 
 struct handstat hs[4] ;
