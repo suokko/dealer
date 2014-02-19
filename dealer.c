@@ -5,6 +5,8 @@
 #include <string.h>
 #include <limits.h>
 
+#include "bittwiddle.h"
+
 long seed = 0;
 static int quiet = 0;
 char* input_file = 0;
@@ -1766,6 +1768,19 @@ int main (int argc, char **argv) {
   assert(0xfe02 == bitpermutate(0xfe01));
   assert(0xf061 == bitpermutate(0xf058));
   assert(0x017f == bitpermutate(0x00ff));
+
+  assert(0 == popcount(0x0000));
+  assert(1 == popcount(0x0100));
+  assert(2 == popcount(0x1001));
+  assert(16 == popcount(0xffff));
+  assert(0 == popcountl(0x0000));
+  assert(1 == popcountl(0x0100));
+  assert(2 == popcountl(0x1001));
+  assert(16 == popcountl(0xffff));
+  assert(0 == popcountll(0x0000));
+  assert(1 == popcountll(0x0100));
+  assert(2 == popcountll(0x1001));
+  assert(16 == popcountll(0xffff));
 
   verbose = 1;
 

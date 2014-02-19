@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <assert.h>
 
+#include "bittwiddle.h"
+
 /* Card is a 64 bit integer where each two bytes is one suit.
  * That makes a hand simple bitwise-or of all cards in the hand.
  * Board for compuation contains 4*64=256 bits in 4 hand vectors.
@@ -74,7 +76,7 @@ static const card suit_masks[] = {
 /* Some helper functions for hands */
 static inline int hand_count_cards(const hand h)
 {
-	return __builtin_popcountll(h);
+	return popcountll(h);
 }
 
 /* Return index of most significant card bit set */
