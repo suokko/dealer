@@ -27,8 +27,7 @@ struct context {
 
 struct handstat {
     int hs_length[NSUITS];      /* distribution */
-    int hs_points[NSUITS];      /* 4321 HCP per suit */
-    int hs_totalpoints;         /* Sum of above four */
+    int hs_points[NSUITS + 1];  /* 4321 HCP per suit or total */
     int hs_bits;                /* Distribution bit position */
     int hs_loser[NSUITS];       /* Losers in a suit */
     int hs_totalloser;          /* Losers in the hand */

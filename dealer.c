@@ -508,7 +508,32 @@ int make_contract (char suitchar, char trickchar) {
   return MAKECONTRACT (suit, trick);
 }
 
-static void analyze (struct board *d, struct handstat *hsbase) {
+/*
+ * Calculate and cache hcp for a player
+ *
+ * @param d       Current board to analyze
+ * @param hsbase  The base of handstat cache
+ * @param compass The player to calculate stats for
+ * @param suit    The suit to calculate or 4 for complete hand
+ */
+static int hcp (const struct board *d, struct handstat *hsbase, int compass, int suit)
+{
+      assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
+      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+
+      struct handstat *hs = &hsbase[compass];
+
+      if (hs->hs_points[suit] == -1) {
+        /* No cached value so has to calculate it */
+        const hand h = suit == 4 ? d->hands[compass] :
+                                   d->hands[compass] & suit_masks[suit];
+
+        hs->hs_points[suit] = getpc(idxHcp, h);
+      }
+      return hs->hs_points[suit];
+}
+
+static void analyze (const struct board *d, struct handstat *hsbase) {
 
   /* Analyze a hand.  Modified by HU to count controls and losers. */
   /* Further mod by AM to count several alternate pointcounts too  */
@@ -558,7 +583,7 @@ static void analyze (struct board *d, struct handstat *hsbase) {
 
     /* Initialize values summed */
     hs->hs_totalloser = 0;
-    hs->hs_totalpoints = 0;
+    hs->hs_points[4] = -1;
     hs->hs_totalcontrol = 0;
 
     /* start from the first card for this player, and walk through them all -
@@ -574,7 +599,7 @@ static void analyze (struct board *d, struct handstat *hsbase) {
       assert (hs->hs_length[s] >= 0);
       /* Now, using the values calculated already, load those pointcount
          values which are common enough to warrant a non array lookup */
-      hs->hs_points[s] = getpc(idxHcp, h & suit_masks[s]);
+      hs->hs_points[s] = -1;
       int ctrl = getpc(idxControlsInt, h & suit_masks[s]);
       hs->hs_control[s] = getpc(idxControls, h & suit_masks[s]);
 
@@ -607,7 +632,6 @@ static void analyze (struct board *d, struct handstat *hsbase) {
 
       /* Now add the losers to the total. */
       hs->hs_totalloser += hs->hs_loser[s];
-      hs->hs_totalpoints += hs->hs_points[s];
       hs->hs_totalcontrol += hs->hs_control[s];
 
     } /* end for each suit */
@@ -1056,7 +1080,7 @@ static inline void exh_print_stats (struct handstat *hs) {
     printf ("  Suit %d: ", s);
     printf ("Len = %2d, Points = %2d\n", hs->hs_length[s], hs->hs_points[s]);
   }
-  printf ("  Totalpoints: %2d\n", hs->hs_totalpoints);
+  printf ("  Totalpoints: %2d\n", hs->hs_points[s]);
 }
 
 static inline void exh_print_vector (struct handstat *hs) {
@@ -1075,6 +1099,10 @@ static inline void exh_print_vector (struct handstat *hs) {
   }
   printf ("\n");
   hsp = hs + exh_player[0];
+  for (s = SUIT_CLUB; s <= NSUITS; s++) {
+    hcp(curdeal, hsp, exh_player[0],  s);
+    hcp(curdeal, hsp, exh_player[1],  s);
+  }
   exh_print_stats (hsp);
   printf ("Player %d: ", exh_player[1]);
   for (i = 0; i < exh_vect_length; i++) {
@@ -1179,7 +1207,7 @@ static int evaltree (struct treebase *b) {
       return hs[t->tr_int2].hs_length[t->tr_int1];
     case TRT_HCPTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalpoints;
+      return hcp(curdeal, hs, t->tr_int1, 4);
     case TRT_PT0TOTAL:      /* compass */
     case TRT_PT1TOTAL:      /* compass */
     case TRT_PT2TOTAL:      /* compass */
@@ -1195,7 +1223,7 @@ static int evaltree (struct treebase *b) {
     case TRT_HCP:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_points[t->tr_int2];
+      return hcp(curdeal, hs, t->tr_int1, t->tr_int2);
     case TRT_PT0:      /* compass, suit */
     case TRT_PT1:      /* compass, suit */
     case TRT_PT2:      /* compass, suit */
