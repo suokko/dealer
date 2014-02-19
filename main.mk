@@ -16,9 +16,14 @@ CXXFLAGS ?=
 LDFLAGS  ?=
 DESTDIR  ?=
 
+COMPILERVERSION := $(shell $(CC) --version)
 
 RELEASEFLAGS := -DNDEBUG
+ifneq ($(subst gcc,,$(COMPILERVERSION)),$(COMPILERVERSION))
 OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model
+else
+OPTFLAGS := -O2 -ftree-vectorize
+endif
 PROFFLAGS := -fprofile-generate
 PUSEFLAGS := -fprofile-use -flto
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
