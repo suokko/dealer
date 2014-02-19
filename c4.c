@@ -45,7 +45,7 @@ int eval_cccc (int seat) {
   int suit;
 
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; ++suit) {
-    int Length = hs[seat].hs_length[suit];
+    int Length = suitlength(curdeal, hs, seat, suit);
 
     int HasAce   = HAS_CARD2 (suit, RK_ACE);
     int HasKing  = HAS_CARD2 (suit, RK_KING);
@@ -118,7 +118,7 @@ int eval_cccc (int seat) {
 int suit_quality (int seat, int suit) {
   int Quality = 0;
 
-  int Length = hs[seat].hs_length[suit];
+  int Length = suitlength(curdeal, hs, seat, suit);
 
   int HasAce   = HAS_CARD2 (suit, RK_ACE);
   int HasKing  = HAS_CARD2 (suit, RK_KING);

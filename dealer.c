@@ -550,6 +550,33 @@ static int control (const struct board *d, struct handstat *hsbase, int compass,
       return hs->hs_control[suit];
 }
 
+/**
+ * Assume that popcnt is fast enough operation not needing caching.
+ */
+int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit)
+{
+  assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE);
+  assert(compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
+  (void)hsbase;
+  hand h = d->hands[compass] & suit_masks[suit];
+  return hand_count_cards(h);
+}
+
+/**
+ * The nit position in shape bitmap for this board is calculated from length of suits.
+ */
+static int distrbit (const struct board *d, struct handstat *hsbase, int compass)
+{
+  assert(compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
+  struct handstat *hs = &hsbase[compass];
+
+  if (hs->hs_bits == -1) {
+    hs->hs_bits = distrbitmaps[suitlength(d, hsbase, compass, SUIT_CLUB)]
+      [suitlength(d, hsbase, compass, SUIT_DIAMOND)]
+      [suitlength(d, hsbase, compass, SUIT_HEART)];
+  }
+  return hs->hs_bits;
+}
 static int loser (const struct board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
@@ -564,7 +591,7 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
           for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
             hs->hs_loser[4] += loser(d, hsbase, compass, suit);
         } else {
-          const int length = hs->hs_length[suit];
+          const int length = suitlength(d, hsbase, compass, suit);
           const hand h = d->hands[compass] & suit_masks[suit];
           int control = getpc(idxControlsInt, h);
           int winner = getpc(idxWinnersInt, h);
@@ -640,10 +667,6 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
       hs->hs_totalcounts[t] = 0;
     }
 
-    /* clear the length for each suit */
-    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-      hs->hs_length[s] = 0;
-    }
     /* clear the total losers */
     hs->hs_totalloser = 0;
 #endif /* _DEBUG_ */
@@ -657,13 +680,8 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
        use the player offset to jump to the first card.  Can't just increment
        through the deck, because we skip those players who are not part of the
        analysis */
-    hand h = d->hands[player];
-    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++)
-      hs->hs_length[s] = hand_count_cards(h & suit_masks[s]);
 
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-      assert (hs->hs_length[s] < 14);
-      assert (hs->hs_length[s] >= 0);
       /* Now, using the values calculated already, load those pointcount
          values which are common enough to warrant a non array lookup */
       hs->hs_points[s] = -1;
@@ -672,9 +690,7 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
 
     } /* end for each suit */
 
-    hs->hs_bits = distrbitmaps[hs->hs_length[SUIT_CLUB]]
-      [hs->hs_length[SUIT_DIAMOND]]
-      [hs->hs_length[SUIT_HEART]];
+    hs->hs_bits = -1;
   } /* end for each player */
 }
 
@@ -1110,11 +1126,11 @@ static void exh_map_cards (struct board *b) {
   b->hands[exh_player[1]] |= p1;
 }
 
-static inline void exh_print_stats (struct handstat *hs) {
+static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   int s;
   for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
     printf ("  Suit %d: ", s);
-    printf ("Len = %2d, Points = %2d\n", hs->hs_length[s], hs->hs_points[s]);
+    printf ("Len = %2d, Points = %2d\n", hs_length[s], hs->hs_points[s]);
   }
   printf ("  Totalpoints: %2d\n", hs->hs_points[s]);
 }
@@ -1123,6 +1139,7 @@ static inline void exh_print_vector (struct handstat *hs) {
   int i, s, r;
   int onecard;
   struct handstat *hsp;
+  int hs_length[4];
 
   printf ("Player %d: ", exh_player[0]);
   for (i = 0; i < exh_vect_length; i++) {
@@ -1136,10 +1153,11 @@ static inline void exh_print_vector (struct handstat *hs) {
   printf ("\n");
   hsp = hs + exh_player[0];
   for (s = SUIT_CLUB; s <= NSUITS; s++) {
+    hs_length[s] = suitlength(curdeal, hsp, exh_player[0], s);
     hcp(curdeal, hsp, exh_player[0],  s);
     hcp(curdeal, hsp, exh_player[1],  s);
   }
-  exh_print_stats (hsp);
+  exh_print_stats (hsp, hs_length);
   printf ("Player %d: ", exh_player[1]);
   for (i = 0; i < exh_vect_length; i++) {
     if ((1 & (vectordeal >> i))) {
@@ -1151,7 +1169,9 @@ static inline void exh_print_vector (struct handstat *hs) {
   }
   printf ("\n");
   hsp = hs + exh_player[1];
-  exh_print_stats (hsp);
+  for (s = SUIT_CLUB; s <= NSUITS; s++)
+    hs_length[s] = suitlength(curdeal, hsp, exh_player[1], s);
+  exh_print_stats (hsp, hs_length);
 }
 
 static void exh_shuffle (int vector, int prevvect, struct board *b) {
@@ -1240,7 +1260,7 @@ static int evaltree (struct treebase *b) {
     case TRT_LENGTH:      /* suit, compass */
       assert (t->tr_int1 >= SUIT_CLUB && t->tr_int1 <= SUIT_SPADE);
       assert (t->tr_int2 >= COMPASS_NORTH && t->tr_int2 <= COMPASS_WEST);
-      return hs[t->tr_int2].hs_length[t->tr_int1];
+      return suitlength(curdeal, hs, t->tr_int2, t->tr_int1);
     case TRT_HCPTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       return hcp(curdeal, hs, t->tr_int1, 4);
@@ -1278,7 +1298,7 @@ static int evaltree (struct treebase *b) {
       /* assert (t->tr_int2 >= 0 && t->tr_int2 < MAXDISTR); */
       {
         struct treeshape *s = (struct treeshape *)b;
-        return (checkshape(hs[s->compass].hs_bits, &s->shape));
+        return (checkshape(distrbit(curdeal, hs, s->compass), &s->shape));
       }
     case TRT_HASCARD:      /* compass, card */
       {
