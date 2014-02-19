@@ -31,8 +31,7 @@ struct handstat {
     int hs_bits;                /* Distribution bit position */
     int hs_loser[NSUITS];       /* Losers in a suit */
     int hs_totalloser;          /* Losers in the hand */
-    int hs_control[NSUITS];     /* Controls in a suit */
-    int hs_totalcontrol;        /* Controls in the hand */
+    int hs_control[NSUITS + 1]; /* Controls in a suit or total */
 } ;
 
 struct handstat hs[4] ;

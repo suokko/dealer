@@ -533,6 +533,23 @@ static int hcp (const struct board *d, struct handstat *hsbase, int compass, int
       return hs->hs_points[suit];
 }
 
+static int control (const struct board *d, struct handstat *hsbase, int compass, int suit)
+{
+      assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
+      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+
+      struct handstat *hs = &hsbase[compass];
+
+      if (hs->hs_control[suit] == -1) {
+        /* No cached value so has to calculate it */
+        const hand h = suit == 4 ? d->hands[compass] :
+                                   d->hands[compass] & suit_masks[suit];
+
+        hs->hs_control[suit] = getpc(idxControls, h);
+      }
+      return hs->hs_control[suit];
+}
+
 static void analyze (const struct board *d, struct handstat *hsbase) {
 
   /* Analyze a hand.  Modified by HU to count controls and losers. */
@@ -584,7 +601,7 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
     /* Initialize values summed */
     hs->hs_totalloser = 0;
     hs->hs_points[4] = -1;
-    hs->hs_totalcontrol = 0;
+    hs->hs_control[4] = -1;
 
     /* start from the first card for this player, and walk through them all -
        use the player offset to jump to the first card.  Can't just increment
@@ -601,7 +618,7 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
          values which are common enough to warrant a non array lookup */
       hs->hs_points[s] = -1;
       int ctrl = getpc(idxControlsInt, h & suit_masks[s]);
-      hs->hs_control[s] = getpc(idxControls, h & suit_masks[s]);
+      hs->hs_control[s] = -1;
 
       switch (hs->hs_length[s]) {
         case 0: {
@@ -632,7 +649,6 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
 
       /* Now add the losers to the total. */
       hs->hs_totalloser += hs->hs_loser[s];
-      hs->hs_totalcontrol += hs->hs_control[s];
 
     } /* end for each suit */
 
@@ -1259,11 +1275,11 @@ static int evaltree (struct treebase *b) {
       return hs[t->tr_int1].hs_loser[t->tr_int2];
     case TRT_CONTROLTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalcontrol;
+      return control(curdeal, hs, t->tr_int1, 4);
     case TRT_CONTROL:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_control[t->tr_int2];
+      return control(curdeal, hs, t->tr_int1, t->tr_int2);
     case TRT_CCCC:
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       return cccc (t->tr_int1);
