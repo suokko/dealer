@@ -550,6 +550,56 @@ static int control (const struct board *d, struct handstat *hsbase, int compass,
       return hs->hs_control[suit];
 }
 
+static int loser (const struct board *d, struct handstat *hsbase, int compass, int suit)
+{
+      assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
+      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+
+      struct handstat *hs = &hsbase[compass];
+
+      if (hs->hs_loser[suit] == -1) {
+        /* No cached value so has to calculate it */
+        if (suit == 4) {
+          hs->hs_loser[4] = 0;
+          for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
+            hs->hs_loser[4] += loser(d, hsbase, compass, suit);
+        } else {
+          const int length = hs->hs_length[suit];
+          const hand h = d->hands[compass] & suit_masks[suit];
+          int control = getpc(idxControlsInt, h);
+          int winner = getpc(idxWinnersInt, h);
+
+          switch (length) {
+          case 0:
+            /* A void is 0 losers */
+            hs->hs_loser[suit] = 0;
+            break;
+          case 1:
+            {
+              /* Singleton A 0 losers, K or Q 1 loser */
+              int losers[] = {1, 1, 0};
+              assert (control < 3);
+              hs->hs_loser[suit] = losers[control];
+              break;
+            }
+          case 2:
+            {
+              /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
+              int losers[] = {2, 1, 1, 0};
+              assert (control <= 3);
+              hs->hs_loser[suit] = losers[control];
+              break;
+            }
+          default:
+            /* Losers, first correct the number of losers */
+            hs->hs_loser[suit] = 3 - winner;
+            break;
+          }
+        }
+      }
+      return hs->hs_loser[suit];
+}
+
 static void analyze (const struct board *d, struct handstat *hsbase) {
 
   /* Analyze a hand.  Modified by HU to count controls and losers. */
@@ -599,7 +649,7 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
 #endif /* _DEBUG_ */
 
     /* Initialize values summed */
-    hs->hs_totalloser = 0;
+    hs->hs_loser[4] = -1;
     hs->hs_points[4] = -1;
     hs->hs_control[4] = -1;
 
@@ -617,38 +667,8 @@ static void analyze (const struct board *d, struct handstat *hsbase) {
       /* Now, using the values calculated already, load those pointcount
          values which are common enough to warrant a non array lookup */
       hs->hs_points[s] = -1;
-      int ctrl = getpc(idxControlsInt, h & suit_masks[s]);
       hs->hs_control[s] = -1;
-
-      switch (hs->hs_length[s]) {
-        case 0: {
-          /* A void is 0 losers */
-          hs->hs_loser[s] = 0;
-          break;
-        }
-        case 1: {
-          /* Singleton A 0 losers, K or Q 1 loser */
-          int losers[] = {1, 1, 0};
-          assert (ctrl < 3);
-          hs->hs_loser[s] = losers[ctrl];
-          break;
-        }
-        case 2: {
-          /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
-          int losers[] = {2, 1, 1, 0};
-          assert (ctrl <= 3);
-          hs->hs_loser[s] = losers[ctrl];
-          break;
-        }
-        default: {
-          /* Losers, first correct the number of losers */
-          hs->hs_loser[s] = 3 - getpc(idxWinnersInt, h & suit_masks[s]);
-          break;
-        }
-      }
-
-      /* Now add the losers to the total. */
-      hs->hs_totalloser += hs->hs_loser[s];
+      hs->hs_loser[s] = -1;
 
     } /* end for each suit */
 
@@ -1268,11 +1288,11 @@ static int evaltree (struct treebase *b) {
       }
     case TRT_LOSERTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hs[t->tr_int1].hs_totalloser;
+      return loser(curdeal, hs, t->tr_int1, 4);
     case TRT_LOSER:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hs[t->tr_int1].hs_loser[t->tr_int2];
+      return loser(curdeal, hs, t->tr_int1, t->tr_int2);
     case TRT_CONTROLTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       return control(curdeal, hs, t->tr_int1, 4);
