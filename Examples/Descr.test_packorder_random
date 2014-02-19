@@ -1,0 +1,8 @@
+# Random packorder means we analyze each time different boards
+# but unit testing requires same output each time requiring
+# rules to make sure we output same stuff in-depend of boards
+
+generate 1000000
+
+action
+	average "one" hcp(north) - hcp(north) + 1,

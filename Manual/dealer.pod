@@ -1,10 +1,11 @@
+=encoding utf-8
 =head1 NAME
 
 dealer - bridge hand generator
 
 =head1 SYNOPSIS
 
-B<dealer> [-023ehuvmqV] [-p I<n>] [-g I<n>] [-s I<seed>] [-l I<n>] [I<inputfile>]
+B<dealer> [-023ehuvmqV] [-p I<n>] [-g I<n>] [-s I<seed>] [-i S<rng>] [-i I<n1>,-I<n2>,...,-I<n52>] [-l I<n>] [I<inputfile>]
 
 =head1 DESCRIPTION AND EXAMPLE
 
@@ -67,6 +68,15 @@ Suppress PBN output (useful for testing, then switch it back on when generating 
 
 Uses number as the seed for the random generator, running the program twice
 with the same seed will produce the same sequence of hands.
+
+=item B<-i> S<rng>
+
+Initial pack order using system random number generator (/dev/random).
+
+=item B<-i> S<c1>S<c2>...S<c52>
+
+Initial pack order given as list of cards. First character is the suit symbol
+[SHDCshdc♠♥♦♣♤♡♢♧] and second character is the rank [23456789TJQKA].
 
 =item B<-u>
 

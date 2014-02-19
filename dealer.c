@@ -69,6 +69,7 @@ enum { STAT_MODE, EXHAUST_MODE };
 static int computing_mode = DEFAULT_MODE;
 
 static const char ucrep[14] = "23456789TJQKA";
+static const char *ucsep[4]  = {"♣","♦","♥","♠"};
 
 static int biastotal = 0;
 int biasdeal[4][4] = { {-1, -1, -1, -1}, {-1, -1, -1, -1},
@@ -295,7 +296,7 @@ static int true_dd (const struct board *d, int l, int c) {
 #ifdef MSDOS
     /* Ugly fix for MSDOS. Requires a file called in.txt and will create the
        files tst.pbn and out.txt. Note that we need not user crlf here, as it's
-       only dealer that will read the files anyway, Micke Hovm�ller 990310 */
+       only dealer that will read the files anyway, Micke Hovmöller 990310 */
     FILE *f;
     char tn1[] = "tst.pbn";
     char tn2[] = "out.txt";
@@ -306,7 +307,7 @@ static int true_dd (const struct board *d, int l, int c) {
     fprintcompact (f, d, 0);
     /* Write the player to lead and strain. Note that since the player to lead
        sits _behind_ declarer, the array is "eswn" instead of "nesw".
-       /Micke Hovm�ller 990312 */
+       /Micke Hovmöller 990312 */
     fprintf (f, "%c %c\n", "eswn"[l], "cdhsn"[c]);
     fclose (f);
 
@@ -444,13 +445,131 @@ static int checkshape (int nr, struct shape *s)
   return r;
 }
 
-static void newpack (struct pack *d) {
+struct rng {
+  FILE *f;
+  unsigned char random[70];
+  unsigned idx;
+};
+
+static struct rng *initrng()
+{
+  struct rng *r;
+  struct rng rvalue = {0, {0}, 0};
+  /* Some paths to try in order for the random device */
+  const char *paths[] = { "/dev/urandom", "/dev/random" };
+  unsigned i;
+  for (i = 0; i < sizeof(*paths)/sizeof(paths[0]); i++) {
+    FILE *f = fopen(paths[i], "r");
+    if (!f)
+      continue;
+    setvbuf(f, NULL, _IONBF, sizeof(random));
+    rvalue.f = f;
+    rvalue.idx = sizeof(rvalue.random);
+    break;
+  }
+  if (rvalue.f == 0)
+    error("No random device could be opened");
+  r = malloc(sizeof(*r));
+  *r = rvalue;
+  return r;
+}
+
+static int nextpos(struct rng *r, int place)
+{
+  int rv;
+  unsigned char v;
+  do {
+    if (r->idx == sizeof(r->random)) {
+      rv = fread(r->random, sizeof(r->random), 1, r->f);
+      r->idx = 0;
+      if (rv != 1)
+        error("Failed to read random state");
+    }
+    v = r->random[r->idx++];
+    rv = v % (52 - place);
+  } while(place - rv > 255 - v);
+  return rv;
+}
+
+static void freerng(struct rng *r)
+{
+  if (r->f)
+    fclose(r->f);
+  free(r);
+}
+
+card make_card (char rankchar, char suitchar);
+
+static void newpack (struct pack *d, const char *initialpack) {
   int suit, rank, place;
 
   place = 0;
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
     for (rank = 0; rank < 13; rank++)
       d->c[place++] = MAKECARD (suit, rank);
+
+  /* If user wants random order initial pack do a single shuffle using
+   * user values or system random number generator.
+   */
+  if (initialpack) {
+    char statetext[52*3+1];
+    char *iter = statetext;
+
+    if (strcmp(initialpack, "rng") == 0) {
+      struct rng *state = initrng();
+
+      for (place = 0; place < 51; place++) {
+        int pos = nextpos(state, place) + place;
+        assert (pos < 52);
+        assert (pos >= place);
+        card t = d->c[pos];
+        d->c[pos] = d->c[place];
+        d->c[place] = t;
+        iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
+      }
+      card t = d->c[place];
+      iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
+      freerng(state);
+    } else {
+      const char *initer = initialpack;
+      const char *suitsymbols[4][4] = {
+        {"C","c","♣","♧"},
+        {"D","d","♦","♤"},
+        {"H","h","♥","♡"},
+        {"S","s","♠","♤"},
+      };
+      for (place = 0; place < 52; place++) {
+        char suit, rank;
+        int s, i;
+        if (initer[0] == '\0')
+          error("Need 52 card for initial pack order");
+        for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
+          suit = suitsymbols[s][0][0];
+          for (i = 0; i < 4; i++) {
+            if (strncmp(initer, suitsymbols[s][i], strlen(suitsymbols[s][i])) == 0) {
+              initer += strlen(suitsymbols[s][i]);
+              goto breakout;
+            }
+          }
+        }
+        error("Unknown suit symbol");
+breakout:
+        if (initer[0] == '\0')
+          error("Need 52 card for initial pack order");
+        rank = initer[0];
+        initer++;
+
+        d->c[place] = make_card(rank, suit);
+        card t = d->c[place];
+        iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
+      }
+    }
+
+    if (!quiet)
+      printf("Initial pack order: %s\n", statetext);
+
+    free((char *)initialpack);
+  }
 }
 
 card hascard (const struct board *d, int player, card onecard) {
@@ -519,7 +638,7 @@ int make_contract (char suitchar, char trickchar) {
 static int hcp (const struct board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
-      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+      assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
 
       struct handstat *hs = &hsbase[compass];
 
@@ -538,7 +657,7 @@ static int hcp (const struct board *d, struct handstat *hsbase, int compass, int
 static int control (const struct board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
-      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+      assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
 
       struct handstat *hs = &hsbase[compass];
 
@@ -584,7 +703,7 @@ static int distrbit (const struct board *d, struct handstat *hsbase, int compass
 static int loser (const struct board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
-      assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE || suit == 4);
+      assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
 
       struct handstat *hs = &hsbase[compass];
 
@@ -801,7 +920,7 @@ void predeal (int player, card onecard) {
     yyerror("More than 13 cards for one player");
 }
 
-static void initprogram () {
+static void initprogram (const char *initialpack) {
   int i = 0, p, j = 0;
 
   struct pack temp;
@@ -811,7 +930,7 @@ static void initprogram () {
   /* clear the handstat cache */
   memset(hs, -1, sizeof(hs));
 
-  newpack(&temp);
+  newpack(&temp, initialpack);
 
   setup_bias();
 
@@ -1619,6 +1738,7 @@ int main (int argc, char **argv) {
   int seed_provided = 0;
   extern int optind;
   extern char *optarg;
+  const char *initialpack = NULL;
   int c;
   int errflg = 0;
   int progressmeter = 0;
@@ -1634,7 +1754,7 @@ int main (int argc, char **argv) {
 
   gettimeofday (&tvstart, (void *) 0);
 
-  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:V")) != -1) {
+  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:")) != -1) {
     switch (c) {
       case '0':
       case '2':
@@ -1656,6 +1776,12 @@ int main (int argc, char **argv) {
         break;
       case 'p':
         maxproduce = atoi (optarg);
+        break;
+      case 'i':
+        /* 96bit number translated to initial pack order or rng for secure
+         * random number from system.
+         */
+        initialpack = strdup(optarg);
         break;
       case 's':
         seed_provided = 1;
@@ -1685,7 +1811,7 @@ int main (int argc, char **argv) {
       }
     }
   if (argc - optind > 2 || errflg) {
-    fprintf (stderr, "Usage: %s [-emv] [-s seed] [-p num] [-v num] [inputfile]\n", argv[0]);
+    fprintf (stderr, "Usage: %s [-emv] [-s seed] [-i rng|52 cards] [-p num] [-v num] [inputfile]\n", argv[0]);
     exit (-1);
   }
   if (optind < argc && freopen (input_file = argv[optind], "r", stdin) == NULL) {
@@ -1704,7 +1830,7 @@ int main (int argc, char **argv) {
   }
   SRANDOM (seed);
 
-  initprogram ();
+  initprogram (initialpack);
   if (maxgenerate == 0)
     maxgenerate = 10000000;
   if (maxproduce == 0)

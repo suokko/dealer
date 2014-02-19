@@ -20,7 +20,12 @@ to generate all 10 400 600 hands in less than 10 seconds on any modern computer.
       on when generating the "final" sample).
  <li> <b>-s number :</b> Uses number as the seed for the random generator,
       running the program twice with the same seed, will produce the
-      same sequence of hands.  
+      same sequence of hands.
+ <li> <b>-i rng|52 cards :</b> Initial order of pack for dealing making it
+      possible to generate all possible boards in the first run of shuffle.
+      Possible parameter are string "rng" that tells to use system secure random
+      number source or one string holding all 52 cards starting with suit symbol
+      [SHDCshdc♠♥♦♣♤♡♢♧] followed by rank [23456789TJQKA].
  <li> <b>-u :</b> Select upper- or lowercase for the symbols "AKQJT".
  <li> <b>-v :</b> Verbose output, prints statistics at the end of the run.
  <li> <b>-V :</b> Emits a version-identification string and exits

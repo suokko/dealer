@@ -1,0 +1,6 @@
+-s 1 -i rng -q Descr.test_packorder_random
+one: 1
+Generated 1000000 hands
+Produced 1000000 hands
+Initial random seed 1
+Time needed    0.768 sec
