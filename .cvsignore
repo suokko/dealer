@@ -17,3 +17,4 @@ Examples/Output.*
 tags
 etags
 build.mk
+cpudetect/cpudetect
