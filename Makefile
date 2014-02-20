@@ -211,6 +211,17 @@ ${1}_MV_OBJS += $$(MV_OBJS) $$(patsubst %.o,%.cov.o,$$(MV_OBJS)) $$(patsubst %.o
 
 endef
 
+define SET_CXX
+$(if $(filter ${1},$($(2)_LIBS)),$(2)_HASCXX:=cxx,)
+endef
+
+define PUSH_CXX
+ifeq ($$(${1}_HASCXX),cxx)
+$$(foreach DEP,$$(ALL_TARGETS),\
+	$$(eval $$(call SET_CXX,${1},$$(DEP))))
+endif
+endef
+
 # Setup dependencies for each target so all sources are build into the target
 define MAKE_TARGET
 # Basic path and target type variable setup
@@ -305,15 +316,17 @@ $$(${1}_COVPATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(${1}_COVPATH): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 
 # Libary dependencies
-# TODO check for c++ static libraries
 # TODO support shared libraries
 ${1}_SYSLIBS := $$(filter -l%,$$(${1}_LIBS))
 ${1}_LIBS := $$(filter-out -l%,$$(${1}_LIBS))
 ifeq ($$(${1}_HASCXX),c)
 $$(foreach LIB,$$(${1}_LIBS),\
 	$$(if $$(filter cxx,$$($${LIB}_HASCXX)),${1}_HASCXX:=cxx,))
-# TODO needs to push cxx detection down the dependency chain
 endif
+ifeq ($$(${1}_HASCXX),cxx)
+$$(eval $$(call PUSH_CXX,${1}))
+endif
+
 $${${1}_PATH}: $$(call CONCAT,$$(LIB_DIR),$$(${1}_LIBS))
 $${${1}_COVPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.cov.a,$$(${1}_LIBS)))
 $${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS)))
