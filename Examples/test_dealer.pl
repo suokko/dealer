@@ -7,10 +7,8 @@ if ($file eq "") {
 }
 
 if ($exe eq "") {
-  $exe = "dealer"
+  $exe = "../dealer"
 }
-
-$exe = "../$exe";
 
 print $exe
 #
@@ -25,14 +23,14 @@ sub replaceprogname {
   $cov  = $exe;
   $orig = $exe;
   $cov  =~ s/^.*\/([^\/]*[^.][^c][^o][^vf])(\.cov|\.prof|)$/\1.cov/;
-  $orig =~ s/^.*\/([^\/]*[^.][^c].[^v])(\.cov|)$/\1/;
+  $orig =~ s/^(.*\/)([^\/]*[^.][^c].[^v])(\.cov|)$/(\1|)\2/;
  
   open (IN, "+<$file");
   @lines = <IN>;
 
   seek IN,0,0;
   foreach $line (@lines) {
-    $line =~ s/$orig([^.][^c][^o][^v])/$cov\1/g;
+    $line =~ s/$orig([^.\/][^cp])/$cov\2/g;
     print IN $line;
   }
   close IN;

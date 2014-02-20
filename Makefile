@@ -3,7 +3,7 @@
 # Make the path to be relative to working directory or
 # absolute if it is below current working directory
 define CANONICAL_PATH
-$(subst $(CURDIR),.,$(patsubst $(CURDIR)/%,%,$(abspath $(1))))
+$(abspath $(1))
 endef
 
 # Concat a path to list of files
@@ -136,7 +136,7 @@ clean_${1}:
 endef
 
 define CREAT_CLEAN_DIR_RULE
-ifneq ($(abspath ${1}),${1})
+ifneq ($(subst $(CURDIR),,${1}),${1})
 clean: clean_dir_${1}
 endif
 
@@ -399,7 +399,7 @@ $$(call CONCAT,$$(DIR),$(BUILDDIR))/%.$$(MAN_SECTION): $$(call CONCAT,$$(DIR),%.
 	@mkdir -p $$(dir $$@)
 	$$(SPOD2MAN) --section=6 --release="$(PROGRAM)" --center="User Documentation" $$< > $$@
 
-ifneq ($$(abspath $$(DIR)),$$(DIR))
+ifneq ($$(subst $(CURDIR),,$$(DIR)),$$(DIR))
 ifneq ($$(MANS),)
 all: $$(MANS)
 

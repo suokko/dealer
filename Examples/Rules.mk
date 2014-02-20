@@ -10,7 +10,7 @@ DOCS := Descr.*
 
 DOCS_INSTALL_PATH := Examples
 
-SRCDIR := ${CURDIR}/Examples
+SRCDIR := ${TOP}/Examples
 
 SHELL=/bin/sh
 
@@ -41,6 +41,7 @@ else
 PROG:=${PROGRAM}
 endif
 endif
+PROG:=$(call CONCAT,$(TOP),$(PROG))
 
 OUT = $(subst Descr.,Output.,${DESCR})
 
@@ -50,7 +51,7 @@ testcov: makehtml
 ALLTESTS := distribution examples
 
 distribution: ${PROG} clearstats
-	@cd ${SRCDIR} && ../${PROG} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
+	@cd ${SRCDIR} && ${PROG} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
 
 examples: ${OUT}
 
