@@ -20,7 +20,6 @@ card  make_card(char,char);
 void  clearpointcount(void);
 void  clearpointcount_alt(int);
 void  pointcount(int,int);
-void* mycalloc(int,size_t);
 int   make_contract (char, char);
 extern int yylex (void);
 static int d2n(char s[4]);
@@ -28,6 +27,7 @@ static int d2n(char s[4]);
 static int predeal_compass;     /* global variable for predeal communication */
 
 static int pointcount_index;    /* global variable for pointcount communication */
+extern struct globals *gp;
 
 static struct treebase *var_lookup(char *s, int mustbethere) ;
 static struct action *newaction(int type, struct treebase * p1, char * s1, int, struct treebase * ) ;
@@ -103,29 +103,25 @@ defs
 
 def
         : GENERATE number
-                { extern int maxgenerate; if(!maxgenerate) maxgenerate = $2; }
+                { if(!gp->maxgenerate) gp->maxgenerate = $2; }
         | PRODUCE number
-                { extern int maxproduce; if(!maxproduce) maxproduce = $2; }
+                { if(!gp->maxproduce) gp->maxproduce = $2; }
         | DEALER  compass
-                { extern int maxdealer;
-                  maxdealer = $2;
-                }
+                { gp->maxdealer = $2; }
         | VULNERABLE vulnerable
-                { extern int maxvuln;
-                  maxvuln = $2;
-                }
+                { gp->maxvuln = $2; }
         | PREDEAL predealargs
         | POINTCOUNT { clearpointcount(); pointcount_index=12;} pointcountargs
         | ALTCOUNT number
                 { clearpointcount_alt($2); pointcount_index=12;} pointcountargs
         | CONDITION expr
-                { extern struct treebase *decisiontree; decisiontree = $2; }
+                { gp->decisiontree = $2; }
         | expr
-                { extern struct treebase *decisiontree; decisiontree = $1; }
+                { gp->decisiontree = $1; }
         | IDENT '=' expr
                 { new_var($1, $3); }
         | ACTION actionlist
-                { extern struct action *actionlist; actionlist = $2; }
+                { gp->actionlist = $2; }
         ;
 
 predealargs
@@ -156,12 +152,12 @@ pointcountargs
 
 compass
         : COMPASS
-                { extern int use_compass[NSUITS]; use_compass[$1] = 1; $$= $1; }
+                { gp->use_compass |= 1 << $1; $$= $1; }
         ;
 
 vulnerable
         : VULNERABLE
-                { extern int use_vulnerable[NSUITS]; use_vulnerable[$1] = 1; $$= $1; }
+                { $$= $1; }
         ;
 
 shlprefix
@@ -347,37 +343,37 @@ actionlist
         ;
 action
         : PRINTALL
-                { will_print++;
+                { gp->will_print = 1;
                   $$ = newaction(ACT_PRINTALL, NIL, (char *) 0, 0, NIL);
                 }
         | PRINTEW
-                { will_print++;
+                { gp->will_print = 1;
                   $$ = newaction(ACT_PRINTEW, NIL, (char *) 0, 0, NIL);
                 }
         | PRINT '(' printlist ')'
-                { will_print++;
+                { gp->will_print = 1;
                   $$ = newaction(ACT_PRINT, NIL, (char *) 0, $3, NIL);
                 }
         | PRINTCOMPACT
-                { will_print++;
+                { gp->will_print = 1;
                   $$=newaction(ACT_PRINTCOMPACT,NIL,0,0, NIL);}
         | PRINTONELINE
-                { will_print++;
+                { gp->will_print = 1;
                   $$ = newaction(ACT_PRINTONELINE, NIL, 0, 0, NIL);}
         | PRINTPBN
-                { will_print++;
+                { gp->will_print = 1;
                   $$=newaction(ACT_PRINTPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
-                { will_print++;
+                { gp->will_print = 1;
                   $$=newaction(ACT_PRINTES,(struct treebase*)$3,0,0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
-                { will_print++;
+                { gp->will_print = 1;
                   $$=newaction(ACT_EVALCONTRACT,0,0,0, NIL);}
         | PRINTCOMPACT '(' expr ')'
-                { will_print++; 
+                { gp->will_print = 1;
                   $$=newaction(ACT_PRINTCOMPACT,$3,0,0, NIL);}
         | PRINTONELINE '(' expr ')'
-                { will_print++;
+                { gp->will_print = 1;
                   $$=newaction(ACT_PRINTONELINE,$3,0,0, NIL);}
         | AVERAGE optstring expr
                 { $$ = newaction(ACT_AVERAGE, $3, $2, 0, NIL); }
@@ -650,29 +646,29 @@ static char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
 int bias_len(int compass){
   return
-    TRUNCZ(biasdeal[compass][0])+
-    TRUNCZ(biasdeal[compass][1])+
-    TRUNCZ(biasdeal[compass][2])+
-    TRUNCZ(biasdeal[compass][3]);
+    TRUNCZ(gp->biasdeal[compass][0])+
+    TRUNCZ(gp->biasdeal[compass][1])+
+    TRUNCZ(gp->biasdeal[compass][2])+
+    TRUNCZ(gp->biasdeal[compass][3]);
 }
 
 int bias_totsuit(int suit){
   return
-    TRUNCZ(biasdeal[0][suit])+
-    TRUNCZ(biasdeal[1][suit])+
-    TRUNCZ(biasdeal[2][suit])+
-    TRUNCZ(biasdeal[3][suit]);
+    TRUNCZ(gp->biasdeal[0][suit])+
+    TRUNCZ(gp->biasdeal[1][suit])+
+    TRUNCZ(gp->biasdeal[2][suit])+
+    TRUNCZ(gp->biasdeal[3][suit]);
 }
 
 void bias_deal(int suit, int compass, int length){
-  if(biasdeal[compass][suit]!=-1){
+  if(gp->biasdeal[compass][suit]!=-1){
     char s[256];
     sprintf(s,"%s's %s suit has length already set to %d",
       player_name[compass],suit_name[suit],
-      biasdeal[compass][suit]);
+      gp->biasdeal[compass][suit]);
     yyerror(s);
   }
-  biasdeal[compass][suit]=length;
+  gp->biasdeal[compass][suit]=length;
   if(bias_len(compass)>13){
       char s[256];
     sprintf(s,"Suit lengths too long for %s",

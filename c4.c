@@ -24,7 +24,7 @@ basically a no-op.
 #include "c4.h"
 
 #define C4_TYPE int
-C4_TYPE Rescale (int nValue) {
+static C4_TYPE Rescale (int nValue) {
   return nValue;
 }
 
@@ -45,7 +45,7 @@ int eval_cccc (int seat) {
   int suit;
 
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; ++suit) {
-    int Length = suitlength(curdeal, hs, seat, suit);
+    int Length = suitlength(&gptr->curboard, hs, seat, suit);
 
     int HasAce   = HAS_CARD2 (suit, RK_ACE);
     int HasKing  = HAS_CARD2 (suit, RK_KING);
@@ -118,7 +118,7 @@ int eval_cccc (int seat) {
 int suit_quality (int seat, int suit) {
   int Quality = 0;
 
-  int Length = suitlength(curdeal, hs, seat, suit);
+  int Length = suitlength(&gptr->curboard, hs, seat, suit);
 
   int HasAce   = HAS_CARD2 (suit, RK_ACE);
   int HasKing  = HAS_CARD2 (suit, RK_KING);

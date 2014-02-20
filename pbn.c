@@ -10,7 +10,6 @@
 #include "pbn.h"
 #include "card.h"
 
-extern long seed;
 extern char* input_file;
 
 int printpbn (int board, const struct board *d) {
@@ -32,7 +31,7 @@ int printpbn (int board, const struct board *d) {
   verbose ^= 1;
 
   printf ("[Event \"Hand simulated by dealer with file %s, seed %lu\"]\n",
-  input_file, seed);
+  input_file, gptr->seed);
 
   printf ("[Site \"-\"]\n");
 
@@ -50,17 +49,17 @@ int printpbn (int board, const struct board *d) {
   printf ("[South \"-\"]\n");
    
   /* Dealer, rotates unless set by the user */
-  if ((maxdealer < 0) || (maxdealer > 3)) { 
+  if ((gptr->maxdealer < 0) || (gptr->maxdealer > 3)) { 
      printf ("[Dealer \"%s\"]\n", dealer_name[board%4]);
   } else {
-    printf ("[Dealer \"%s\"]\n", dealer_name[maxdealer]);
+    printf ("[Dealer \"%s\"]\n", dealer_name[gptr->maxdealer]);
   }
   
   /* Vulnerability, rotates unless set by the user */
-  if ((maxvuln < 0) || (maxvuln > 3)) {
+  if ((gptr->maxvuln < 0) || (gptr->maxvuln > 3)) {
      printf ("[Vulnerable \"%s\"]\n", vulner_name[board_vul[board%16]]);
   } else {
-     printf ("[Vulnerable \"%s\"]\n", vulner_name[maxvuln]);
+     printf ("[Vulnerable \"%s\"]\n", vulner_name[gptr->maxvuln]);
   }
 
   /* Print the cards */

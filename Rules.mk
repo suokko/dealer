@@ -1,9 +1,8 @@
-TARGETS := dealer dealergenlib
+TARGETS := dealer dealergenlib libdealer.a
 
-dealer_LIBS := librand.a
+dealer_LIBS := libdealer.a librand.a libcpudetect.a
 
-dealer_SRC := dealer.c \
-	c4.c \
+dealer_SRC := main.c \
 	pbn.c \
 	pointcount.c \
 	defs.y \
@@ -19,4 +18,23 @@ dealer_LIBS += -lws2_32
 dealergenlib_LIBS += -lws2_32 librand.a
 endif
 
+libdealer.a_SRC := dealer.c \
+	c4.c 
+
+libdealer.a_MV_SRC := dealer.c c4.c
+libdealer.a_MV_CFG := default sse2 popcnt sse4 avx2
+
+libdealer.a_MV_default := -DMVDEFAULT 
+
+ifneq ($(subst gcc,,$(COMPILERVERSION)),$(COMPILERVERSION))
+libdealer.a_MV_sse2 := -msse -msse2 -mfpmath=sse
+libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt -mfpmath=sse
+libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mfpmath=sse
+libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mavx2 -mfpmath=sse
+else
+libdealer.a_MV_sse2 := -msse -msse2 
+libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt 
+libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 
+libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx  -mavx2 
+endif
 SUBDIRS := */Rules.mk

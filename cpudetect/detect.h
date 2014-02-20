@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 extern "C" {
+#else
+#include <stdbool.h>
 #endif
 
 void cpu_init();
