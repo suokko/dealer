@@ -169,11 +169,7 @@ MV_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 
 ifeq ($$(FLAGSWORK),)
 
-ifneq ($(filter release,$(MAKECMDGOALS)),)
 $$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(PUSEFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
-else
-$$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
-endif
 $$(MV_OBJS):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(MV_OBJS):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
 $$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCPPFLAGS := $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(OFLAG) $$(COVFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
@@ -288,11 +284,7 @@ cov: $$(${1}_COVPATH)
 endif
 
 #Target variables
-ifneq ($(filter release,$(MAKECMDGOALS)),)
 $$(${1}_OBJS): DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(PUSEFLAGS) $$(INCPPFLAGS)
-else
-$$(${1}_OBJS): DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $$(INCPPFLAGS)
-endif
 $$(${1}_OBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(${1}_OBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 $$(${1}_COVOBJS): DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(COVFLAGS) $$(INCPPFLAGS)
@@ -301,11 +293,7 @@ $$(${1}_COVOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 $$(${1}_PROFOBJS): DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(PROFFLAGS) $$(INCPPFLAGS)
 $$(${1}_PROFOBJS): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(${1}_PROFOBJS): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
-ifneq ($(filter release,$(MAKECMDGOALS)),)
 $${${1}_PATH}: DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(PUSEFLAGS)
-else
-$${${1}_PATH}: DCPPFLAGS := $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(OPTFLAGS)
-endif
 $$(${1}_PATH): DCXXFLAGS := $(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(${1}_PATH): DCFLAGS := $(DCFLAGS) $$(${1}_CFLAGS)
 $${${1}_PROFPATH}: DCPPFLAGS := $(OPTFLAGS) $(DCPPFLAGS) $$(${1}_CPPFLAGS) $(PROFFLAGS)
@@ -334,11 +322,7 @@ $${${1}_PROFPATH}: $$(call CONCAT,$$(LIB_DIR),$$(subst .a,.prof.a,$$(${1}_LIBS))
 # Setup flex and yacc dependencies
 ifneq "$$(${1}_YACCS)" ""
 $$(${1}_YACCS): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
-ifneq ($(filter release,$(MAKECMDGOALS)),)
 $$(${1}_YACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $$(PUSEFLAGS) $$(INCFLAGS)
-else
-$$(${1}_YACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(INCFLAGS)
-endif
 $$(subst .o,.cov.o,$$(${1}_YACCS)): $$(${1}_FLEXS) $$(subst .o,.c,$$(${1}_YACCS))
 $$(subst .o,.cov.o,$$(${1}_YACCS)): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function $$(COVFLAGS) $$(INCFLAGS)
 $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))

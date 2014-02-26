@@ -25,9 +25,12 @@ else
 OPTFLAGS := -O2 -ftree-vectorize
 endif
 PROFFLAGS := -fprofile-generate
-PUSEFLAGS := -fprofile-use -flto
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
+PUSEFLAGS := -fprofile-use -flto=jobserver
 OPTFLAGS += $(RELEASEFLAGS)
+LDFLAGS += -fwhole-program
+else
+PUSEFLAGS :=
 endif
 
 #Disable inlining for coverage reports
