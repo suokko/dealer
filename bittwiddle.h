@@ -1,5 +1,7 @@
 #pragma once
 
+
+#if defined(__GNUC__) && !defined(__clang__)
 /**
  * GCC popcount fallback is horrible slow. That makes it better to use
  * hand coded fallback that produces clearly faster code.
@@ -119,3 +121,11 @@ static inline int popcount(unsigned int v)
 	return (v * mask) >> (sizeof(v)*8 - 8);
 #endif
 }
+
+#else
+
+#define popcount __builtin_popcount
+#define popcountl __builtin_popcountl
+#define popcountll __builtin_popcountll
+
+#endif

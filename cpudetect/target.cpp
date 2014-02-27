@@ -22,7 +22,7 @@ struct make_unsigned<unsigned __int128>
 #endif
 }
 
-#if __WORDSIZE == 32
+#if __WORDSIZE == 32 && !defined(__clang__)
 #define __builtin_popcountll(v) (__builtin_popcountl(v) + __builtin_popcountl(v >> 32))
 #endif
 
