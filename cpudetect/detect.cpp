@@ -1,6 +1,9 @@
 #include "detect.h"
 #include <set>
 #include <string>
+#if defined(__i386__) || defined(__x86_64__)
+#include <cpuid.h>
+#endif
 
 typedef std::set<std::string> feature_set;
 
@@ -11,11 +14,7 @@ static void x86_cpu_init()
 #if defined(__i386__) || defined(__x86_64__)
 	/* Fetch cpu features */
 	unsigned eax, ebx, ecx, edx, op = 1;
-	asm ("cpuid"
-		/* outputs */
-		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
-		/* inputs */
-		: "a" (op));
+	__get_cpuid(op, &eax, &ebx, &ecx, &edx);
 	/**
 	 * basic info
 	 */
@@ -139,11 +138,7 @@ static void x86_cpu_init()
 
 	/* Read more flags from op 7 */
 	op = 7;
-	asm ("cpuid"
-		/* outputs */
-		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
-		/* inputs */
-		: "a" (op));
+	__get_cpuid(op, &eax, &ebx, &ecx, &edx);
 
 	union extraflags {
 		uint32_t reg[4];
