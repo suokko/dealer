@@ -158,7 +158,7 @@ CPPFLAG := $$(filter-out -m%,$$(CPPFLAG)) $$(filter -m32,$$(CPPFLAG)) $$(filter 
 # Cache flag tests result for quicker recompiles
 CACHE := $$(LIB_DIR)/__flagtest.o.${1}_${2}.cache
 # Check -m flags passed in are accepted by compiler
-FLAGSWORK := $$(shell [ -e $$(CACHE) ] || ($(MKDIR) $$(LIB_DIR) && $(CC) -E $$(OPTFLAGS) $$(CPPFLAG) $$(DCFLAGS) $$(${1}_CFLAGS) $$(${1}_MV_${2}) $$(call CONCAT,$(TOP),flagstest.c) -o /dev/null 2> $$(CACHE)); cat $$(CACHE))
+FLAGSWORK := $$(shell [ -e $$(CACHE) ] || ($(MKDIR) $$(LIB_DIR) && echo "int main(void) {return 0;}" | $(CC) -E $$(OPTFLAGS) $$(CPPFLAG) $$(DCFLAGS) $$(${1}_CFLAGS) $$(${1}_MV_${2}) -x c - -o /dev/null 2> $$(CACHE)); cat $$(CACHE))
 
 FLAGS_CLEAN += $$(CACHE)
 endif
