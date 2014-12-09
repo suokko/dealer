@@ -1163,7 +1163,8 @@ int DEFUN(deal_main) (struct globals *g) {
   switch (gp->computing_mode) {
     case STAT_MODE:
       for (gp->ngen = gp->nprod = 0; gp->ngen < g->maxgenerate && gp->nprod < g->maxproduce; gp->ngen++) {
-        shuffle (&g->curboard);
+        if (!shuffle (&g->curboard))
+          break;
         if (interesting ()) {
           action ();
           gp->nprod++;
