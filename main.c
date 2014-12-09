@@ -596,6 +596,8 @@ static void cleanup_action () {
         }
         if (toprintcol[0] != 0)
           printf ("        Low");
+        else
+          printf ("    ");
         for (j = 1; j < (high2 - low2) + 2; j++) {
           if (toprintcol[j] != 0)
             printf (" %6d", j + low2 - 1);
