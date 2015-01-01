@@ -5,26 +5,26 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
 Losers: 6
-S : 1
+S : 0
 H : 3
 D : 1
-C : 1
-HCP: 17
-S : 4
-H : 1
+C : 2
+HCP: 8
+S : 0
+H : 0
 D : 6
-C : 6
-Control: 5
-S : 2
+C : 2
+Control: 1
+S : 0
 H : 0
 D : 1
-C : 2
+C : 0
 
 
 North hands:
@@ -32,24 +32,24 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
-C4: 1675
-S : 80
-H : 100
-D : 180
-C : 240
+C4: 1220
+S : 0
+H : 0
+D : 480
+C : 40
 tens: 1
 S : 0
-H : 1
-D : 0
+H : 0
+D : 1
 C : 0
-jacks: 2
+jacks: 1
 S : 0
-H : 1
+H : 0
 D : 1
 C : 0
 
@@ -59,10 +59,10 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
 queens: 2
 S : 0
@@ -74,11 +74,11 @@ S : 0
 H : 0
 D : 1
 C : 0
-aces: 2
-S : 1
+aces: 0
+S : 0
 H : 0
 D : 0
-C : 1
+C : 0
 
 
 North hands:
@@ -86,26 +86,26 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
-top2: 3
-S : 1
+top2: 1
+S : 0
 H : 0
 D : 1
-C : 1
-top3: 5
-S : 1
+C : 0
+top3: 3
+S : 0
 H : 0
 D : 2
-C : 2
-top4: 7
-S : 1
-H : 1
+C : 1
+top4: 4
+S : 0
+H : 0
 D : 3
-C : 2
+C : 1
 
 
 North hands:
@@ -113,21 +113,21 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
-top5: 8
-S : 1
-H : 2
-D : 3
-C : 2
-c13: 22
-S : 6
-H : 1
+top5: 5
+S : 0
+H : 0
+D : 4
+C : 1
+c13: 9
+S : 0
+H : 0
 D : 7
-C : 8
+C : 2
 
 
 North hands:
@@ -135,10 +135,10 @@ North hands:
 
 
    1.               
-A 4 
-J T 9 2 
-K Q J 
-A Q 5 4 
+- 
+7 5 2 
+K Q J T 8 6 4 2 
+Q 7 
 
 Generated 1 hands
 Produced 1 hands

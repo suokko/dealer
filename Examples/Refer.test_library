@@ -57,64 +57,56 @@ Produced 1 hands
 Initial random seed 1
 Time needed    0.000 sec
 -s 1 -l100 Descr.test_library
-n ...AKQJT98765432
-e ..AKQJT98765432.
-s .AKQJT98765432..
-w AKQJT98765432...
-north clubs: 13
-north diamonds: 0
-north hearts: 13
-north spades: 0
-north notrumps: 13
-south clubs: 13
-south diamonds: 0
-south hearts: 13
-south spades: 0
-south notrumps: 13
-east clubs: 0
-east diamonds: 13
-east hearts: 0
-east spades: 13
-east notrumps: 13
-west clubs: 0
-west diamonds: 13
-west hearts: 0
-west spades: 13
-west notrumps: 13
-Generated 1 hands
-Produced 1 hands
+north clubs: -nan
+north diamonds: -nan
+north hearts: -nan
+north spades: -nan
+north notrumps: -nan
+south clubs: -nan
+south diamonds: -nan
+south hearts: -nan
+south spades: -nan
+south notrumps: -nan
+east clubs: -nan
+east diamonds: -nan
+east hearts: -nan
+east spades: -nan
+east notrumps: -nan
+west clubs: -nan
+west diamonds: -nan
+west hearts: -nan
+west spades: -nan
+west notrumps: -nan
+Generated 0 hands
+Produced 0 hands
 Initial random seed 1
-Time needed    0.470 sec
+Time needed    0.000 sec
 -s 1 -l99 -g2 Descr.test_library
 n J64.AK754.A3.AQ7
 e Q82.963.Q8742.43
 s AK753.QT8.J65.KJ
 w T9.J2.KT9.T98652
-n J64.AK754.A3.AQ7
-e Q82.963.Q8742.43
-s AK753.QT8.J65.KJ
-w T9.J2.KT9.T98652
-north clubs: 8.5
+north clubs: 8
 north diamonds: 8
-north hearts: 11.5
-north spades: 11.5
-north notrumps: 11.5
-south clubs: 8.5
+north hearts: 11
+north spades: 11
+north notrumps: 11
+south clubs: 8
 south diamonds: 8
-south hearts: 11.5
-south spades: 11.5
-south notrumps: 11.5
-east clubs: 4.5
+south hearts: 11
+south spades: 11
+south notrumps: 11
+east clubs: 4
 east diamonds: 5
-east hearts: 1.5
-east spades: 1.5
-east notrumps: 1.5
-west clubs: 4.5
+east hearts: 1
+east spades: 1
+east notrumps: 1
+west clubs: 4
 west diamonds: 5
-west hearts: 1.5
-west spades: 1.5
-west notrumps: 1.5
-Generated 2 hands
-Produced 2 hands
+west hearts: 1
+west spades: 1
+west notrumps: 1
+Generated 1 hands
+Produced 1 hands
 Initial random seed 1
-Time needed    3.168 sec
+Time needed    0.000 sec

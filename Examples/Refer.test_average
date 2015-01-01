@@ -1,7 +1,7 @@
-avg > 0: 0.216094
-avg > 0: 0.154946
-avg > 200000: 0.216094
+avg > 0: 0.215743
+avg > 0: 0.154762
+avg > 200000: 0.215743
 Generated 1000000 hands
 Produced 1000000 hands
 Initial random seed 1
-Time needed    0.644 sec
+Time needed    0.762 sec

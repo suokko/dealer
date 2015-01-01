@@ -1,12 +1,13 @@
 Frequency controls:
-    4	      18
-    5	     324
-    6	    1636
-    7	    3516
-    8	    3387
-    9	    1034
-   10	      85
-Generated 1546443 hands
+    3	       1
+    4	      16
+    5	     317
+    6	    1588
+    7	    3563
+    8	    3455
+    9	     982
+   10	      78
+Generated 1542758 hands
 Produced 10000 hands
 Initial random seed 1
-Time needed    0.989 sec
+Time needed    1.122 sec

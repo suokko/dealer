@@ -1,62 +1,62 @@
-K Q 4               J 6 
-A Q 7 4 3           J 6 
-A 6 5               Q T 8 4 2 
-Q 9                 K J 3 2 
+K                   Q T 9 5 4 3 
+A J T 6             9 
+A Q 4               9 3 
+A 9 5 4 2           K Q J 6 
 
-K 8 4 2             Q J T 5 
-A 4                 7 5 
-A Q 5               K J 8 2 
-K J 7 3             Q 4 2 
+Q                   A J 8 5 3 2 
+A K Q T 8 7 3       9 2 
+K 8                 Q 4 
+A J 5               Q 9 3 
 
-A K 6 4             T 5 
-7 6                 K Q J 3 2 
-A Q T 6             9 7 2 
-A 4 2               K J 9 
+A Q                 9 6 2 
+K 9 7 3             A J T 8 5 4 
+K 6 4               J 8 5 
+A K 9 4             Q 
 
-A K 8               J 7 6 
-3                   A J T 9 8 6 4 
-K Q 8 7 2           - 
-A K J 9             Q 6 3 
+K 6 2               T 7 3 
+A K J 6 4 3         Q 9 8 2 
+Q 2                 K 9 
+A 7                 K J 9 2 
 
-A K 9               6 5 
-A K 4               Q 9 5 
-6                   K Q T 8 5 4 2 
-A T 7 5 3 2         Q 
+A 7                 Q 5 4 
+A K 9               Q J 7 6 2 
+J 8 7 5 2           K 
+A K Q               9 6 5 3 
 
-A J 9 6 4           T 8 
-A K J 7 2           Q 8 5 
-A                   J T 8 4 
-8 7                 A Q T 6 
+A K                 9 5 4 3 2 
+J 3                 K Q 6 5 2 
+A 6 5 4 3           K Q 
+A Q 8 6             7 
 
--                   Q T 7 5 
-A K Q 5 4           J 9 7 
-A K J 8             Q T 2 
-A 9 8 5             K J 6 
+K                   J T 9 
+A Q J 7 2           K T 3 
+A J T 6             Q 4 3 
+Q 7 5               K T 9 4 
 
-K 3                 6 2 
-A J 3               K Q 6 5 
-A K Q T 6 4         9 8 5 
-8 2                 K Q 9 3 
+Q J T 8 7           K 2 
+K J 8               Q 7 6 4 
+A 2                 K Q J T 9 
+A K 5               J T 
 
-A                   J T 3 
-A K Q J 6 2         9 8 5 
-9 8 6 4 2           K Q 
-A                   K 8 7 4 2 
+K 4 3               A Q J 8 7 
+A Q 9 8             6 5 2 
+9 2                 J 6 
+A K Q T             6 3 2 
 
-A K T 7             Q J 
--                   Q J T 9 3 
-K Q                 A T 9 6 
-A Q 9 8 7 6 3       J 4 
+A                   K 7 6 4 3 2 
+A K 4 2             T 6 5 
+6 5 4               K Q J 
+A K Q T 4           J 
 
 Frequency :
-    1	       4
-    2	       6
+    1	       2
+    2	       8
 Frequency :
-    6	       1
-    7	       2
-    8	       5
-    9	       2
-Generated 847 hands
+    6	       3
+    7	       1
+    8	       3
+    9	       3
+Generated 1265 hands
 Produced 10 hands
 Initial random seed 1
-Time needed    0.001 sec
+Time needed    0.003 sec
