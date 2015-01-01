@@ -105,12 +105,12 @@ int score (int vuln, int suit, int level, int dbl, int tricks) {
       return -200 - 300 * (5 + level - tricks);
     } else {
       switch (6 + level - tricks) {
-        case -1:
+        case 1:
           return -100;
-        case -2:
+        case 2:
           return -300;
         default:
-          return -500 - 300 * (4 + level - tricks);
+          return -500 - 300 * (3 + level - tricks);
       }
     }
   }
