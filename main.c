@@ -94,35 +94,53 @@ int imps (int scorediff) {
   return scorediff < 0 ? -i : i;
 }
 
-int score (int vuln, int suit, int level, int tricks) {
+int score (int vuln, int suit, int level, int dbl, int tricks) {
   int total = 0;
 
   /* going down */
-  if (tricks < 6 + level) return -50 * (1 + vuln) * (6 + level - tricks);
+  if (tricks < 6 + level) {
+    if (!dbl)
+      return -50 * (1 + vuln) * (6 + level - tricks);
+    if (vuln) {
+      return -200 - 300 * (5 + level - tricks);
+    } else {
+      switch (6 + level - tricks) {
+        case -1:
+          return -100;
+        case -2:
+          return -300;
+        default:
+          return -500 - 300 * (4 + level - tricks);
+      }
+    }
+  }
 
-  /* Tricks */
-  total = total + ((suit >= SUIT_HEART) ? 30 : 20) * (tricks - 6);
+  int trickpts = ((suit >= SUIT_HEART) ? 30 : 20);
+  int contractpts = level * trickpts;
+  if (suit == SUIT_NT) contractpts += 10;
 
-  /* NT bonus */
-  if (suit == SUIT_NT) total += 10;
-
+  if (dbl) contractpts *= 2;
+  /* Contracted trick points */
+  total = contractpts;
   /* part score bonus */
   total += 50;
 
-  /* game bonus for NT */
-  if ((suit == SUIT_NT) && level >= 3) total += 250 + 200 * vuln;
+  if (dbl) total += 50;
 
-  /* game bonus for major-partscore bns */
-  if ((suit == SUIT_HEART || suit == SUIT_SPADE) && level >= 4) total += 250 + 200 * vuln;
-
-  /* game bonus for minor-partscore bns */
-  if ((suit == SUIT_CLUB || suit == SUIT_DIAMOND) && level >= 5) total += 250 + 200 * vuln;
+  /* game bonus */
+  if (contractpts >= 100) total += 250 + 200 * vuln;
 
   /* small slam bonus */
   if (level == 6) total += 500 + 250 * vuln;
 
   /* grand slam bonus */
   if (level == 7) total += 1000 + 500 * vuln;
+
+  /* Over tricks */
+  if (dbl)
+    total += 100 * (1 + vuln) * (tricks - 6 - level);
+  else
+    total += trickpts * (tricks - 6 - level);
 
   return total;
 }
@@ -350,7 +368,7 @@ card make_card (char rankchar, char suitchar) {
   return MAKECARD (suit, rank);
 }
 
-int make_contract (char suitchar, char trickchar) {
+int make_contract (char suitchar, char trickchar, char dbl) {
   int trick, suit;
   trick = (int) trickchar - '0';
   switch (suitchar) {
@@ -374,7 +392,7 @@ int make_contract (char suitchar, char trickchar) {
       printf ("%c", suitchar);
       assert (0);
   }
-  return MAKECONTRACT (suit, trick);
+  return MAKECONTRACT (suit, trick) + (dbl == 'x' ? 64 : 0);
 }
 
 void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablecompass) {
@@ -515,8 +533,8 @@ static void showevalcontract (int nh) {
       for (l = 1; l < 8; l++) {
         int t = 0, tn = 0;
         for (i = 0; i < 14; i++) {
-          t += gptr->results[0][s][i] * score (v, s, l, i);
-          tn += gptr->results[1][s][i] * score (v, s, l, i);
+          t += gptr->results[0][s][i] * score (v, s, l, 0, i);
+          tn += gptr->results[1][s][i] * score (v, s, l, 0, i);
         }
         printf ("%4d/%4d ", t / nh, tn / nh);
       }

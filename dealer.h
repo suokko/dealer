@@ -75,14 +75,14 @@ extern const struct globals *gptr;
 struct handstat hs[4] ;
 
 int imps (int scorediff) __attribute__ ((pure));
-int score (int vuln, int suit, int level, int tricks) __attribute__ ((pure));
+int score (int vuln, int suit, int level, int dbl, int tricks) __attribute__ ((pure));
 void error (char *s) __attribute__ ((noreturn, pure));
 void clearpointcount ();
 void clearpointcount_alt (int cin);
 void pointcount (int index, int value);
 void newpack (struct pack *d, const char *initialpack);
 card make_card (char rankchar, char suitchar) __attribute__ ((pure));
-int make_contract (char suitchar, char trickchar) __attribute__ ((pure));
+int make_contract (char suitchar, char trickchar, char dbl) __attribute__ ((pure));
 void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablecompass);
 void printdeal (const struct board *d);
 void printhands (int boardno, const struct board *dealp, int player, int nhands);

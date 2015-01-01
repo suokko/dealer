@@ -970,7 +970,8 @@ static int evaltree (struct treebase *b) {
       return dd (&gp->curboard, t->tr_int1, t->tr_int2);
     case TRT_SCORE:      /* vul/non_vul, contract, tricks in leaf1 */
       assert (t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
-      return score (t->tr_int1, t->tr_int2 % 5, t->tr_int2 / 5, evaltree (t->tr_leaf1));
+      int cntr = t->tr_int2 & (64 - 1);
+      return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1));
     case TRT_IMPS:
       return imps (evaltree (t->tr_leaf1));
     case TRT_AVG:

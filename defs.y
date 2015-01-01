@@ -20,7 +20,7 @@ card  make_card(char,char);
 void  clearpointcount(void);
 void  clearpointcount_alt(int);
 void  pointcount(int,int);
-int   make_contract (char, char);
+int   make_contract (char, char, char);
 extern int yylex (void);
 static int d2n(char s[4]);
 
