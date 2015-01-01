@@ -229,7 +229,7 @@ static int makeprocess(struct process *p, unsigned long gen, unsigned long seed,
   sprintf(ddscmd, "gen-%ld-%ld-52-20.txt", seed, gen);
   remove(ddscmd);
 
-  sprintf(ddscmd, "dds -genseed=%ld -gen=%ld -gentricks=20", seed, gen);
+  sprintf(ddscmd, "ddd -genseed=%ld -gen=%ld -gentricks=20", seed, gen);
 
   if (verbosity >= 2) {
     fprintf(stderr, "%sRunning '%s'\n", (linefeed ? "\n": ""), ddscmd);

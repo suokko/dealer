@@ -18,7 +18,7 @@ OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 DESCR := $(wildcard ${SRCDIR}/Descr.*)
 # move the Descr.test_dealer to front because it is slow
 DESCR := ${SRCDIR}/Descr.test_dealer $(filter-out .test_dealer,${DESCR})
-DDSEXISTS := $(shell which dds)
+DDSEXISTS := $(shell which ddd)
 LCOVEXISTS := $(shell which lcov)
 ifeq (${DDSEXISTS},)
 DESCR := $(filter-out .dds.,${DESCR})
