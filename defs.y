@@ -419,8 +419,11 @@ struct treebase *var_lookup(char *s, int mustbethere)
         for(v=vars; v!=0; v = v->v_next)
                 if (strcmp(s, v->v_ident)==0)
                         return v->v_tree;
-        if (mustbethere)
-                yyerror("unknown variable");
+        if (mustbethere) {
+                char buffer[40 + strlen(s)];
+                sprintf(buffer, "unknown variable: %s", s);
+                yyerror(buffer);
+        }
         return 0;
 }
 
