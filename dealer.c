@@ -35,7 +35,7 @@ void yyerror (char *);
 
 #define TWO_TO_THE_13 (1<<13)
 #define DEFAULT_MODE STAT_MODE
-#define RANDBITS 16
+#define RANDBITS 13
 #define NRANDVALS (1<<RANDBITS)
 #define NRANDMASK (NRANDVALS-1)
 
