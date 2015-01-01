@@ -61,43 +61,43 @@ int main(void)
 	sep = "";
 	cpu_init();
 #if defined(__i386__) || defined(__x86_64__)
-	if (cpu_supports("cmov")) {
+	if (cpu_supports(CPUCMOV)) {
 		cur += sprintf(cur, "%scmov", sep);
 		sep = ", ";
 	}
-	if (cpu_supports("mmx")) {
+	if (cpu_supports(CPUMMX)) {
 		cur += sprintf(cur, "%smmx", sep);
 		sep = ", ";
 	}
-	if (cpu_supports("sse")) {
+	if (cpu_supports(CPUSSE)) {
 		cur += sprintf(cur, "%ssse", sep);
 		sep = ", ";
 	}
-	if (cpu_supports("sse2")) {
+	if (cpu_supports(CPUSSE2)) {
 		cur += sprintf(cur, "%ssse2", sep);
 		sep = ", ";
 		sse2_test(55);
 	}
-	if (cpu_supports("sse3")) {
+	if (cpu_supports(CPUSSE3)) {
 		cur += sprintf(cur, "%ssse3", sep);
 		sep = ", ";
 		sse3_test(55);
 	}
-	if (cpu_supports("popcnt")) {
+	if (cpu_supports(CPUPOPCNT)) {
 		cur += sprintf(cur, "%spopcnt", sep);
 		sep = ", ";
 		popcnt_test(55);
 	}
-	if (cpu_supports("sse4.1")) {
+	if (cpu_supports(CPUSSE41)) {
 		cur += sprintf(cur, "%ssse4.1", sep);
 		sep = ", ";
 	}
-	if (cpu_supports("sse4.2")) {
+	if (cpu_supports(CPUSSE42)) {
 		cur += sprintf(cur, "%ssse4.2", sep);
 		sep = ", ";
 		sse4_test(55);
 	}
-	if (cpu_supports("avx")) {
+	if (cpu_supports(CPUAVX)) {
 		cur += sprintf(cur, "%savx", sep);
 		sep = ", ";
 		avx_test(55);
@@ -106,7 +106,7 @@ int main(void)
 		cur += sprintf(cur, "%sxop", sep);
 		sep = ", ";
 	}*/
-	if (cpu_supports("avx2")) {
+	if (cpu_supports(CPUAVX2)) {
 		cur += sprintf(cur, "%savx2", sep);
 		sep = ", ";
 		avx2_test(55);

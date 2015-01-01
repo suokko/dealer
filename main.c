@@ -770,13 +770,13 @@ int main (int argc, char **argv) {
   cpu_init();
   int r;
 #if defined(__x86_64__) || defined(__i386__)
-  if (compilerfeatures < AVX2 && cpu_supports("avx2")) {
+  if (compilerfeatures < AVX2 && cpu_supports(CPUAVX2)) {
     r = avx2_deal_main(gp);
-  } else if(compilerfeatures < SSE4 && cpu_supports("sse4.2")) {
+  } else if(compilerfeatures < SSE4 && cpu_supports(CPUSSE42)) {
     r = sse4_deal_main(gp);
-  } else if(compilerfeatures < POPCNT && cpu_supports("popcnt")) {
+  } else if(compilerfeatures < POPCNT && cpu_supports(CPUPOPCNT)) {
     r = popcnt_deal_main(gp);
-  } else if(compilerfeatures < SSE2 && cpu_supports("sse2")) {
+  } else if(compilerfeatures < SSE2 && cpu_supports(CPUSSE2)) {
     r = sse2_deal_main(gp);
   } else {
     r = default_deal_main(gp);

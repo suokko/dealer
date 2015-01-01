@@ -39,8 +39,11 @@ static int popcount(T in)
 		return __builtin_popcountl(in);
 	if (sizeof(in) <= sizeof(long long))
 		return __builtin_popcountll(in);
+#ifdef __x86_64
 	if (sizeof(in) == 2*sizeof(long long))
-		return __builtin_popcountll(in) + __builtin_popcountll(in >> (8*sizeof(long long)));
+		return __builtin_popcountll(in) +
+			__builtin_popcountll(static_cast<unsigned __int128>(in) >> (8*sizeof(long long)));
+#endif
 #endif
 	typedef std::make_unsigned<T> uT;
 	typename uT::type x = in;

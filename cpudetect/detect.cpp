@@ -7,13 +7,13 @@
 
 typedef std::set<std::string> feature_set;
 
-feature_set features;
+unsigned features;
 
 static void x86_cpu_init()
 {
 #if defined(__i386__) || defined(__x86_64__)
 	/* Fetch cpu features */
-	unsigned eax, ebx, ecx, edx, op = 1;
+	unsigned eax = 0, ebx = 0, ecx = 0, edx = 0, op = 1;
 	__get_cpuid(op, &eax, &ebx, &ecx, &edx);
 	/**
 	 * basic info
@@ -120,21 +120,21 @@ static void x86_cpu_init()
 	info.reg[3] = ebx;
 
 	if (info.data.cmov)
-		features.insert("cmov");
+		features |= CPUCMOV;
 	if (info.data.sse)
-		features.insert("sse");
+		features |= CPUSSE;
 	if (info.data.sse2)
-		features.insert("sse2");
+		features |= CPUSSE2;
 	if (info.data.sse3)
-		features.insert("sse3");
+		features |= CPUSSE3;
 	if (info.data.popcnt)
-		features.insert("popcnt");
+		features |= CPUPOPCNT;
 	if (info.data.sse41)
-		features.insert("sse4.1");
+		features |= CPUSSE41;
 	if (info.data.sse42)
-		features.insert("sse4.2");
+		features |= CPUSSE42;
 	if (info.data.avx)
-		features.insert("avx");
+		features |= CPUAVX;
 
 	/* Read more flags from op 7 */
 	op = 7;
@@ -163,7 +163,7 @@ static void x86_cpu_init()
 	flags.reg[3] = edx;
 
 	if (flags.data.avx2)
-		features.insert("avx2");
+		features |= CPUAVX2;
 #endif
 }
 
@@ -172,11 +172,8 @@ void cpu_init()
 	x86_cpu_init();
 }
 
-bool cpu_supports(const char *feature)
+bool cpu_supports(enum cpufeatures feature)
 {
-	auto iter = features.find(feature);
-	if (iter == features.end())
-		return false;
-	return true;
+	return feature & features;
 }
 
