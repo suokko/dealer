@@ -26,7 +26,7 @@ libdealer.a_MV_CFG := default sse2 popcnt sse4 avx2
 
 libdealer.a_MV_default := -DMVDEFAULT 
 
-ifneq ($(subst gcc,,$(COMPILERVERSION)),$(COMPILERVERSION))
+ifneq (gcc,$(COMPILER))
 libdealer.a_MV_sse2 := -msse -msse2 -mfpmath=sse
 libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt -mfpmath=sse
 libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mfpmath=sse

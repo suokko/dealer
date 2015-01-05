@@ -17,7 +17,7 @@ cpudetect_MV_CFG := default slowmul sse2 sse3 popcnt sse4 avx avx2
 
 cpudetect_MV_default := -DMVDEFAULT 
 cpudetect_MV_slowmul := -DSLOWMUL=1
-ifneq ($(subst gcc,,$(COMPILERVERSION)),$(COMPILERVERSION))
+ifneq (gcc,$(COMPILER))
 cpudetect_MV_sse2 := -msse -msse2 -mfpmath=sse
 cpudetect_MV_sse3 := -msse -msse2 -msse3 -mfpmath=sse
 cpudetect_MV_popcnt := -msse -msse2 -msse3 -mpopcnt -mfpmath=sse

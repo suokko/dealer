@@ -11,15 +11,28 @@ INSTALL	 ?= install
 POD2MAN  ?= pod2man
 
 CFLAGS   ?=
-CPPFLAGS ?= -march=native 
+CPPFLAGS ?= -march=native  -flto
 CXXFLAGS ?=
 LDFLAGS  ?=
 DESTDIR  ?=
 
 COMPILERVERSION := $(shell $(CC) --version)
 
+ifneq ($(subst Free Software Foundation,,$(COMPILERVERSION)),$(COMPILERVERSION))
+AR := $(host)gcc-ar
+COMPILER:=gcc
+else
+ifneq ($(subst clang,,$(COMPILERVERSION)),$(COMPILERVERSION))
+AR := $(host)llvm-ar
+COMPILER:=clang
+else
+$(warning *** Warning: unknown compiler)
+COMPILER:=unknown
+endif
+endif
+
 RELEASEFLAGS := -DNDEBUG
-ifneq ($(subst gcc,,$(COMPILERVERSION)),$(COMPILERVERSION))
+ifeq (gcc,$(COMPILER))
 OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model
 else
 OPTFLAGS := -O2 -ftree-vectorize
