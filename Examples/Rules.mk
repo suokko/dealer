@@ -81,6 +81,6 @@ clearstats:
 	@echo "  RM     *.gcda" && rm -f ${BUILDDIR}/*.gcda
 
 exampleclean:
-	-rm -f ${OUTPUT}
+	-$(SRM) ${OUTPUT}
 
 clean: exampleclean
