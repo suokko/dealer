@@ -1,4 +1,9 @@
 TARGETS := dealer dealergenlib libdealer.a
+GENTARGETS := tables
+
+tables_SRC := pregen.c
+tables_PARAM := -ir
+tables_OUT := tables.c
 
 dealer_LIBS := libdealer.a librand.a libcpudetect.a
 
@@ -19,7 +24,8 @@ dealergenlib_LIBS += -lws2_32 librand.a
 endif
 
 libdealer.a_SRC := dealer.c \
-	c4.c 
+	c4.c \
+	tables.c
 
 libdealer.a_MV_SRC := dealer.c c4.c
 libdealer.a_MV_CFG := default sse2 popcnt sse4 avx2

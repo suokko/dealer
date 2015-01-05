@@ -6,6 +6,7 @@
 #include <limits.h>
 
 #include "bittwiddle.h"
+#include "pregen.h"
 
 #if defined(_MSC_VER) || defined(__WIN32) || defined(WIN32)
   /* with VC++6, winsock2 declares ntohs and struct timeval */
@@ -60,7 +61,12 @@ static int swapindex = 0;
    This makes looking up a shape a small constant cost.
 */
 
-static unsigned char zero52[NRANDVALS];
+struct selected_prng {
+	const unsigned char *table;
+	unsigned int mask;
+};
+
+static struct selected_prng zero52;
 
 /* Function definitions */
 static int true_dd (const struct board *d, int l, int c); /* prototype */
@@ -118,13 +124,13 @@ static uint16_t uniform_random(uint16_t max) {
   return rnd;
 }
 
-static uint16_t uniform_random_table() {
-  uint16_t rnd;
-  do {
-    rnd = random16();
-    rnd = zero52[rnd & NRANDMASK];
-  } while (rnd == 0xFF);
-  return rnd;
+static inline uint16_t uniform_random_table() {
+	uint16_t rnd;
+	do {
+		rnd = random16();
+		rnd = zero52.table[rnd & zero52.mask];
+	} while (rnd == 0xFF);
+	return rnd;
 }
 
 static void initevalcontract () {
@@ -524,21 +530,9 @@ static void initprogram (const char *initialpack) {
   /* Now initialize array zero52 with numbers 0..51 repeatedly. This whole
      charade is just to prevent having to do divisions. */
   j = 52 - biastotal - predealcnt;
-  /* Are all cards are bias randomized? */
-  if (j == 0)
-    return;
-  for (i = 0; i < j; i++)
-    zero52[i] = i;
-
-  for (; i + i < NRANDVALS; i += i)
-    memcpy(&zero52[i], &zero52[0], i);
-
-  /* Fill last chunk up to last full block */
-  int end = NRANDVALS - (NRANDVALS % j);
-  memcpy(&zero52[i], &zero52[0], end - i);
-  /* Fill the last part of the array with 0xFF, just to prevent
-     that 0 occurs more than 51. This is probably just for hack value */
-  memset(&zero52[end], 0xFF, NRANDVALS - end);
+  assert(j >= 2);
+  zero52.table = prnglookup.table + prnglookup.entries[j - 2].idx;
+  zero52.mask = prnglookup.entries[j - 2].mask;
 }
 
 static void swap2 (struct board *d, int p1, int p2) {

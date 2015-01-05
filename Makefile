@@ -11,6 +11,13 @@ define CONCAT
 $(if ${1},$(call CANONICAL_PATH,$(addprefix ${1}/,${2})),$(call CANONICAL_PATH,${2}))
 endef
 
+#Do per file wildcard expanding
+define WILDCARD
+$(foreach F,${2},\
+	$(or $(subst $(1)/,,$(wildcard $(call CONCAT,$(1),$(F)))),\
+		$(F)))
+endef
+
 # Find main.mk in the directory tree
 # This supports make on any subdirectory with symlinked Makefile
 ifndef TOP
@@ -232,12 +239,16 @@ TDIR := $${LIB_DIR}
 ${1}_TYPE=static
 endif
 
-${1}_SRC := $$(subst $$(DIR)/,,$$(wildcard $$(call CONCAT,$$(DIR),$${${1}_SRC})))
-${1}_MV_SRC := $$(subst $$(DIR)/,,$$(wildcard $$(call CONCAT,$$(DIR),$${${1}_MV_SRC})))
+${1}_SRC := $$(call WILDCARD,$$(DIR),$${${1}_SRC})
+${1}_MV_SRC := $$(call WILDCARD,$$(DIR),$${${1}_MV_SRC})
 ${1}_SRC := $$(filter-out $$(${1}_MV_SRC),$$(${1}_SRC))
 
 # Figure correct path for the target
+ifeq (${2},0)
 ${1}_PATH := $$(call CONCAT,$${TDIR},${1})
+else
+${1}_PATH := $$(call CONCAT,$${${1}_BUILDDIR},${1})
+endif
 # fugure out what should be build from the source file extension
 ${1}_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 	$$(filter-out %.l,$$(patsubst %.cpp,%.o,$$(patsubst %.y,%.o,\
@@ -278,9 +289,11 @@ $$(foreach CFG,$$(${1}_MV_CFG),\
 
 #Main target dependencies only if it is current directory or subdirectory
 ifeq ($$(filter-out $(CURDIR)%,$$(abspath $$(DIR))),)
+ifeq (${2},0)
 all: $$(${1}_PATH)
 prof: $$(${1}_PROFPATH)
 cov: $$(${1}_COVPATH)
+endif
 endif
 
 #Target variables
@@ -329,8 +342,15 @@ $$(${1}_PROFYACCS): $$(${1}_PROFFLEXS) $$(subst .o,.c,$$(${1}_PROFYACCS))
 $$(${1}_PROFYACCS): DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS) -Wno-unused-function  $$(PROFFLAGS) $$(INCFLAGS)
 endif
 
+GENSRC :=
+ifeq (${2},1)
+GENSRC := $$(call CONCAT,$$(${1}_BUILDDIR),${${1}_OUT})
+$${GENSRC}: $${${1}_PATH}
+	${SGEN} $$< ${${1}_PARAM} > $$@
+endif
+
 ALLOBJS := $$(${1}_OBJS) $$(${1}_COVOBJS) $${${1}_PROFOBJS} $$(${1}_MV_OBJS)
-GENFILES := $$(subst .o,.c,$$(${1}_YACCS)) $$(subst .o,.c,$$(${1}_PROFYACCS)) $$(${1}_PROFFLEXS) $$(${1}_FLEXS)
+GENFILES := $$(subst .o,.c,$$(${1}_YACCS)) $$(subst .o,.c,$$(${1}_PROFYACCS)) $$(${1}_PROFFLEXS) $$(${1}_FLEXS) $$(GENSRC)
 
 BUILDMKDEP :=
 ifneq (,$(wildcard $(call CONCAT,$(TOP),build.mk)))
@@ -353,6 +373,7 @@ define INCLUDE_SUBDIR
 # Clean and setup per subdirectory variables
 # TODO support not target prefixed variables for single target subdirectoreis
 TARGETS :=
+GENTARGETS :=
 SUBDIRS :=
 MKFILE  := $(1)
 DOCS	:=
@@ -373,7 +394,11 @@ include $(1)
 
 # Generated rules for each target declared
 $$(foreach TARGET, $${TARGETS},\
-$$(eval $$(call MAKE_TARGET,$${TARGET}))\
+$$(eval $$(call MAKE_TARGET,$${TARGET},0))\
+)
+
+$$(foreach TARGET, $${GENTARGETS},\
+$$(eval $$(call MAKE_TARGET,$${TARGET},1))\
 )
 
 MANS := $$(subst $$(DIR),,$$(wildcard $$(call CONCAT,$$(DIR),$$(filter %.pod,$$(DOCS)))))

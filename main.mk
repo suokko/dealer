@@ -76,6 +76,7 @@ SRM    = $(RM)
 SRMDIR = $(RMDIR)
 SINSTALL = $(INSTALL)
 SPOD2MAN = $(POD2MAN)
+SGEN   = 
 else
 SCC    = @echo "  CC    " ${notdir $@} && $(host)$(CC)
 SAR    = @echo "  AR    " ${notdir $@} && $(host)$(AR)
@@ -87,5 +88,6 @@ SRM    = @echo "  RM    " $@ && $(RM)
 SRMDIR = @echo "  RMDIR " $@ && $(RMDIR)
 SINSTALL = @echo "  INST  " ${notdir $@} && $(INSTALL)
 SPOD2MAN = @echo "  P2M   " ${notdir $@} && $(POD2MAN)
+SGEN   = @echo "  GEN   " $$@ && 
 endif
 
