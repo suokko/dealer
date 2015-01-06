@@ -189,29 +189,23 @@ void * mycalloc (unsigned nel, unsigned siz) {
 }
 
 static void initdistr (struct globals *g) {
-  int **p4, *p3;
-  int clubs, diamonds, hearts;
+  unsigned clubs;
 
   int shape = 0;
 
-  /* Allocate the four dimensional pointer array */
-
   for (clubs = 0; clubs <= 13; clubs++) {
-    p4 = (int **) mycalloc ((unsigned) 14 - clubs, sizeof (*p4));
-    g->distrbitmaps[clubs] = p4;
-    for (diamonds = 0; diamonds <= 13 - clubs; diamonds++) {
-      p3 = (int *) mycalloc ((unsigned) 14 - clubs - diamonds, sizeof (*p3));
-      p4[diamonds] = p3;
-      for (hearts = 0; hearts <= 13 - clubs - diamonds; hearts++) {
-        p3[hearts] = ++shape;
-      }
-    }
+    unsigned max = 14 - clubs;
+    unsigned min = 0;
+    unsigned toadd = ((max+min)*(max-min+1))/2;
+    g->distrbitmaps[clubs] = shape;
+    shape += toadd;
   }
 }
 
 void  setshapebit (struct shape *s, int cl, int di, int ht, int sp)
 {
-  int nr = getshapenumber(cl, di, ht, sp);
+  (void)sp;
+  unsigned nr = getshapenumber(cl, di, ht);
   int idx = nr / 32;
   int bit = nr % 32;
   s->bits[idx] |= 1 << bit;

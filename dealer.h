@@ -53,7 +53,7 @@ struct globals {
     struct board predealt;
     struct board curboard;
     struct rngstate rngstate;
-    int **distrbitmaps[14];
+    int16_t distrbitmaps[14];
 
     struct treebase *decisiontree;
     struct action *actionlist;
@@ -93,10 +93,13 @@ extern evaltreeptr evaltreefunc;
 typedef card (*hascardptr) (const struct board *d, int player, card onecard);
 extern hascardptr hascard;
 
-static inline int getshapenumber (int cl, int di, int ht, int sp)
+static inline int getshapenumber (unsigned cl, unsigned di, unsigned ht)
 {
-  (void)sp;
-  return gptr->distrbitmaps[cl][di][ht];
+  unsigned max = 14-cl;
+  unsigned min = max-di+1;
+  di = ((max+min)*(max-min+1))/2;
+  max = gptr->distrbitmaps[cl] + di + ht;
+  return max;
 }
 
 void * mycalloc (unsigned nel, unsigned siz);

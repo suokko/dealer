@@ -329,9 +329,9 @@ static int distrbit (const struct board *d, struct handstat *hsbase, int compass
 
   if (hs->hs_bits[0] != gp->ngen) {
     hs->hs_bits[0] = gp->ngen;
-    hs->hs_bits[1] = gp->distrbitmaps[staticsuitlength(d, hsbase, compass, SUIT_CLUB)]
-      [staticsuitlength(d, hsbase, compass, SUIT_DIAMOND)]
-      [staticsuitlength(d, hsbase, compass, SUIT_HEART)];
+    hs->hs_bits[1] = getshapenumber(staticsuitlength(d, hsbase, compass, SUIT_CLUB),
+      staticsuitlength(d, hsbase, compass, SUIT_DIAMOND),
+      staticsuitlength(d, hsbase, compass, SUIT_HEART));
   }
   return hs->hs_bits[1];
 }
