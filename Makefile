@@ -176,11 +176,11 @@ MV_OBJS := $$(call CONCAT,$$(${1}_BUILDDIR),\
 
 ifeq ($$(FLAGSWORK),)
 
-$$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(PUSEFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
+$$(MV_OBJS):  DCPPFLAGS := $$(OPTFLAGS) $$(DCPPFLAGS) $$(${1}_CPPFLAGS) $$(PUSEFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
 $$(MV_OBJS):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(MV_OBJS):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
-$$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCPPFLAGS := $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(OFLAG) $$(COVFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
-$$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCPPFLAGS := $$(CPPFLAG) $$(${1}_CPPFLAGS) $$(OFLAG) $$(PROFFLAGS) $(${1}_MV_${2}) $$(INCPPFLAGS)
+$$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCPPFLAGS := $$(DCPPFLAGS) $$(${1}_CPPFLAGS) $$(OFLAG) $$(COVFLAGS) $$(${1}_MV_${2}) $$(INCPPFLAGS)
+$$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCPPFLAGS := $$(DCPPFLAGS) $$(${1}_CPPFLAGS) $$(OFLAG) $$(PROFFLAGS) $(${1}_MV_${2}) $$(INCPPFLAGS)
 $$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(patsubst %.o,%.prof.o,$$(MV_OBJS)):  DCXXFLAGS := $$(DCXXFLAGS) $$(${1}_CXXFLAGS)
 $$(patsubst %.o,%.cov.o,$$(MV_OBJS)):  DCFLAGS := $$(DCFLAGS) $$(${1}_CFLAGS)
