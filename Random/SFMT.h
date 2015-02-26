@@ -114,64 +114,39 @@ struct SFMT_T {
 
 typedef struct SFMT_T sfmt_t;
 
-#if defined(__AVX2__) && !defined(MVDEFAULT)
-#define sfmt_fill_array32   sfmt_avx2_fill_array32
-#define sfmt_fill_array64   sfmt_avx2_fill_array64
-#define sfmt_init_gen_rand  sfmt_avx2_init_gen_rand
-#define sfmt_init_by_array  sfmt_avx2_init_by_array
-#define sfmt_get_idstring   sfmt_avx2_get_idstring
-#define sfmt_get_min_array_size32 sfmt_avx2_get_min_array_size32
-#define sfmt_get_min_array_size64 sfmt_avx2_get_min_array_size64
-#define sfmt_gen_rand_all   sfmt_avx2_gen_rand_all
-#define sfmt_genrand_uint32 sfmt_avx2_genrand_uint32
-#define sfmt_genrand_uint64 sfmt_avx2_genrand_uint64
-#define sfmt_to_real1       sfmt_avx2_to_real1
-#define sfmt_genrand_real1  sfmt_avx2_genrand_real1
-#define sfmt_genrand_real2  sfmt_avx2_genrand_real2
-#define sfmt_genrand_real3  sfmt_avx2_genrand_real3
-#define sfmt_to_res53       sfmt_avx2_to_res53
-#define sfmt_fenrand_res53  sfmt_avx2_genrand_res53
-#define sfmt_to_res53_mix   sfmt_avx2_to_res53_mix
-#define sfmt_genrand_res53_mix sfmt_avx2_genrand_res53_mix
-#elif defined(__SSE2__) && !defined(MVDEFAULT)
-#define sfmt_fill_array32   sfmt_sse2_fill_array32
-#define sfmt_fill_array64   sfmt_sse2_fill_array64
-#define sfmt_init_gen_rand  sfmt_sse2_init_gen_rand
-#define sfmt_init_by_array  sfmt_sse2_init_by_array
-#define sfmt_get_idstring   sfmt_sse2_get_idstring
-#define sfmt_get_min_array_size32 sfmt_sse2_get_min_array_size32
-#define sfmt_get_min_array_size64 sfmt_sse2_get_min_array_size64
-#define sfmt_gen_rand_all   sfmt_sse2_gen_rand_all
-#define sfmt_genrand_uint32 sfmt_sse2_genrand_uint32
-#define sfmt_genrand_uint64 sfmt_sse2_genrand_uint64
-#define sfmt_to_real1       sfmt_sse2_to_real1
-#define sfmt_genrand_real1  sfmt_sse2_genrand_real1
-#define sfmt_genrand_real2  sfmt_sse2_genrand_real2
-#define sfmt_genrand_real3  sfmt_sse2_genrand_real3
-#define sfmt_to_res53       sfmt_sse2_to_res53
-#define sfmt_fenrand_res53  sfmt_sse2_genrand_res53
-#define sfmt_to_res53_mix   sfmt_sse2_to_res53_mix
-#define sfmt_genrand_res53_mix sfmt_sse2_genrand_res53_mix
+#define CAT2(a,b) a ##_## b
+#define CAT(a,b) CAT2(a,b)
+
+#ifdef MVSFMT
+#define SFMTDEFUN(a) CAT(MVSFMT,a)
 #else
-#define sfmt_fill_array32   sfmt_default_fill_array32
-#define sfmt_fill_array64   sfmt_default_fill_array64
-#define sfmt_init_gen_rand  sfmt_default_init_gen_rand
-#define sfmt_init_by_array  sfmt_default_init_by_array
-#define sfmt_get_idstring   sfmt_default_get_idstring
-#define sfmt_get_min_array_size32 sfmt_default_get_min_array_size32
-#define sfmt_get_min_array_size64 sfmt_default_get_min_array_size64
-#define sfmt_gen_rand_all   sfmt_default_gen_rand_all
-#define sfmt_genrand_uint32 sfmt_default_genrand_uint32
-#define sfmt_genrand_uint64 sfmt_default_genrand_uint64
-#define sfmt_to_real1       sfmt_default_to_real1
-#define sfmt_genrand_real1  sfmt_default_genrand_real1
-#define sfmt_genrand_real2  sfmt_default_genrand_real2
-#define sfmt_genrand_real3  sfmt_default_genrand_real3
-#define sfmt_to_res53       sfmt_default_to_res53
-#define sfmt_fenrand_res53  sfmt_default_genrand_res53
-#define sfmt_to_res53_mix   sfmt_default_to_res53_mix
-#define sfmt_genrand_res53_mix sfmt_default_genrand_res53_mix
+#if defined(__AVX2__)
+#define SFMTDEFUN(a) CAT(avx2,a)
+#elif defined(__SSE2__)
+#define SFMTDEFUN(a) CAT(sse2,a)
+#else
+#define SFMTDEFUN(a) CAT(default,a)
 #endif
+#endif
+
+#define sfmt_fill_array32   SFMTDEFUN(sfmt_fill_array32)
+#define sfmt_fill_array64   SFMTDEFUN(sfmt_fill_array64)
+#define sfmt_init_gen_rand  SFMTDEFUN(sfmt_init_gen_rand)
+#define sfmt_init_by_array  SFMTDEFUN(sfmt_init_by_array)
+#define sfmt_get_idstring   SFMTDEFUN(sfmt_get_idstring)
+#define sfmt_get_min_array_size32 SFMTDEFUN(sfmt_get_min_array_size32)
+#define sfmt_get_min_array_size64 SFMTDEFUN(sfmt_get_min_array_size64)
+#define sfmt_gen_rand_all   SFMTDEFUN(sfmt_gen_rand_all)
+#define sfmt_genrand_uint32 SFMTDEFUN(sfmt_genrand_uint32)
+#define sfmt_genrand_uint64 SFMTDEFUN(sfmt_genrand_uint64)
+#define sfmt_to_real1       SFMTDEFUN(sfmt_to_real1)
+#define sfmt_genrand_real1  SFMTDEFUN(sfmt_genrand_real1)
+#define sfmt_genrand_real2  SFMTDEFUN(sfmt_genrand_real2)
+#define sfmt_genrand_real3  SFMTDEFUN(sfmt_genrand_real3)
+#define sfmt_to_res53       SFMTDEFUN(sfmt_to_res53)
+#define sfmt_fenrand_res53  SFMTDEFUN(sfmt_genrand_res53)
+#define sfmt_to_res53_mix   SFMTDEFUN(sfmt_to_res53_mix)
+#define sfmt_genrand_res53_mix SFMTDEFUN(sfmt_genrand_res53_mix)
 
 void sfmt_fill_array32(sfmt_t * sfmt, uint32_t * array, int size);
 void sfmt_fill_array64(sfmt_t * sfmt, uint64_t * array, int size);

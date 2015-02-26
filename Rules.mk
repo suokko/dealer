@@ -36,17 +36,14 @@ libdealer.a_SRC := dealer.c \
 libdealer.a_MV_SRC := dealer.c c4.c
 libdealer.a_MV_CFG := default sse2 popcnt sse4 avx2
 
-libdealer.a_MV_default := -DMVDEFAULT 
+libdealer.a_MV_default := -DMVDEFAULT=default
 
 ifneq (gcc,$(COMPILER))
-libdealer.a_MV_sse2 := -msse -msse2 -mfpmath=sse
-libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt -mfpmath=sse
-libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mfpmath=sse
-libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mavx2 -mfpmath=sse
-else
-libdealer.a_MV_sse2 := -msse -msse2 
-libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt 
-libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 
-libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx  -mavx2 
+FPMATH := -mfpmath=sse
 endif
+libdealer.a_MV_sse2 := -msse -msse2 $(FPMATH) -DMVDEFAULT=sse2
+libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt $(FPMATH) -DMVDEFAULT=popcnt
+libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 $(FPMATH) -DMVDEFAULT=ss4
+libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mavx2 $(FPMATH) -DMVDEFAULT=avx2
+
 SUBDIRS := */Rules.mk
