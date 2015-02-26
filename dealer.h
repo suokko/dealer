@@ -2,6 +2,7 @@
 #define DEALER_H
 
 #include "card.h"
+#include "pointcount.h"
 #include "Random/SFMT.h"
 
 #ifdef __cplusplus
@@ -18,7 +19,6 @@ struct context {
   struct handstat *ps ; /* Pointer to stats of current deal */
 } c;
 
-#include "pointcount.h"
 
 int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);
 

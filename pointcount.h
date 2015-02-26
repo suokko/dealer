@@ -3,6 +3,10 @@
 /* Indexes into the pointcount array */
 #include "card.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum idxPointcount
 {
 	/* Internal controls and winners for loser calculation */
@@ -58,6 +62,8 @@ static inline int getpc(int idx, const hand h)
 	return r;
 }
 
-static inline int getpc(int idx, const hand h);
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* POINTCOUNT_H */
