@@ -104,7 +104,10 @@ typedef union W128_T w128_t;
  */
 struct SFMT_T {
     /** the 128-bit internal state array */
-    w128_t state[SFMT_N];
+    union {
+        w128_t state[SFMT_N];
+        uint16_t u16state[SFMT_N*sizeof(w128_t)/sizeof(uint16_t)];
+    };
     /** index counter to the 32-bit internal state array */
     int idx;
 };

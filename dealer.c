@@ -105,12 +105,11 @@ struct globals *gp;
 
 static inline uint16_t random16()
 {
-  if (gp->rngstate.idx == sizeof(gp->rngstate.random)/sizeof(gp->rngstate.random[0])) {
+  if (gp->rngstate.idx == SFMT_N*sizeof(w128_t)/2) {
     gp->rngstate.idx = 0;
-    sfmt_fill_array64(&gp->rngstate.sfmt, (uint64_t *)gp->rngstate.random,
-        sizeof(gp->rngstate.random)/sizeof(uint64_t));
+    sfmt_gen_rand_all(&gp->rngstate);
   }
-  return gp->rngstate.random[gp->rngstate.idx++];
+  return gp->rngstate.u16state[gp->rngstate.idx++];
 }
 
 static inline uint32_t random32()
@@ -1376,9 +1375,8 @@ int DEFUN(deal_main) (struct globals *g) {
   hascard = statichascard;
 
   /* The most suspect part of this program */
-  sfmt_init_gen_rand(&g->rngstate.sfmt, g->seed);
-  g->rngstate.idx = sizeof(g->rngstate.random)/sizeof(g->rngstate.random[0]);
-  assert(sfmt_get_min_array_size64(&g->rngstate.sfmt) < (int)(sizeof(g->rngstate.random)/sizeof(uint64_t)));
+  sfmt_init_gen_rand(&g->rngstate, g->seed);
+  g->rngstate.idx = SFMT_N * 8;
 
   initprogram (g->initialpack);
 

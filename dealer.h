@@ -29,14 +29,8 @@ struct handstat {
     int hs_control[(NSUITS + 1)*2]; /* Controls in a suit or total */
 } ;
 
-struct rngstate {
-  uint16_t random[512*4];
-  unsigned idx;
-  sfmt_t sfmt;
-} __attribute__  ((aligned (32)));
-
-
 struct globals {
+    sfmt_t rngstate __attribute__  ((aligned (32)));;
     long seed;
     const char *initialpack;
     int maxgenerate;
@@ -56,7 +50,6 @@ struct globals {
     struct pack curpack;
     struct board predealt;
     struct board curboard;
-    struct rngstate rngstate;
     int16_t distrbitmaps[14];
 
     struct treebase *decisiontree;
