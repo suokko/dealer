@@ -11,7 +11,11 @@
 #define __builtin_popcountll(v) (__builtin_popcountl(v) + __builtin_popcountl(v >> 32))
 #endif
 
-static inline int popcountll(unsigned long long v)
+#define lltype unsigned long long
+#define ltype unsigned long
+#define utype unsigned
+
+static inline int popcountll(lltype v)
 {
 #ifdef __POPCNT__
 	return __builtin_popcountll(v);
@@ -22,28 +26,28 @@ static inline int popcountll(unsigned long long v)
 	/* Sum every bit.
 	 * Cheat by subtract to avoid a mask operation.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(lltype)0)/((1ULL << depth)+1);
 	v = v - ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every two bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(lltype)0)/((1ULL << depth)+1);
 	v = (v & mask) + ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every four bits. 
 	 * No overflow allows masking after sum.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(lltype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 	depth *= 2;
 
 	/* Sum every eith bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(lltype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 
 	/* Multiplication can sum all bytes because results fits to a byte. */
-	mask = (~(typeof(v))0)/255;
+	mask = (~(lltype)0)/255;
 	return (v * mask) >> (sizeof(v)*8 - 8);
 #endif
 }
@@ -59,28 +63,28 @@ static inline int popcountl(unsigned long v)
 	/* Sum every bit.
 	 * Cheat by subtract to avoid a mask operation.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(ltype)0)/((1ULL << depth)+1);
 	v = v - ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every two bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(ltype)0)/((1ULL << depth)+1);
 	v = (v & mask) + ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every four bits. 
 	 * No overflow allows masking after sum.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(ltype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 	depth *= 2;
 
 	/* Sum every eith bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(ltype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 
 	/* Multiplication can sum all bytes because results fits to a byte. */
-	mask = (~(typeof(v))0)/255;
+	mask = (~(ltype)0)/255;
 	return (v * mask) >> (sizeof(v)*8 - 8);
 #endif
 }
@@ -96,28 +100,28 @@ static inline int popcount(unsigned int v)
 	/* Sum every bit.
 	 * Cheat by subtract to avoid a mask operation.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(utype)0)/((1ULL << depth)+1);
 	v = v - ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every two bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(utype)0)/((1ULL << depth)+1);
 	v = (v & mask) + ((v >> depth) & mask);
 	depth *= 2;
 
 	/* Sum every four bits. 
 	 * No overflow allows masking after sum.
 	 */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(utype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 	depth *= 2;
 
 	/* Sum every eith bits. */
-	mask = (~(typeof(v))0)/((1ULL << depth)+1);
+	mask = (~(utype)0)/((1ULL << depth)+1);
 	v = (v  + (v >> depth)) & mask;
 
 	/* Multiplication can sum all bytes because results fits to a byte. */
-	mask = (~(typeof(v))0)/255;
+	mask = (~(utype)0)/255;
 	return (v * mask) >> (sizeof(v)*8 - 8);
 #endif
 }
