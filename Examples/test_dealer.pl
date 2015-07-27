@@ -72,32 +72,35 @@ foreach $input (`ls $file`) {
   }
 
   if (-e $refer) {
-    $diff = `diff -Z $output $refer`;
-    $diff =~ s/^(.*Time needed.*|.*\[Date ".*|[^<>].*)\R//mg;
+    $diff = `diff -u -Z $refer $output`;
+    $diff =~ s/^(.*Time needed.*|.*\[Date ".*|[^+-].*|[+-][+-][+-] .*)\R//mg;
     if (-e "$refer.err" || -e "$output.err") {
       if (-e "$refer.err" && -e "$output.err") {
-        $err = `diff -Z $output.err $refer.err`;
+        $err = `diff -u -Z $refer.err $output.err`;
       } else { if (-e "$output.err") {
-          print "$refer.err missing\n";
+          print "Error: $refer.err missing\n";
           $err = `cat "$output.err"`;
+          $exitcode = 4;
         } else {
-          print "$output.err missing\n";
+          print "Error: $output.err missing\n";
           $err = `cat $refer.err`;
+          $exitcode = 5;
         }
       }
       if ($err ne "") {
-        print "stderr not matching\n";
+        print "Error: stderr ($output.err) not matching\n";
         print $err;
         $exitcode = 2;
       }
     }
     if ($diff ne "") {
-      print "output not matching\n";
+      print "Error: output ($output) not matching\n";
       print $diff;
       $exitcode = 1;
     }
   } else {
-    print "$refer is missing\n";
+    print "Error: $refer is missing\n";
+    $exitcode = 3
   }
 
 }
