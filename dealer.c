@@ -64,6 +64,7 @@ static int swapindex = 0;
 struct selected_prng {
 	const unsigned char *table;
 	unsigned int mask;
+        unsigned int end;
 };
 
 static struct selected_prng zero52;
@@ -126,11 +127,12 @@ static uint16_t uniform_random(uint16_t max) {
 
 static inline uint16_t uniform_random_table() {
 	uint16_t rnd;
+        unsigned mask = zero52.mask;
+        unsigned end = zero52.end;
 	do {
-		rnd = random16();
-		rnd = zero52.table[rnd & zero52.mask];
-	} while (rnd == 0xFF);
-	return rnd;
+		rnd = random16() & mask;
+	} while (rnd >= end);
+	return zero52.table[rnd];
 }
 
 static void initevalcontract () {
@@ -533,6 +535,9 @@ static void initprogram (const char *initialpack) {
   assert(j >= 2);
   zero52.table = prnglookup.table + prnglookup.entries[j - 2].idx;
   zero52.mask = prnglookup.entries[j - 2].mask;
+  unsigned end = zero52.mask;
+  for (; zero52.table[end] == 0xff; end--);
+  zero52.end = end + 1;
 }
 
 static void swap2 (struct board *d, int p1, int p2) {
