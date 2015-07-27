@@ -1,0 +1,5 @@
+abs(2) 2, abs(-3) 3, abs(0) 0, abs(-50+25) 25, abs(var = -4) 4
+Generated 1 hands
+Produced 1 hands
+Initial random seed 1
+Time needed    0.000 sec

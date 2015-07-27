@@ -69,7 +69,7 @@ static void new_var(char *s, struct treebase *t) ;
 %token CONTROL LOSER DEALER
 %token QUALITY CCCC
 %token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
-%token EVALCONTRACT ALL NONE SCORE IMPS RND AVG
+%token EVALCONTRACT ALL NONE SCORE IMPS RND AVG ABS
 %token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
 %token <y_int> NUMBER
@@ -320,6 +320,8 @@ expr
                 { $$ = newtree(TRT_RND, $3, NIL, 0, 0); }
         | AVG
                 { $$ = newtree(TRT_AVG, NIL, NIL, 0, 0); }
+        | ABS '(' expr ')'
+                { $$ = newtree(TRT_ABS, $3, NIL, 0, 0); }
         ;
 
 exprlist

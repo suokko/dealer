@@ -115,6 +115,7 @@ struct expr {
 #define TRT_PT9         51
 #define TRT_AVG         52
 #define TRT_VAR         53
+#define TRT_ABS         54
 
 /*
  * Actions to be taken

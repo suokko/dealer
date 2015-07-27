@@ -976,6 +976,8 @@ static int evaltree (struct treebase *b) {
       return imps (evaltree (t->tr_leaf1));
     case TRT_AVG:
       return (int)(gptr->average*1000000);
+    case TRT_ABS:
+      return abs(evaltree(t->tr_leaf1));
     case TRT_RND:
       {
         double eval = evaltree(t->tr_leaf1);

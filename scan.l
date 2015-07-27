@@ -96,6 +96,7 @@ shape           return(SHAPE);
 any                 return(ANY);
 rnd         return(RND);
 avg         return(AVG);
+abs         return(ABS);
 [CDHS]A?K?Q?J?T?9?8?7?6?5?4?3?2?        { yylval.y_str = mystrcpy(yytext); return HOLDING; }
 [2-9TJQKA][CDHS]        { yylval.y_card = make_card(yytext[0], yytext[1]);
                           return(CARD); }
