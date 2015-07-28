@@ -231,7 +231,7 @@ static int true_dd (const struct board *d, int l, int c) {
     fclose (f);
     fd = mkstemp (tn2);
     if (fd < 0 ) error ("Can't create temporary file");
-    sprintf (cmd, "ddd %s -trumps=%c -leader=%c -sol=1 | tail -n1 > %s;", tn1, "cdhsn"[c], "eswn"[l], tn2);
+    sprintf (cmd, "ddd %s -trumps=%c -leader=%c -sol=1 | tail -n1 > %s;", tn1, "cdhsn"[c], "nesw"[l], tn2);
     r = system (cmd);
     f = fdopen (fd, "r");
     if (f == 0) error ("Can't read output of analysis");
@@ -240,7 +240,7 @@ static int true_dd (const struct board *d, int l, int c) {
     fclose (f);
     remove (tn1);
     remove (tn2);
-    return res;
+    return 13 - res;
 #endif /* MSDOS */
   }
 }
