@@ -68,7 +68,7 @@ static void new_var(char *s, struct treebase *t) ;
 %token AVERAGE HASCARD FREQUENCY PREDEAL POINTCOUNT ALTCOUNT
 %token CONTROL LOSER DEALER
 %token QUALITY CCCC
-%token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
+%token TRICKS LEADTRICKS NOTRUMPS NORTHSOUTH EASTWEST
 %token EVALCONTRACT ALL NONE SCORE IMPS RND AVG ABS
 %token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
@@ -280,6 +280,10 @@ expr
                 { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, $5); }
     | TRICKS '(' compass ',' NOTRUMPS ')'
                 { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, 4); }
+    | LEADTRICKS '(' compass ',' SUIT ')'
+                { $$ = newtree(TRT_LEADTRICKS, NIL, NIL, $3, $5); }
+    | LEADTRICKS '(' compass ',' NOTRUMPS ')'
+                { $$ = newtree(TRT_LEADTRICKS, NIL, NIL, $3, 4); }
     | SCORE '(' VULN ',' CONTRACT ',' expr ')'
                 { $$ = newtree(TRT_SCORE, $7, NIL, $3, $5); }
     | IMPS '(' expr ')'

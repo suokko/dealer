@@ -168,6 +168,30 @@ static int dd (const struct board *d, int l, int c) {
   return cached_tricks[l][c];
 }
 
+static struct value lead_dd (const struct board *d, int l, int c) {
+  char res[13];
+  struct value r;
+  struct value_array *arr = mycalloc(1, sizeof(*arr));
+  unsigned idx, fill = 0;
+  memset(res, -1, sizeof(res));
+  card hand = gptr->predealt.hands[(l+1) % 4];
+  solveLead(d, l, c, hand, res);
+  for (idx = 0; idx < sizeof(res); idx++) {
+    card c = hand_extract_card(hand);
+    hand &= ~c;
+    if (res[idx] == -1)
+      continue;
+    arr->key[fill] = C_BITPOS(c);
+    arr->value[fill] = res[idx];
+    fill++;
+  }
+  for (; fill < sizeof(res); fill++)
+    arr->value[fill] = -1;
+  r.type = VAL_INT_ARR;
+  r.array = arr;
+  return r;
+}
+
 struct tagLibdeal libdeal;
 
 static int get_tricks (int pn, int dn) {
@@ -789,54 +813,210 @@ static int bitpermutate(int vector)
 
 /* End of Specific routines for EXHAUST_MODE */
 
-static int evaltree (struct treebase *b) {
+static struct value evaltree (struct treebase *b) {
   struct tree *t = (struct tree*)b;
+  struct value r;
   switch (b->tr_type) {
     default:
       assert (0);
     case TRT_NUMBER:
-      return t->tr_int1;
+      r.type = VAL_INT;
+      r.intvalue = t->tr_int1;
+      return r;
     case TRT_VAR:
       if (gp->ngen != t->tr_int1) {
-        t->tr_int2 = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1);
         t->tr_int1 = gp->ngen;
+        t->tr_int2 = r.type;
+        t->tr_leaf2 = (void*)r.array;
+        return r;
       }
-      return t->tr_int2;
+      r.type = t->tr_int2;
+      r.array = (void*)t->tr_leaf2;
+      return r;
     case TRT_AND2:
-      return evaltree (t->tr_leaf1) && evaltree (t->tr_leaf2);
+      {
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        if (!r.intvalue)
+          return r;
+        r = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = !!r.intvalue;
+        return r;
+      }
     case TRT_OR2:
-      return evaltree (t->tr_leaf1) || evaltree (t->tr_leaf2);
+      {
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        if (r.intvalue) {
+          r.intvalue = 1;
+          return r;
+        }
+        r = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = !!r.intvalue;
+        return r;
+      }
     case TRT_ARPLUS:
-      return evaltree (t->tr_leaf1) + evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r2.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r.intvalue += r2.intvalue;
+        return r;
+      }
     case TRT_ARMINUS:
-      return evaltree (t->tr_leaf1) - evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r2.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r.intvalue -= r2.intvalue;
+        return r;
+      }
     case TRT_ARTIMES:
-      return evaltree (t->tr_leaf1) * evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r2.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r.intvalue *= r2.intvalue;
+        return r;
+      }
     case TRT_ARDIVIDE:
-      return evaltree (t->tr_leaf1) / evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r2.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r.intvalue /= r2.intvalue;
+        return r;
+      }
     case TRT_ARMOD:
-      return evaltree (t->tr_leaf1) % evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r2.type != VAL_INT)
+          error("Only int supported for arithmetic\n");
+        r.intvalue %= r2.intvalue;
+        return r;
+      }
     case TRT_CMPEQ:
-      return evaltree (t->tr_leaf1) == evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue == r2.intvalue;
+        return r;
+      }
     case TRT_CMPNE:
-      return evaltree (t->tr_leaf1) != evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue != r2.intvalue;
+        return r;
+      }
     case TRT_CMPLT:
-      return evaltree (t->tr_leaf1) < evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue < r2.intvalue;
+        return r;
+      }
     case TRT_CMPLE:
-      return evaltree (t->tr_leaf1) <= evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue <= r2.intvalue;
+        return r;
+      }
     case TRT_CMPGT:
-      return evaltree (t->tr_leaf1) > evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue > r2.intvalue;
+        return r;
+      }
     case TRT_CMPGE:
-      return evaltree (t->tr_leaf1) >= evaltree (t->tr_leaf2);
+      {
+        struct value r2;
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r2 = evaltree(t->tr_leaf2);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = r.intvalue >= r2.intvalue;
+        return r;
+      }
     case TRT_NOT:
-      return !evaltree (t->tr_leaf1);
+      {
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for comparison\n");
+        r.intvalue = !r.intvalue;
+        return r;
+      }
     case TRT_LENGTH:      /* suit, compass */
       assert (t->tr_int1 >= SUIT_CLUB && t->tr_int1 <= SUIT_SPADE);
       assert (t->tr_int2 >= COMPASS_NORTH && t->tr_int2 <= COMPASS_WEST);
-      return staticsuitlength(&gp->curboard, hs, t->tr_int2, t->tr_int1);
+      {
+        r.intvalue = staticsuitlength(&gp->curboard, hs, t->tr_int2, t->tr_int1);
+        r.type = VAL_INT;
+        return r;
+      }
     case TRT_HCPTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return hcp(&gp->curboard, hs, t->tr_int1, 4);
+      {
+        r.intvalue = hcp(&gp->curboard, hs, t->tr_int1, 4);
+        r.type = VAL_INT;
+        return r;
+      }
     case TRT_PT0TOTAL:      /* compass */
     case TRT_PT1TOTAL:      /* compass */
     case TRT_PT2TOTAL:      /* compass */
@@ -848,11 +1028,19 @@ static int evaltree (struct treebase *b) {
     case TRT_PT8TOTAL:      /* compass */
     case TRT_PT9TOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return getpc(idxTens + (b->tr_type - TRT_PT0TOTAL) / 2, gp->curboard.hands[t->tr_int1]);
+      {
+        r.intvalue = getpc(idxTens + (b->tr_type - TRT_PT0TOTAL) / 2, gp->curboard.hands[t->tr_int1]);
+        r.type = VAL_INT;
+        return r;
+      }
     case TRT_HCP:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return hcp(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+      {
+        r.intvalue = hcp(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+        r.type = VAL_INT;
+        return r;
+      }
     case TRT_PT0:      /* compass, suit */
     case TRT_PT1:      /* compass, suit */
     case TRT_PT2:      /* compass, suit */
@@ -865,69 +1053,112 @@ static int evaltree (struct treebase *b) {
     case TRT_PT9:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return getpc(idxTens + (b->tr_type - TRT_PT0) / 2, gp->curboard.hands[t->tr_int1] & suit_masks[t->tr_int2]);
+      {
+        r.intvalue = getpc(idxTens + (b->tr_type - TRT_PT0) / 2, gp->curboard.hands[t->tr_int1] & suit_masks[t->tr_int2]);
+        r.type = VAL_INT;
+        return r;
+      }
     case TRT_SHAPE:      /* compass, shapemask */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       {
         struct treeshape *s = (struct treeshape *)b;
-        return (checkshape(distrbit(&gp->curboard, hs, s->compass), &s->shape));
+        r.intvalue = (checkshape(distrbit(&gp->curboard, hs, s->compass), &s->shape));
+        r.type = VAL_INT;
+        return r;
       }
     case TRT_HASCARD:      /* compass, card */
       {
         struct treehascard *hc = (struct treehascard *)t;
         assert (hc->compass >= COMPASS_NORTH && hc->compass <= COMPASS_WEST);
-        return statichascard (&gp->curboard, hc->compass, hc->c) > 0;
+        r.intvalue = statichascard (&gp->curboard, hc->compass, hc->c) > 0;
+        r.type = VAL_INT;
+        return r;
       }
     case TRT_LOSERTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return loser(&gp->curboard, hs, t->tr_int1, 4);
+      r.intvalue = loser(&gp->curboard, hs, t->tr_int1, 4);
+      r.type = VAL_INT;
+      return r;
     case TRT_LOSER:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return loser(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+      r.intvalue = loser(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+      r.type = VAL_INT;
+      return r;
     case TRT_CONTROLTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return control(&gp->curboard, hs, t->tr_int1, 4);
+      r.intvalue = control(&gp->curboard, hs, t->tr_int1, 4);
+      r.type = VAL_INT;
+      return r;
     case TRT_CONTROL:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return control(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+      r.intvalue = control(&gp->curboard, hs, t->tr_int1, t->tr_int2);
+      r.type = VAL_INT;
+      return r;
     case TRT_CCCC:
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      return cccc (t->tr_int1);
+      r.intvalue = cccc (t->tr_int1);
+      r.type = VAL_INT;
+      return r;
     case TRT_QUALITY:
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      return quality (t->tr_int1, t->tr_int2);
+      r.intvalue = quality (t->tr_int1, t->tr_int2);
+      r.type = VAL_INT;
+      return r;
     case TRT_IF:
       assert (t->tr_leaf2->tr_type == TRT_THENELSE);
       {
         struct tree *leaf2 = (struct tree *)t->tr_leaf2;
-        return (evaltree (t->tr_leaf1) ? evaltree (leaf2->tr_leaf1) :
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for branching");
+        return (r.intvalue ? evaltree (leaf2->tr_leaf1) :
               evaltree (leaf2->tr_leaf2));
       }
     case TRT_TRICKS:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);
-      return dd (&gp->curboard, t->tr_int1, t->tr_int2);
+      r.intvalue = dd (&gp->curboard, t->tr_int1, t->tr_int2);
+      r.type = VAL_INT;
+      return r;
+    case TRT_LEADTRICKS:      /* compass, suit */
+      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
+      assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);
+      return lead_dd (&gp->curboard, t->tr_int1, t->tr_int2);
     case TRT_SCORE:      /* vul/non_vul, contract, tricks in leaf1 */
       assert (t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
       int cntr = t->tr_int2 & (64 - 1);
       return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1));
     case TRT_IMPS:
-      return imps (evaltree (t->tr_leaf1));
+      r = evaltree (t->tr_leaf1);
+      if (r.type != VAL_INT)
+        error("Only int support for imps");
+      r.intvalue = imps (r.intvalue);
+      return r;
     case TRT_AVG:
-      return (int)(gptr->average*1000000);
+      r.intvalue = (int)(gptr->average*1000000);
+      r.type = VAL_INT;
+      return r;
     case TRT_ABS:
-      return abs(evaltree(t->tr_leaf1));
+      r = evaltree (t->tr_leaf1);
+      if (r.type != VAL_INT)
+        error("Only int support for abs");
+      r.intvalue = abs(r.intvalue);
+      return r;
     case TRT_RND:
       {
-        double eval = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1);
+        if (r.type != VAL_INT)
+          error("Only int supported for RND");
+        double eval = r.intvalue;
         unsigned random = random32();
         double mul = eval * random;
         double res = mul / (UINT_MAX + 1.0);
         int rv = (int)(res);
-        return rv;
+        r.intvalue = rv;
+        return r;
       }
   }
 }
@@ -937,7 +1168,7 @@ static int interesting () {
   return evaltree (decisiontree);
 }
 */
-#define interesting() ((int)evaltree(gp->decisiontree))
+#define interesting() ((int)evaltree(gp->decisiontree).intvalue)
 
 static void setup_action () {
   struct action *acp;
@@ -978,9 +1209,57 @@ static void setup_action () {
     }
 }
 
+static void frequency2dout(struct action *acp, int expr,  int expr2) {
+        int val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
+
+        high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
+        high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
+        low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
+        low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
+        if (expr > high1)
+                val1 = high1 - low1 + 2;
+        else {
+                val1 = expr - low1 + 1;
+                if (val1 < 0) val1 = 0;
+        }
+        if (expr2 > high2)
+                val2 = high2 - low2 + 2;
+        else {
+                val2 = expr2 - low2 + 1;
+                if (val2 < 0) val2 = 0;
+        }
+        acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * val1 + val2]++;
+}
+
+static void frequency_to_lead(struct action *acp, struct value val) {
+        int low1 = acp->ac_u.acu_f.acuf_lowbnd;
+        int high1 = acp->ac_u.acu_f.acuf_highbnd;
+        int low2 = 0;
+        int high2 = 12;
+        card *h;
+        struct value_array *arr = val.array;
+
+        free(acp->ac_u.acu_f.acuf_freqs);
+
+        acp->ac_type = ACT_FREQUENCYLEAD;
+        acp->ac_u.acu_f2d.acuf_lowbnd_expr1 = low1;
+        acp->ac_u.acu_f2d.acuf_highbnd_expr1 = high1;
+        acp->ac_u.acu_f2d.acuf_lowbnd_expr2 = low2;
+        acp->ac_u.acu_f2d.acuf_highbnd_expr2 = high2;
+        acp->ac_u.acu_f2d.acuf_freqs = (long *)mycalloc(
+                        (high1 - low1 + 3) * (high2 - low2 + 3),
+                        sizeof(long));
+        h = mycalloc(high2 - low2 + 1, sizeof(card));
+        for (;low2 <= high2; low2++) {
+               card c = 1LL << arr->key[low2];
+               h[low2] = c;
+        }
+        acp->ac_expr2 = (void*)h;
+};
+
 static void action () {
   struct action *acp;
-  int expr, expr2, val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
+  struct value expr, expr2;
 
   for (acp = gp->actionlist; acp != 0; acp = acp->ac_next) {
     switch (acp->ac_type) {
@@ -993,14 +1272,14 @@ static void action () {
         printcompact (&gp->curboard);
         if (acp->ac_expr1) {
           expr = evaltree (acp->ac_expr1);
-          printf ("%d\n", expr);
+          printf ("%d\n", expr.intvalue);
         }
         break;
       case ACT_PRINTONELINE:
         printoneline (&gp->curboard);
         if (acp->ac_expr1) {
           expr = evaltree (acp->ac_expr1);
-          printf ("%d\n", expr);
+          printf ("%d\n", expr.intvalue);
         }
         break;
 
@@ -1009,7 +1288,7 @@ static void action () {
           while (pex) {
             if (pex->ex_tr) {
               expr = evaltree (pex->ex_tr);
-              printf ("%d", expr);
+              printf ("%d", expr.intvalue);
             }
             if (pex->ex_ch) {
               printf ("%s", pex->ex_ch);
@@ -1032,38 +1311,41 @@ static void action () {
         board_to_stored(&gp->deallist[gp->nprod], &gp->curboard);
         break;
       case ACT_AVERAGE:
-        acp->ac_int1 += evaltree (acp->ac_expr1);
+        expr = evaltree(acp->ac_expr1);
+        acp->ac_int1 += expr.intvalue;
         break;
       case ACT_FREQUENCY:
         expr = evaltree (acp->ac_expr1);
-        if (expr < acp->ac_u.acu_f.acuf_lowbnd)
+        if (expr.type == VAL_INT_ARR) {
+          frequency_to_lead(acp, expr);
+          goto frequencylead;
+        }
+        if (expr.intvalue < acp->ac_u.acu_f.acuf_lowbnd)
           acp->ac_u.acu_f.acuf_uflow++;
-        else if (expr > acp->ac_u.acu_f.acuf_highbnd)
+        else if (expr.intvalue > acp->ac_u.acu_f.acuf_highbnd)
           acp->ac_u.acu_f.acuf_oflow++;
         else
-          acp->ac_u.acu_f.acuf_freqs[expr - acp->ac_u.acu_f.acuf_lowbnd]++;
+          acp->ac_u.acu_f.acuf_freqs[expr.intvalue - acp->ac_u.acu_f.acuf_lowbnd]++;
+        break;
+      case ACT_FREQUENCYLEAD:
+        expr = evaltree (acp->ac_expr1);
+frequencylead:
+        {
+                unsigned idx;
+                struct value_array *arr = (void*)expr.array;;
+                assert(expr.type == VAL_INT_ARR);
+                for (idx = 0; idx < 13; idx++) {
+                        if (arr->value[idx] < 0)
+                                continue;
+                        frequency2dout(acp, arr->value[idx], idx);
+                }
+        }
+        free(expr.array);
         break;
       case ACT_FREQUENCY2D:
         expr = evaltree (acp->ac_expr1);
         expr2 = evaltree (acp->ac_expr2);
-
-        high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
-        high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
-        low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
-        low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
-        if (expr > high1)
-          val1 = high1 - low1 + 2;
-        else {
-          val1 = expr - low1 + 1;
-          if (val1 < 0) val1 = 0;
-        }
-        if (expr2 > high2)
-          val2 = high2 - low2 + 2;
-        else {
-          val2 = expr2 - low2 + 1;
-          if (val2 < 0) val2 = 0;
-        }
-        acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * val1 + val2]++;
+        frequency2dout(acp, expr.intvalue, expr2.intvalue);
         break;
       }
     }

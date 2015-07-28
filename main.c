@@ -101,7 +101,7 @@ int imps (int scorediff) {
   return scorediff < 0 ? -i : i;
 }
 
-int score (int vuln, int suit, int level, int dbl, int tricks) {
+static int scoreone (int vuln, int suit, int level, int dbl, int tricks) {
   int total = 0;
 
   /* going down */
@@ -150,6 +150,19 @@ int score (int vuln, int suit, int level, int dbl, int tricks) {
     total += trickpts * (tricks - 6 - level);
 
   return total;
+}
+
+struct value score (int vuln, int suit, int level, int dbl, struct value tricks) {
+  if (tricks.type == VAL_INT) {
+    tricks.intvalue = scoreone(vuln, suit, level, dbl, tricks.intvalue);
+  } else {
+    unsigned idx;
+    for (idx = 0; idx < sizeof(*tricks.array->key)/sizeof(tricks.array->key[0])
+        && tricks.array->key[idx] != 0; idx++) {
+      tricks.array->value[idx] = scoreone(vuln, suit, level, dbl, tricks.array->value[idx]);
+    }
+  }
+  return tricks;
 }
 
 void error (char *s) {
@@ -441,6 +454,11 @@ void printdeal (const struct board *d) {
   printf ("\n");
 }
 
+void printcard(card c) {
+  assert(hand_count_cards(c) == 1);
+  printf("%s%c", ucsep[C_SUIT(c)], ucrep[C_RANK(c)]);
+}
+
 void predeal (int player, card onecard) {
 
   int i;
@@ -534,8 +552,8 @@ static void showevalcontract (int nh) {
       for (l = 1; l < 8; l++) {
         int t = 0, tn = 0;
         for (i = 0; i < 14; i++) {
-          t += gptr->results[0][s][i] * score (v, s, l, 0, i);
-          tn += gptr->results[1][s][i] * score (v, s, l, 0, i);
+          t += gptr->results[0][s][i] * scoreone (v, s, l, 0, i);
+          tn += gptr->results[1][s][i] * scoreone (v, s, l, 0, i);
         }
         printf ("%4d/%4d ", t / nh, tn / nh);
       }
@@ -580,8 +598,11 @@ static void cleanup_action () {
         break;
       case ACT_AVERAGE:
         gp->average = (double)acp->ac_int1 / gptr->nprod;
-        if (acp->ac_expr2 && !evaltreefunc(acp->ac_expr2))
-          break;
+        if (acp->ac_expr2) {
+          struct value r = evaltreefunc(acp->ac_expr2);
+          if (r.type == VAL_INT && !r.intvalue)
+            break;
+        }
         if (acp->ac_str1)
           printf ("%s: ", acp->ac_str1);
         printf ("%g\n", gp->average);
@@ -596,7 +617,9 @@ static void cleanup_action () {
         }
         if (acp->ac_u.acu_f.acuf_oflow)
           printf ("High\t%8ld\n", acp->ac_u.acu_f.acuf_oflow);
+        free(acp->ac_u.acu_f.acuf_freqs);
         break;
+      case ACT_FREQUENCYLEAD:
       case ACT_FREQUENCY2D: {
         int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow,
           sumtot, sumcol, *toprintcol, *toprintrow;
@@ -618,8 +641,15 @@ static void cleanup_action () {
         else
           printf ("    ");
         for (j = 1; j < (high2 - low2) + 2; j++) {
-          if (toprintcol[j] != 0)
-            printf (" %6d", j + low2 - 1);
+          if (toprintcol[j] != 0) {
+            if (acp->ac_type == ACT_FREQUENCY2D)
+              printf (" %6d", j + low2 - 1);
+            else {
+              card * header = (card*)acp->ac_expr2;
+              printf ("     ");
+              printcard(header[j - 1]);
+            }
+          }
         }
         if (toprintcol[j] != 0)
           printf ("   High");
@@ -653,6 +683,9 @@ static void cleanup_action () {
             printf (" %6d", sumcol);
         }
         printf (" %6d%s%s", sumtot, crlf, crlf);
+        if (acp->ac_type == ACT_FREQUENCYLEAD)
+          free(acp->ac_expr2);
+        free(acp->ac_u.acu_f2d.acuf_freqs);
         free(toprintcol);
         free(toprintrow);
       }

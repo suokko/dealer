@@ -83,7 +83,7 @@ static inline int hand_count_cards(const hand h)
 static inline int C_BITPOS(const card c)
 {
 	assert(hand_count_cards(c) >= 1);
-	return __builtin_ctzll(c);
+	return sizeof(c)*8 - __builtin_clzll(c) - 1;
 }
 
 static inline int C_SUIT(const card c)

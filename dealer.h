@@ -4,6 +4,10 @@
 #include "card.h"
 #include "Random/SFMT.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern const char * const player_name[4];
 
 int verbose;
@@ -75,7 +79,7 @@ extern const struct globals *gptr;
 struct handstat hs[4] ;
 
 int imps (int scorediff) __attribute__ ((pure));
-int score (int vuln, int suit, int level, int dbl, int tricks) __attribute__ ((pure));
+struct value score (int vuln, int suit, int level, int dbl, struct value tricks) __attribute__ ((pure));
 void error (char *s) __attribute__ ((noreturn, pure));
 void clearpointcount ();
 void clearpointcount_alt (int cin);
@@ -88,7 +92,25 @@ void printdeal (const struct board *d);
 void printhands (int boardno, const struct board *dealp, int player, int nhands);
 void printew (const struct board *d);
 
-typedef int (*evaltreeptr)(struct treebase *b);
+struct value_array {
+  int key[13];
+  int value[13];
+};
+
+enum value_type {
+  VAL_INT,
+  VAL_INT_ARR,
+};
+
+struct value {
+  enum value_type type;
+  union {
+    struct value_array *array;
+    int intvalue;
+  };
+};
+
+typedef struct value (*evaltreeptr)(struct treebase *b);
 extern evaltreeptr evaltreefunc;
 typedef card (*hascardptr) (const struct board *d, int player, card onecard);
 extern hascardptr hascard;
@@ -111,6 +133,8 @@ extern const char *ucsep[4];
 
 #define printcompact(d) (fprintcompact(stdout, d, 0, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1, 0))
+
+void printcard(card c);
 
  #define HAS_CARD(d,p,c) hascard(d,p,c)
 
@@ -136,5 +160,9 @@ int avx2_deal_main (struct globals *g);
 
 #define suitlength DEFUN(suitlength)
 int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DEALER_H */

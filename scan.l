@@ -89,6 +89,7 @@ controls?   return(CONTROL);
 quality         return(QUALITY);
 cccc            return(CCCC);
 tricks?     return(TRICKS);
+leadtricks? return(LEADTRICKS);
 score       return(SCORE);
 imps?       return(IMPS);
 hascard         return(HASCARD);

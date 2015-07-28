@@ -116,6 +116,7 @@ struct expr {
 #define TRT_AVG         52
 #define TRT_VAR         53
 #define TRT_ABS         54
+#define TRT_LEADTRICKS  55
 
 /*
  * Actions to be taken
@@ -164,6 +165,7 @@ struct action {
 #define ACT_FREQUENCY2D 8
 #define ACT_PRINTONELINE 9
 #define ACT_PRINTES 10
+#define ACT_FREQUENCYLEAD 11
 
 /* Constants for CCCC and Quality */
 
