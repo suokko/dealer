@@ -44,6 +44,9 @@ Recommended tools to build from source are
 Recommended run time dependencies are
 * Bo's dds (http://privat.bahnhof.se/wb758135/)
 
+libdds.so, libdds.dylib or dds.dll needs to be in runtime library search path to
+use double dummy solver in dealer scripts.
+
 2.  Build on linux:
 
 
