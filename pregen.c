@@ -3,18 +3,20 @@
 #include <limits.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
+#include <inttypes.h>
 
-static unsigned long ncrtable[14*13 + 1];
+static uint64_t ncrtable[14*13 + 1];
 
 static unsigned ncridx(int n, int r)
 {
 	return n*13 + r;
 }
 
-static unsigned long ncr(int n, int r)
+static uint64_t ncr(int n, int r)
 {
 	if (0)
-		printf("n: %d, r: %d = %ld\n", n, r, ncrtable[ncridx(n,r)]);
+		printf("n: %d, r: %d = %" PRId64 "\n", n, r, ncrtable[ncridx(n,r)]);
 	return ncrtable[ncridx(n, r)];
 }
 
@@ -41,8 +43,8 @@ static int doincludes(void)
 
 static int doprngtables(void)
 {
-	long cards, pot, idx = 32; // Starts with pot table
-	const long ratelimit = 64;
+	int64_t cards, pot, idx = 32; // Starts with pot table
+	const int64_t ratelimit = 64;
 
 	struct entry {
 		unsigned mask;
@@ -52,16 +54,16 @@ static int doprngtables(void)
 	struct entry results[52] = {{0}};
 
 	for (cards = 2; cards < 52; cards++) {
-		long bestreminder = LONG_MAX;
-		long bestrate = ratelimit - 1;
-		long bestpot = 0;
+		int64_t bestreminder = INT64_MAX;
+		int64_t bestrate = ratelimit - 1;
+		int64_t bestpot = 0;
 		if (((cards - 1) & cards) == 0)
 			continue;
-		for (pot = ratelimit; pot < (1L << 56); pot <<= 1) {
+		for (pot = ratelimit; pot < (1LL << 56); pot <<= 1) {
 			if (cards > pot)
 				continue;
-			long reminder = pot % cards;
-			long missrate = pot / (reminder);
+			int64_t reminder = pot % cards;
+			int64_t missrate = pot / (reminder);
 			if (missrate > bestrate)
 				bestrate = missrate;
 			else
@@ -104,7 +106,7 @@ static int doprngtables(void)
 
 	for (cards = 2; cards < 53; cards++) {
 
-		iter += sprintf(iter, "%ld,", cards - 1);
+		iter += sprintf(iter, "%" PRId64 ",", cards - 1);
 
 		if (results[cards - 2].mask == 0) {
 			results[cards - 2].mask = cards - 1;
@@ -133,7 +135,7 @@ static int doprngtables(void)
 		unsigned mask = results[cards - 2].mask;
 		unsigned lidx = results[cards - 2].idx;
 
-		printf("\t\t{.idx = %u, // %lu\n"
+		printf("\t\t{.idx = %u, // %"PRIu64"\n"
 			"\t\t.mask = %u,},\n",
 			lidx, cards, mask);
 	}
@@ -142,9 +144,13 @@ static int doprngtables(void)
 }
 
 struct patternparam {
+#ifdef _WIN32
+	int64_t total;
+#else
 	__int128 total;
+#endif
 	void (*complete)(struct patternparam *p);
-	unsigned long count[4];
+	uint64_t count[4];
 	unsigned max[4];
 	unsigned len[16];
 	unsigned i;
@@ -197,7 +203,11 @@ static void patternrunloop(struct patternparam *p)
 static void patternprintstats(struct patternparam *p)
 {
 	unsigned i;
+#ifndef _WIN32
 	__int128 cnt = 1;
+#else
+	int64_t cnt = 1;
+#endif
 	printf("%03u: ", p->i);
 
 	for (i = 3; i < 4; i--) {
@@ -211,8 +221,8 @@ static void patternprintstats(struct patternparam *p)
 				p->len[0 + i*4]);
 	}
 	p->total += cnt;
-	printf("%23lu %16lx %16lx\n",
-			(unsigned long)cnt, (unsigned long)(p->total >> 64), (unsigned long)p->total);
+	printf("%"PRId64": %16"PRIx64" %16"PRIx64"\n",
+			(uint64_t)cnt, (uint64_t)(p->total >> 64), (uint64_t)p->total);
 	p->i++;
 	p->count[0] = 1;
 }
@@ -259,18 +269,18 @@ static int patternstatistics(int nrhands)
 
 static int rngtablestatistics(void)
 {
-	long cards;
-	long pot;
-	long total = 0;
-	long missrate = 400;
-	long best = 0;
-	long maxrate[53] = {0};
+	int64_t cards;
+	int64_t pot;
+	int64_t total = 0;
+	int64_t missrate = 400;
+	int64_t best = 0;
+	int64_t maxrate[53] = {0};
 	printf("rate\tbytes\taverate\tbytes/rate\n");
-	for (missrate = 1; missrate < 1L << 32;) {
+	for (missrate = 1; missrate < 1LL << 32;) {
 		total = 0;
 
 		for (cards = 2; cards < 53; cards++) {
-			for (pot = 1; pot < (1L << 56); pot <<= 1) {
+			for (pot = 1; pot < (1LL << 56); pot <<= 1) {
 				if (cards > pot)
 					continue;
 
@@ -282,13 +292,13 @@ static int rngtablestatistics(void)
 			}
 			if (pot % cards != 0 && maxrate[cards] < pot/(pot % cards)) {
 				maxrate[cards] = pot/(pot % cards);
-				printf("cards %ld: %ld / %ld = %ld\n",
+				printf("cards %"PRId64": %"PRId64" / %"PRId64" = %"PRId64"\n",
 						cards, pot, pot % cards, maxrate[cards]);
 			}
 			total += pot;
 		}
-		long nextrate = LONG_MAX;
-		long avgrate = 0, count = 0;
+		int64_t nextrate = INT64_MAX;
+		int64_t avgrate = 0, count = 0;
 
 		for (cards = 0; cards < 53; cards++) {
 			if (maxrate[cards] > 0) {

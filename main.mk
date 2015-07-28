@@ -19,11 +19,11 @@ DESTDIR  ?=
 COMPILERVERSION := $(shell $(CC) --version)
 
 ifneq ($(subst Free Software Foundation,,$(COMPILERVERSION)),$(COMPILERVERSION))
-AR := $(host)gcc-ar
+AR := gcc-ar
 COMPILER:=gcc
 else
 ifneq ($(subst clang,,$(COMPILERVERSION)),$(COMPILERVERSION))
-AR := $(host)llvm-ar
+AR := llvm-ar
 COMPILER:=clang
 else
 $(warning *** Warning: unknown compiler)

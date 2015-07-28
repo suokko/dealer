@@ -11,10 +11,14 @@ char* input_file = 0;
 
 #if defined(_MSC_VER) || defined(__WIN32) || defined(WIN32)
   /* with VC++6, winsock2 declares ntohs and struct timeval */
+#ifdef _MSC_VER
   #pragma warning (disable : 4115)
+#endif
   #include <winsock2.h>
   #include <fcntl.h>
+#ifdef _MSC_VER
   #pragma warning (default : 4115)
+#endif
 #else
   /* else we assume we can get ntohs/ntohl from netinet */
   #include <netinet/in.h>
@@ -26,13 +30,16 @@ char* input_file = 0;
     long tv_sec;            /* seconds */
     long tv_usec;            /* and microseconds */
   };
-  #endif /* _MSC_VER */
   #pragma warning (disable : 4100)
-  void gettimeofday (struct timeval *tv, void *pv) {
+  #endif /* _MSC_VER */
+  void gettimeofday (struct timeval *tv, void *vp) {
+    (void)vp;
     tv->tv_sec = time (0);
     tv->tv_usec = 0;
   }
+  #ifdef _MSC_VER
   #pragma warning (default : 4100)
+#endif
 #else
   #include <unistd.h>
   #include <sys/time.h>
@@ -228,7 +235,7 @@ static struct rng *initrng()
     FILE *f = fopen(paths[i], "r");
     if (!f)
       continue;
-    setvbuf(f, NULL, _IONBF, sizeof(random));
+    setvbuf(f, NULL, _IONBF, sizeof(r->random));
     rvalue.f = f;
     rvalue.idx = sizeof(rvalue.random);
     break;

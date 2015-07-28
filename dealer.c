@@ -7,13 +7,18 @@
 
 #include "bittwiddle.h"
 #include "pregen.h"
+#include "dds.h"
 
 #if defined(_MSC_VER) || defined(__WIN32) || defined(WIN32)
   /* with VC++6, winsock2 declares ntohs and struct timeval */
+#ifdef _MSC_VER
   #pragma warning (disable : 4115)
+#endif
   #include <winsock2.h>
   #include <fcntl.h>
+#ifdef _MSC_VER
   #pragma warning (default : 4115)
+#endif
 #else
   /* else we assume we can get ntohs/ntohl from netinet */
   #include <netinet/in.h>
@@ -172,14 +177,6 @@ static int get_tricks (int pn, int dn) {
   return resu;
 }
 
-#if defined(WIN32) || defined(__WIN32)
-static int mkstemp(char *temp)
-{
-  mktemp(temp);
-  return open(temp, O_RDWR | O_CREAT);
-}
-#endif
-
 static int true_dd (const struct board *d, int l, int c) {
   if (gp->loading && libdeal.valid) {
     int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
@@ -187,61 +184,7 @@ static int true_dd (const struct board *d, int l, int c) {
        we have to subtract 13 from that number. */
     return ((l == 0) || (l == 2)) ? 13 - resu : resu;
   } else {
-#ifdef MSDOS
-    /* Ugly fix for MSDOS. Requires a file called in.txt and will create the
-       files tst.pbn and out.txt. Note that we need not user crlf here, as it's
-       only dealer that will read the files anyway, Micke Hovmöller 990310 */
-    FILE *f;
-    char tn1[] = "tst.pbn";
-    char tn2[] = "out.txt";
-    char res;
-
-    f = fopen (tn1, "w+");
-    if (f == 0) error ("Can't open temporary file");
-    fprintcompact (f, d, 0);
-    /* Write the player to lead and strain. Note that since the player to lead
-       sits _behind_ declarer, the array is "eswn" instead of "nesw".
-       /Micke Hovmöller 990312 */
-    fprintf (f, "%c %c\n", "eswn"[l], "cdhsn"[c]);
-    fclose (f);
-
-    fflush (stdout);
-    system ("bridge.exe < in.txt > out.txt");
-    fflush (stdout);
-    f = fopen (tn2, "r");
-    if (f == 0) error ("Can't read output of analysis");
-
-    fscanf (f, "%*[^\n]\nEnter argument line: %c", &res);
-    fclose (f);
-    /* This will get the number of tricks EW can get.  If the user wanted NW, 
-       we have to subtract 13 from that number. */
-    return ((l == 1) || (l == 3)) ? 13 - res : res;
-#else
-    FILE *f;
-    int r;
-    char cmd[1024];
-    char tn1[] = "input.XXXXXX",  tn2[] = "output.XXXXXX";
-    int res;
-
-    int fd = mkstemp (tn1);
-    if (fd < 0 ) error ("Can't create temporary file");
-    f = fdopen (fd, "w+");
-    if (f == 0 ) error ("Can't open temporary file");
-    fprintcompact (f, d, 1, 1);
-    fclose (f);
-    fd = mkstemp (tn2);
-    if (fd < 0 ) error ("Can't create temporary file");
-    sprintf (cmd, "ddd %s -trumps=%c -leader=%c -sol=1 | tail -n1 > %s;", tn1, "cdhsn"[c], "nesw"[l], tn2);
-    r = system (cmd);
-    f = fdopen (fd, "r");
-    if (f == 0) error ("Can't read output of analysis");
-    r = fscanf (f, " %d: ", &res);
-    if (r != 1) fprintf(stderr, "Error reading number of triks from dds\n");
-    fclose (f);
-    remove (tn1);
-    remove (tn2);
-    return 13 - res;
-#endif /* MSDOS */
+    return solve(d, l, c);
   }
 }
 

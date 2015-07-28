@@ -280,9 +280,13 @@ int main(int argc, char * const argv[])
   unsigned long blocksize;
   struct process *process;
 
+#ifdef _WIN32
+  seed[0] = time(NULL);
+#else
   clock_gettime(CLOCK_REALTIME, &tp);
 
   seed[0] = tp.tv_nsec + tp.tv_sec * 1000 * 1000 * 1000;
+#endif
   while ((c = getopt(argc, argv, "hc:a:o:s:g:qv")) != -1) {
     switch (c) {
     default:

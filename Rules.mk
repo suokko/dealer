@@ -18,6 +18,12 @@ dealer_INCDIR := .
 dealergenlib_SRC := genlib.c
 dealergenlib_LIBS := librand.a
 
+# libdds support
+ifeq ($(subst mingw,,$(host)),$(host))
+dealer_LIBS += -ldl
+endif
+dealer_SRC += dds.cpp
+
 ifneq ($(subst mingw,,$(host)),$(host))
 dealer_LIBS += -lws2_32
 dealergenlib_LIBS += -lws2_32 librand.a
