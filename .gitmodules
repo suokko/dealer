@@ -1,0 +1,4 @@
+[submodule "dds"]
+	path = dds
+	url = https://github.com/dds-bridge/dds
+	branch = master
