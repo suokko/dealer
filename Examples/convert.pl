@@ -33,6 +33,9 @@ $rank_to_int{"A"} = 14;
 
 while (($_ =~ /(Frequency|Generated)/) || ($_ = <STDIN>)) {
    chop;
+   if ($_ =~ /\r$/) {
+      chop;
+   }
    chop;
    if ($_ =~ "HCP") {
       ($dummy, $dummy, $player) = split (/\s+/, $_);
@@ -83,7 +86,7 @@ while (($_ =~ /(Frequency|Generated)/) || ($_ = <STDIN>)) {
       }
    } elsif ($_ =~ "Generated") {
       ($dummy, $constant, $dummy) = split (/\s+/, $_);
-      $_ = <stdin>
+      $_ = <stdin>;
    }
 }
 

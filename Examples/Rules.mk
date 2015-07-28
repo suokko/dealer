@@ -18,7 +18,7 @@ OUTPUT = $(wildcard ${SRCDIR}/Output.*)
 DESCR := $(wildcard ${SRCDIR}/Descr.*)
 # move the Descr.test_dealer to front because it is slow
 DESCR := ${SRCDIR}/Descr.test_dealer $(filter-out .test_dealer,${DESCR})
-DDSEXISTS := $(shell which ddd)
+DDSEXISTS := 1
 LCOVEXISTS := $(shell which lcov)
 ifeq (${DDSEXISTS},)
 DESCR := $(filter-out .dds.,${DESCR})
@@ -51,7 +51,7 @@ testcov: makehtml
 ALLTESTS := distribution examples
 
 distribution: ${PROG} clearstats
-	@cd ${SRCDIR} && ${PROG} -s 1 <Test.distribution | ./convert.pl >Output.distribution && diff Output.distribution Refer.distribution
+	@cd ${SRCDIR} && ${PROG} -s 1 Test.distribution | ./convert.pl >Output.distribution && diff -u Refer.distribution Output.distribution
 
 examples: ${OUT}
 
