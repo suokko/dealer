@@ -3,6 +3,8 @@ scan.c
 *.o
 *.a
 *.swp
+*.dll
+*.txt
 *~
 genlib
 genlib.cov
