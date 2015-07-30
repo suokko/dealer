@@ -1,4 +1,6 @@
+#define __STDC_FORMAT_MACROS
 #include <stdio.h>
+#include <stdlib.h>
 #include <getopt.h>
 #include <limits.h>
 #include <string.h>
@@ -6,32 +8,54 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-static uint64_t ncrtable[14*13 + 1];
+#include "pregen.h"
 
-static unsigned ncridx(int n, int r)
-{
-	return n*13 + r;
-}
+static uint64_t ncrtablegen[ncridx(52,14)];
 
-static uint64_t ncr(int n, int r)
+static uint64_t ncrgen(int n, int r)
 {
-	if (0)
-		printf("n: %d, r: %d = %" PRId64 "\n", n, r, ncrtable[ncridx(n,r)]);
-	return ncrtable[ncridx(n, r)];
+	return ncrtablegen[ncridx(n, r)];
 }
 
 static __attribute__((constructor)) void initncr(void)
 {
 	int n,r;
-	for (n = 0; n < 14; n++) {
+	for (n = 0; n < 52; n++) {
 		for (r = 0; r < n + 1; r++) {
 			if (r == 0 || r == n)
-				ncrtable[ncridx(n, r)] = 1;
+				ncrtablegen[ncridx(n, r)] = 1;
 			else
-				ncrtable[ncridx(n, r)] = ncr(n - 1, r - 1) +
-					ncr(n - 1, r);
+				ncrtablegen[ncridx(n, r)] = ncrgen(n - 1, r - 1) +
+					ncrgen(n - 1, r);
 		}
 	}
+	for (r = 0; r < 14; r++) {
+		if (r == 0 || r == n)
+			ncrtablegen[ncridx(n, r)] = 1;
+		else
+			ncrtablegen[ncridx(n, r)] = ncrgen(n - 1, r - 1) +
+				ncrgen(n - 1, r);
+	}
+}
+
+static int doncrtables(void)
+{
+	unsigned i;
+	printf("const unsigned ncrtable[] = {\n\t");
+	for (i = 0; i < ncridx(14,1); i++) {
+		printf("0x%x,",(unsigned)ncrtablegen[i]);
+		if (i % 8 == 0 && i != 0)
+			printf(" // %d\n\t", i);
+	}
+	puts("};");
+	printf("const uint64_t ncrtablelarge[] = {\n\t");
+	for (i = 0; i < ncridx(52,14); i++) {
+		printf("0x%" PRIx64",",ncrtablegen[i]);
+		if (i % 8 == 0 && i != 0)
+			printf(" // %d\n\t", i);
+	}
+	puts("};");
+	return 0;
 }
 
 static int doincludes(void)
@@ -49,9 +73,12 @@ static int doprngtables(void)
 	struct entry {
 		unsigned mask;
 		unsigned idx;
+
+		entry() : mask(0), idx(0)
+		{}
 	};
 
-	struct entry results[52] = {{0}};
+	struct entry results[52];
 
 	for (cards = 2; cards < 52; cards++) {
 		int64_t bestreminder = INT64_MAX;
@@ -135,7 +162,7 @@ static int doprngtables(void)
 		unsigned mask = results[cards - 2].mask;
 		unsigned lidx = results[cards - 2].idx;
 
-		printf("\t\t{.idx = %u, // %"PRIu64"\n"
+		printf("\t\t{.idx = %u, // %" PRIu64"\n"
 			"\t\t.mask = %u,},\n",
 			lidx, cards, mask);
 	}
@@ -143,18 +170,87 @@ static int doprngtables(void)
 	return 0;
 }
 
-struct patternparam {
-#ifdef _WIN32
-	int64_t total;
+#ifdef __amd64__
+typedef __int128 int128;
 #else
-	__int128 total;
+struct fint128 {
+	int64_t high;
+	uint64_t low;
+
+	fint128() : high(0), low(0)
+	{}
+
+	fint128(int val) :
+		high(val < 0 ? INT64_MIN : 0),
+		low(val)
+	{}
+
+	fint128 operator *=(const uint64_t &mul)
+	{
+		uint64_t m0 = mul & UINT32_MAX;
+		uint64_t m1 = mul >> 32;
+		uint64_t v0 = low & UINT32_MAX;
+		uint64_t v1 = low >> 32;
+
+		uint64_t r0 = v0 * m0;
+		uint64_t r1l = v0 * m1;
+		uint64_t r1h = v1 * m0;
+		r1l += r1h;
+		uint64_t r2 = v1 * m1 + (r1l >> 32); // no overflow to r2
+		r2 += (r1l < r1h);
+		if (high) {
+			uint64_t v2 = high & UINT32_MAX;
+			r2 += v2 * m0;
+		}
+		low = r0 + (r1l << 32);
+		high = r2 + (low < r0);
+		return *this;
+	}
+
+	fint128 operator +=(const fint128 &add);
+
+	operator uint64_t() const
+	{
+		return low;
+	}
+
+	fint128 operator >>(const int shift) const
+	{
+		fint128 r(0);
+
+		if (__builtin_constant_p(shift) && shift == 64) {
+			r.low = high;
+			return r;
+		}
+		r.low = low >> shift | high << (64 - shift);
+		r.high = high >> shift;
+		return r;
+	}
+};
+
+fint128 fint128::operator +=(const fint128 &add)
+{
+	low += add.low;
+	high += add.high;
+	high += low < add.low;
+	return *this;
+}
+
+typedef struct fint128 int128;
 #endif
+
+struct patternparam {
+	int128 total;
 	void (*complete)(struct patternparam *p);
 	uint64_t count[4];
 	unsigned max[4];
 	unsigned len[16];
-	unsigned i;
+	unsigned handidx;
 	unsigned nrhands;
+	patternparam()
+	{
+		memset(this, 0, sizeof *this);
+	}
 };
 
 void patterncalcminmax(unsigned *min, unsigned *max, struct patternparam *p, unsigned level)
@@ -179,6 +275,8 @@ void patterncalcminmax(unsigned *min, unsigned *max, struct patternparam *p, uns
 	*max += 1;
 }
 
+static void patternhand(struct patternparam *p);
+
 static void patternrunloop(struct patternparam *p)
 {
 	unsigned ma0, ma1, ma2;
@@ -190,11 +288,11 @@ static void patternrunloop(struct patternparam *p)
 			patterncalcminmax(&mi2, &ma2, p, 2);
 			for (p->len[2] = mi2; p->len[2] < ma2; p->len[2]++) {
 				p->len[3] = 13 - p->len[0] - p->len[1] - p->len[2];
-				p->count[0] = ncr(p->max[0], p->len[0]) *
-					ncr(p->max[1], p->len[1]) *
-					ncr(p->max[2], p->len[2]) *
-					ncr(p->max[3], p->len[3]);
-				p->complete(p);
+				p->count[0] = ncrgen(p->max[0], p->len[0]) *
+					ncrgen(p->max[1], p->len[1]) *
+					ncrgen(p->max[2], p->len[2]) *
+					ncrgen(p->max[3], p->len[3]);
+				patternhand(p);
 			}
 		}
 	}
@@ -203,27 +301,37 @@ static void patternrunloop(struct patternparam *p)
 static void patternprintstats(struct patternparam *p)
 {
 	unsigned i;
-#ifndef _WIN32
-	__int128 cnt = 1;
-#else
-	int64_t cnt = 1;
-#endif
-	printf("%03u: ", p->i);
+	int128 cnt = 1;
+	printf("%03u: ", p->handidx);
 
 	for (i = 3; i < 4; i--) {
 		if (p->count[i] == 0)
 			continue;
 		cnt *= p->count[i];
 		printf("%x%x%x%x ",
-				p->len[3 + i*4],
-				p->len[2 + i*4],
+				p->len[0 + i*4],
 				p->len[1 + i*4],
-				p->len[0 + i*4]);
+				p->len[2 + i*4],
+				p->len[3 + i*4]);
 	}
 	p->total += cnt;
-	printf("%"PRId64": %16"PRIx64" %16"PRIx64"\n",
+	printf("%10" PRId64": %16" PRIx64" %16" PRIx64"\n",
 			(uint64_t)cnt, (uint64_t)(p->total >> 64), (uint64_t)p->total);
-	p->i++;
+	p->handidx++;
+	p->count[0] = 1;
+}
+
+static void patternprintlookup(struct patternparam *p) {
+	uint64_t cnt = 1;
+	unsigned i;
+	for (i = 3; i < 4; i--) {
+		if (p->count[i] == 0)
+			continue;
+		cnt *= p->count[i];
+	}
+	printf("%" PRIu64",%s",
+			cnt,((p->handidx % 8) == 0 && p->handidx != 0) ? "\n\t": " ");
+	p->handidx++;
 	p->count[0] = 1;
 }
 
@@ -231,7 +339,7 @@ static void patternhand(struct patternparam *p)
 {
 	unsigned i;
 	if (p->nrhands == 1) {
-		patternprintstats(p);
+		p->complete(p);
 		return;
 	}
 	p->nrhands--;
@@ -258,11 +366,15 @@ static void patternhand(struct patternparam *p)
 
 static int patternstatistics(int nrhands)
 {
-	struct patternparam param = {
-		.nrhands = nrhands,
-		.max = {13,13,13,13},
-		.complete = patternhand,
-	};
+	struct patternparam param;
+	param.nrhands = nrhands;
+	param.max[0] = param.max[1] = param.max[2] = param.max[3] = 13;
+	param.complete = patternprintstats;
+
+	printf("idx  cdhs%s%s %10s %20s\n",
+		(nrhands > 1 ? " cdhs" : ""),
+		(nrhands > 2 ? " cdhs" : ""),
+		"count", "total");
 	patternrunloop(&param);
 	return 0;
 }
@@ -292,7 +404,7 @@ static int rngtablestatistics(void)
 			}
 			if (pot % cards != 0 && maxrate[cards] < pot/(pot % cards)) {
 				maxrate[cards] = pot/(pot % cards);
-				printf("cards %"PRId64": %"PRId64" / %"PRId64" = %"PRId64"\n",
+				printf("cards %" PRId64": %" PRId64" / %" PRId64" = %" PRId64"\n",
 						cards, pot, pot % cards, maxrate[cards]);
 			}
 			total += pot;
@@ -313,7 +425,7 @@ static int rngtablestatistics(void)
 		count += 4;
 
 		if (best < total) {
-			printf("%ld\t%ld\t%ld\t%ld\n",
+			printf("%" PRId64"\t%" PRId64"\t%" PRId64"\t%" PRId64"\n",
 					nextrate, total,
 					(avgrate+count/2)/count,
 					total/((avgrate+count/2)/count));
@@ -325,18 +437,38 @@ static int rngtablestatistics(void)
 	return 0;
 }
 
-static int help(char *prog)
+static int help(const char *prog)
 {
 	printf("%s - is a helper tool to generate probability and randomization tables\n"
 			"\n"
 			"\t-h\t\tPrint this help\n"
 			"\t-s\t<param>\tPrint statistics for a table [rngtable,1hpattern,2hpattern]\n"
-			"\t-r\t\tCreates optimized lookup tables for shuffling\n",
+			"\t-r\t\tCreates optimized lookup tables for shuffling\n"
+			"\t-p\t<number>\tCreate hand pattern lookup tables for <number> hands\n",
 			prog);
 	return 0;
 }
 
-static int dostatistics(char *prog, char *arg)
+static int dopatterntables(const char *prog, const char *arg)
+{
+	if (arg[0] >= '1' && arg[0] <= '3') {
+		struct patternparam param;
+		param.nrhands = arg[0] - '0';
+		param.max[0] = param.max[1] = param.max[2] = param.max[3] = 13;
+		param.complete = patternprintlookup;
+
+		printf("const uint64_t parttern%dh[] = {\n\t", param.nrhands);
+		patternrunloop(&param);
+		puts("};");
+	} else {
+		printf("Unssupported (%s) hand number. 1-3 are supported.\n", arg);
+		help(prog);
+		exit(1);
+	}
+	return 0;
+}
+
+static int dostatistics(const char *prog, const char *arg)
 {
 	if (strcmp("rngtable", arg) == 0)
 		return rngtablestatistics();
@@ -356,13 +488,19 @@ int main(int argc, char **argv)
 {
 	int c;
 
-	while ((c = getopt(argc, argv, "s:rih")) != - 1) {
+	while ((c = getopt(argc, argv, "s:rp:nih")) != - 1) {
 		switch(c) {
 		case 's':
 			dostatistics(argv[0], optarg);
 			break;
 		case 'r':
 			doprngtables();
+			break;
+		case 'p':
+			dopatterntables(argv[0], optarg);
+			break;
+		case 'n':
+			doncrtables();
 			break;
 		case 'i':
 			doincludes();

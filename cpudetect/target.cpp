@@ -1,9 +1,10 @@
-
+#define __STDC_FORMAT_MACROS
 #include "target_int.h"
 #include <stdio.h>
 #include <assert.h>
 #include <type_traits>
 #include <limits.h>
+#include <inttypes.h>
 
 #ifndef SLOWMUL
 #define SLOWMUL 0

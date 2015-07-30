@@ -1,8 +1,8 @@
 TARGETS := dealer dealergenlib libdealer.a
 GENTARGETS := tables
 
-tables_SRC := pregen.c
-tables_PARAM := -ir
+tables_SRC := pregen.cpp
+tables_PARAM := -irn
 tables_OUT := tables.c
 
 dealer_LIBS := libdealer.a librand.a libcpudetect.a
