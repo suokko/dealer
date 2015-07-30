@@ -48,10 +48,11 @@ foreach $input (`ls $file`) {
   $params = $input;
   $params =~ s/Descr/Params/;
 
+  unlink $output;
+  unlink "$output.err";
+
   if (-e $params) {
     open my $info, $params;
-    unlink $output;
-    unlink "$output.err";
     while( my $line = <$info>) {
       $line =~ s/\R//;
       my($rule, $arg) = split(',', $line);
