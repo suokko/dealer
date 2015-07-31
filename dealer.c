@@ -400,17 +400,17 @@ static void setup_bias (void) {
 
 static card bias_pickcard(int start, int pos, hand mask) {
   int i;
-  card temp = gp->curpack.c[start];
-  for (i = start; i < CARDS_IN_SUIT*NSUITS; i++) {
+  for (i = 0; i < start; i++) {
     if (hand_has_card(mask, gp->curpack.c[i])) {
       if (pos-- == 0)
         break;
     }
   }
-  assert(i < CARDS_IN_SUIT*NSUITS);
-  gp->curpack.c[start]  = gp->curpack.c[i];
+  assert(i < start);
+  card temp = gp->curpack.c[start - 1];
+  gp->curpack.c[start - 1]  = gp->curpack.c[i];
   gp->curpack.c[i] = temp;
-  return gp->curpack.c[start];
+  return gp->curpack.c[start - 1];
 }
 
 static int biasfiltercounter;
@@ -445,7 +445,7 @@ static void shuffle_bias(struct board *d) {
       left = hand_count_cards(suit);
       for (b = 0; b < bias; b++) {
         int pos = uniform_random(left--);
-        card c = bias_pickcard(predealcnt++, pos, suit);
+        card c = bias_pickcard(52 - predealcnt++, pos, suit);
         dealtcardsmask |= c;
         gp->curboard.hands[p] |= c;
       }
@@ -486,12 +486,12 @@ static void initprogram (const char *initialpack) {
 
   const int predealcnt = hand_count_cards(predeal);
   /* Move all matching cards to begin */
-  for (; i < 52; i++) {
+  for (i = 0; i < 52; i++) {
     if (hand_has_card(predeal, temp.c[i])) {
-      gp->curpack.c[i-j] = temp.c[i];
-    } else {
-      gp->curpack.c[predealcnt + j] = temp.c[i];
+      gp->curpack.c[51 - j] = temp.c[i];
       j++;
+    } else {
+      gp->curpack.c[i - j] = temp.c[i];
     }
   }
 
@@ -598,8 +598,8 @@ retry_read:
        It only depends on a valid random number generator.  */
     shuffle_bias(d);
     int dealtcnt = hand_count_cards(dealtcardsmask);
-    const int predealtcnt = dealtcnt;
-    int p, i = predealtcnt;
+    const int predealend = 52 - dealtcnt;
+    int p, i = 0;
     if (biastotal > 0) {
       int postoplayer[52];
       for (p = 0; p < 4; p++) {
@@ -608,12 +608,12 @@ retry_read:
           postoplayer[i] = p;
         }
       }
-      assert(i == 52);
+      assert(i == predealend);
 
-      for (i = predealtcnt; i < 52; i++) {
+      for (i = 0; i < predealend; i++) {
         int pos;
         do {
-          pos = uniform_random_table() + predealtcnt;
+          pos = uniform_random_table();
         } while (bias_filter(&gp->curpack, pos, i, postoplayer));
         card t = gp->curpack.c[pos];
         gp->curpack.c[pos] = gp->curpack.c[i];
@@ -622,24 +622,24 @@ retry_read:
 
     } else {
       /* shuffle remaining cards */
-      for (i = predealtcnt; i < 52; i++) {
-        int pos;
-        pos = uniform_random_table() + predealtcnt;
+      for (i = 0; i < predealend; i++) {
+        int pos = uniform_random_table();
         card t = gp->curpack.c[pos];
         gp->curpack.c[pos] = gp->curpack.c[i];
         gp->curpack.c[i] = t;
       }
     }
     /* Assign remaining cards to a player */
+    i = 0;
+    int playerend = 0;
     for (p = 0; p < 4; p++) {
-      int playercnt = 13 - hand_count_cards(d->hands[p]);
+      playerend += 13 - hand_count_cards(d->hands[p]);
       hand temp = d->hands[p];
-      for (i = dealtcnt; i < playercnt + dealtcnt; i++) {
+      for (; i < playerend; i++) {
         card t = gp->curpack.c[i];
         temp = hand_add_card(temp, t);
       }
       d->hands[p] = temp;
-      dealtcnt += playercnt;
     }
   }
   if (gp->swapping) {
