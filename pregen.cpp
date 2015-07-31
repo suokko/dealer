@@ -7,8 +7,11 @@
 #include <assert.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <deque>
+#include <algorithm>
 
 #include "pregen.h"
+#include "bittwiddle.h"
 
 static uint64_t ncrtablegen[ncridx(52,14)];
 
@@ -239,17 +242,36 @@ fint128 fint128::operator +=(const fint128 &add)
 typedef struct fint128 int128;
 #endif
 
+struct patternentry {
+	uint64_t count;
+	uint16_t len[3];
+
+	patternentry() :
+		count(1),
+		len{0,0,0}
+	{}
+};
+
 struct patternparam {
 	int128 total;
+	std::deque<patternentry> tosort;
 	void (*complete)(struct patternparam *p);
 	uint64_t count[4];
 	unsigned max[4];
 	unsigned len[16];
 	unsigned handidx;
 	unsigned nrhands;
-	patternparam()
+	patternparam() :
+		total(0),
+		tosort(),
+		count{0,0,0,0},
+		len{0,0,0,0,
+			0,0,0,0,
+			0,0,0,0,
+			0,0,0,0},
+		handidx(0),
+		nrhands(0)
 	{
-		memset(this, 0, sizeof *this);
 	}
 };
 
@@ -321,6 +343,286 @@ static void patternprintstats(struct patternparam *p)
 	p->count[0] = 1;
 }
 
+static void patternstore(struct patternparam *p)
+{
+	unsigned i;
+	patternentry e;
+
+	for (i = 3; i < 4; i--) {
+		if (p->count[i] == 0)
+			continue;
+		e.count *= p->count[i];
+		e.len[i] = p->len[0 + i*4] << 0;
+		e.len[i] |= p->len[1 + i*4] << 4;
+		e.len[i] |= p->len[2 + i*4] << 8;
+	}
+	p->tosort.push_back(e);
+	p->count[0] = 1;
+}
+
+static void patternprintstatsuniq(struct patternparam *p)
+{
+	unsigned i,j;
+	unsigned idxchange = 1;
+	unsigned equals[4] = {0,0,0,0};
+	int128 cnt = 1;
+	unsigned filter = 0;
+	unsigned same = 0;
+
+	for (i = 0; i < 3; i++) {
+		if (p->len[i] < p->len[i + 1]) {
+			filter = i << 16;
+			goto out;
+		}
+	}
+
+	for (i = 1; i < 4; i++) {
+		if (p->count[i] == 0)
+			continue;
+
+		unsigned temp[4] = {
+			p->len[0 + i*4],
+			p->len[1 + i*4],
+			p->len[2 + i*4],
+			p->len[3 + i*4],
+		};
+
+		std::sort(temp, temp + 4, [](unsigned a, unsigned b) {return a > b;});
+
+		/* Limit generated second distributions only to smaller than
+		 * or equal to first. This avoids generating same pairs again
+		 */
+		if (temp[0] > p->len[0]) {
+			filter = 1 << 2;
+			goto out;
+		}
+		if (temp[0] == p->len[0]) {
+			if (temp[1] > p->len[1]) {
+				filter = 2 << 4;
+				goto out;
+			}
+			if (temp[1] == p->len[1]) {
+				if (temp[2] > p->len[2]) {
+					filter = 3 << 4;
+					goto out;
+				}
+			}
+		}
+		/* If first has two or more equals filter out duplicates
+		 * from reordering the second
+		 */
+		for (j = 0; j < 3; j++) {
+			if (p->len[j + (i-1)*4] == p->len[j + 1 + (i-1)*4] &&
+					p->len[j + i*4] < p->len[j + 1 + i*4]) {
+				filter = j << 8;
+				goto out;
+			}
+		}
+
+		if (temp[0] == p->len[0] &&
+			temp[1] == p->len[1] &&
+			temp[2] == p->len[2] &&
+			temp[3] == p->len[3]) {
+
+			/* With equal shape and two equal suit lengths
+			 * duplicates can be generated that needs to be
+			 * filtered.
+			 */
+			for (j = 0; j < 3; j++) {
+				if (temp[j] != temp[j+1])
+					continue;
+				if (j < 2 && temp[j] == temp[j+2])
+					break;
+				unsigned x = (j + 2) % 4;
+				unsigned y = (j + 3) % 4;
+				if (x > y)
+					std::swap(x, y);
+
+				if (p->len[x + i*4] == temp[y] &&
+						p->len[y + i*4] == temp[j]) {
+					filter = 1 << 12;
+					goto out;
+				}
+			}
+		}
+	}
+	printf("%4u: ", p->handidx);
+
+	/* Count how many ways this pair needs to be generated.
+	 * All 4 in both unique length (5431 opposite 6431) can be done
+	 * 4*3*2=24 ways. There is 24 unique entries.
+	 * There is two equals in one of hands (5431 opposite 4432) can be done
+	 * 4*3*2=24 ways. There is 12 unique entries.
+	 * There is three equals in one of hands (5431 opposite 4333) can be
+	 * done 4*3*2=24 ways. There is 4 unique entries.
+	 * There is two equals in both hands (4432 opposite 4432) can be done
+	 * (3+2+1)*2=12 ways. There is 6 unique entries three with double factor
+	 * and one with quadruple factor.
+	 * There is two equals and three equals (4432 opposite 4333) can be done
+	 * (3+2+1)*2*2=24 ways. There is 3 unique entries with one having double
+	 * factor.
+	 * There is three and three equals (4333 oposite 4333) can be done
+	 * 4 ways. There is 2 unique entries with one having triple factor.
+	 */
+
+	for (i = 0; i < 4; i++) {
+
+		unsigned temp[4] = {
+			p->len[0 + i*4],
+			p->len[1 + i*4],
+			p->len[2 + i*4],
+			p->len[3 + i*4],
+		};
+
+		if (i > 0)
+			std::sort(temp, temp + 4, [](unsigned a, unsigned b) {return a > b;});
+
+		if (i == 1)
+			same = temp[0] == p->len[0] &&
+				temp[1] == p->len[1] &&
+				temp[2] == p->len[2];
+
+		for (j = 0; j < 3; j++) {
+			if (temp[j] == temp[j + 1])
+				equals[i]++;
+		}
+	}
+	if (equals[0] == 0 || equals[1] == 0) {
+		idxchange = 24;
+		if (!same)
+			idxchange *= 2;
+	} else if (equals[0] == 2 && equals[1] == 2) {
+		idxchange = 4;
+		i = 3;
+		if (p->len[0] != p->len[1])
+			i = 0;
+
+		if (p->len[4] != p->len[5]) {
+			j = p->len[5] == p->len[6] ? 4 : 5;
+		} else {
+			j = p->len[6] != p->len[4] ? 6 : 7;
+		}
+
+		if (!same)
+			idxchange *= 2;
+		if (i + 4 != j)
+			idxchange *= 3;
+	} else if (equals[0] == 1 && equals[1] == 1) {
+		idxchange = 24;
+		unsigned x, y;
+		for (x = 0; x < 3; x++) {
+			if (p->len[x] == p->len[x+1])
+				break;
+		}
+		y = x + 1;
+
+		for (i = 0; i < 3; i++) {
+			for (j = i+1; j < 4; j++) {
+				if (p->len[i+4] == p->len[j+4])
+					break;
+			}
+			if (j < 4)
+				break;
+		}
+
+		unsigned imatch = i == x || i == y;
+		unsigned jmatch = j == x || j == y;
+
+		if (!imatch && !jmatch) {
+			idxchange = 24;
+			if (!same)
+				idxchange *= 2;
+		} else if (imatch ^ jmatch) {
+			idxchange = 24;
+			if (!same)
+				idxchange *= 2;
+			else {
+				x = 0;
+				if (x == i)
+					x = j == 1 ? 2 : 1;
+				y = x + 1;
+				if (y == i || y == j)
+					y = j == y + 1 ? y + 2 : y + 1;
+
+				if (p->len[x] != p->len[x + 4] &&
+						p->len[y] != p->len[y + 4])
+					idxchange *= 2;
+			}
+		} else {
+			idxchange = 12;
+			if (!same)
+				idxchange *= 2;
+		}
+
+	} else if (equals[0] == 2) {
+		idxchange = 24;
+		unsigned uniq = 3;
+		if (p->len[0] != p->len[1])
+			uniq = 0;
+
+		for (i = 0; i < 3; i++) {
+			for (j = i+1; j < 4; j++) {
+				if (p->len[i+4] == p->len[j+4])
+					break;
+			}
+			if (j < 4)
+				break;
+		}
+		if (uniq == i || uniq == j)
+			idxchange *= 2;
+	} else {
+		idxchange = 24;
+		unsigned uniq = 0;
+		assert(equals[0] == 1);
+		assert(equals[1] == 2);
+		for (uniq = 1; uniq < 4; uniq++) {
+			if (p->len[4] != p->len[uniq+4])
+					break;
+		}
+		if (p->len[(uniq+1) % 4 + 4] != p->len[4])
+			uniq = 0;
+
+		for (i = 0; i < 4; i++) {
+			if (i == uniq)
+				continue;
+			if (p->len[i] == p->len[uniq])
+				idxchange = 48;
+		}
+	}
+
+	for (i = 3; i < 4; i--) {
+		if (p->count[i] == 0)
+			continue;
+		cnt *= p->count[i];
+		printf("%x%x%x%x ",
+				p->len[0 + i*4],
+				p->len[1 + i*4],
+				p->len[2 + i*4],
+				p->len[3 + i*4]);
+	}
+	p->total += cnt;
+	printf("%10" PRIu64": %16" PRIx64" %16" PRIx64", %u\n",
+			(uint64_t)cnt, (uint64_t)(p->total >> 64),
+			(uint64_t)p->total, idxchange);
+	p->handidx+=idxchange;
+out:
+	if (filter && false) {
+		printf("%4x: ", filter);
+		for (i = 3; i < 4; i--) {
+			if (p->count[i] == 0)
+				continue;
+			cnt *= p->count[i];
+			printf("%x%x%x%x ",
+					p->len[0 + i*4],
+					p->len[1 + i*4],
+					p->len[2 + i*4],
+					p->len[3 + i*4]);
+		}
+		printf("%lu\n", p->count[0]);
+	}
+	p->count[0] = 1;
+}
+
 static void patternprintlookup(struct patternparam *p) {
 	uint64_t cnt = 1;
 	unsigned i;
@@ -333,6 +635,31 @@ static void patternprintlookup(struct patternparam *p) {
 			cnt,((p->handidx % 8) == 0 && p->handidx != 0) ? "\n\t": " ");
 	p->handidx++;
 	p->count[0] = 1;
+}
+
+static void patternprintstored(struct patternparam *p, int uniq)
+{
+	p->count[0] = p->count[1] = p->count[2] = p->count[3] = 0;
+	unsigned i;
+	for (i = 0; i < p->nrhands; i++)
+		p->count[i] = 1;
+
+	for (const patternentry &e : p->tosort) {
+		for (i = 0; i < p->nrhands; i++) {
+			p->len[0 + i*4] = e.len[i] & 0xF;
+			p->len[1 + i*4] = e.len[i] >> 4 & 0xF;
+			p->len[2 + i*4] = e.len[i] >> 8 & 0xF;
+			p->len[3 + i*4] = 13 -
+				p->len[0 + i*4] -
+				p->len[1 + i*4] -
+				p->len[2 + i*4];
+		}
+		p->count[0] = e.count;
+		if (uniq)
+			patternprintstatsuniq(p);
+		else
+			patternprintstats(p);
+	}
 }
 
 static void patternhand(struct patternparam *p)
@@ -364,18 +691,26 @@ static void patternhand(struct patternparam *p)
 		p->len[i] = p->len[i+4];
 }
 
-static int patternstatistics(int nrhands)
+static int patternstatistics(int nrhands, int uniq, int sort)
 {
 	struct patternparam param;
 	param.nrhands = nrhands;
 	param.max[0] = param.max[1] = param.max[2] = param.max[3] = 13;
-	param.complete = patternprintstats;
+	param.complete = sort ? patternstore :
+		(uniq ? patternprintstatsuniq : patternprintstats);
 
-	printf("idx  cdhs%s%s %10s %20s\n",
-		(nrhands > 1 ? " cdhs" : ""),
-		(nrhands > 2 ? " cdhs" : ""),
+	printf("idx  shdc%s%s %10s %20s\n",
+		(nrhands > 1 ? " shdc" : ""),
+		(nrhands > 2 ? " shdc" : ""),
 		"count", "total");
 	patternrunloop(&param);
+	if (sort) {
+		std::sort(param.tosort.begin(), param.tosort.end(),
+				[](const patternentry &a, const patternentry &b) {
+					return a.count > b.count;
+				});
+		patternprintstored(&param, uniq);
+	}
 	return 0;
 }
 
@@ -468,18 +803,37 @@ static int dopatterntables(const char *prog, const char *arg)
 	return 0;
 }
 
+static int hcpstatistics(void)
+{
+	unsigned matchingcount[41] = {0};
+	uint16_t hcpbits;
+	const uint16_t acemask = 0x8888;
+	for (hcpbits = 0; hcpbits < UINT16_MAX; hcpbits++) {
+		unsigned honours = popcount(hcpbits);
+		if (honours > 13)
+			continue;
+		unsigned kingcount = popcount(hcpbits & (acemask | acemask >> 1));
+		unsigned queencount = popcount(hcpbits & (acemask | acemask >> 2));
+		unsigned hcp = honours + queencount + kingcount*2;
+
+		matchingcount[hcp]++;
+	}
+	printf("hcp count\n");
+	for (hcpbits = 0; hcpbits < 41; hcpbits++)
+		printf("%2d: %4d\n", hcpbits, matchingcount[hcpbits]);
+	return 0;
+}
+
 static int dostatistics(const char *prog, const char *arg)
 {
 	if (strcmp("rngtable", arg) == 0)
 		return rngtablestatistics();
-	else if (strcmp("1hpattern", arg) == 0)
-		return patternstatistics(1);
-	else if (strcmp("2hpattern", arg) == 0)
-		return patternstatistics(2);
-	else if (strcmp("3hpattern", arg) == 0)
-		return patternstatistics(3);
-	else if (strcmp("4hpattern", arg) == 0)
-		return patternstatistics(4);
+	else if (strncmp("hpattern", arg + 1, 8) == 0)
+		return patternstatistics(arg[0] - '0',
+				!!strstr(arg + 9,"uniq"),
+				!!strstr(arg + 9,"sort"));
+	else if (strcmp("hcp", arg) == 0)
+		return hcpstatistics();
 
 	return help(prog);
 }
