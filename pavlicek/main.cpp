@@ -1,6 +1,7 @@
 #include "ghp.h"
 #include "shp.h"
 #include "gsx.h"
+#include "gdx.h"
 #include "handpattern.h"
 #include <unistd.h>
 #include <cstdlib>
@@ -35,6 +36,8 @@ static int dogeneric(const char *prog, const char *arg)
 		printgenerichand<SHP>();
 	else if (arg[0] == 'x')
 		printgenerichand<GSX>();
+	else if (arg[0] == 'd')
+		printgenerichand<GDX>();
 	else
 		help(prog, 2);
 	return 0;
