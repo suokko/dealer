@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <deque>
+#include <set>
 #include <algorithm>
 
 #include "pregen.h"
@@ -242,474 +243,624 @@ fint128 fint128::operator +=(const fint128 &add)
 typedef struct fint128 int128;
 #endif
 
-struct patternentry {
-	uint64_t count;
-	uint16_t len[3];
+struct Pattern {
+	unsigned lengths[4];
 
-	patternentry() :
-		count(1),
-		len{0,0,0}
+	Pattern() : lengths{0,0,0,0}
 	{}
+
+	Pattern(unsigned s, unsigned h, unsigned d, unsigned c) :
+		lengths{s,h,d,c}
+	{}
+
+	void sort()
+	{
+		std::sort(lengths, lengths + 4, std::greater<unsigned>());
+	}
+
+	bool operator<(const Pattern &b) const
+	{
+		for (unsigned i = 0; i < 4; i++) {
+			if (lengths[i] < b.lengths[i])
+				return true;
+			if (lengths[i] != b.lengths[i])
+				return false;
+		}
+		return false;
+	}
 };
 
-struct patternparam {
-	int128 total;
-	std::deque<patternentry> tosort;
-	void (*complete)(struct patternparam *p);
-	uint64_t count[4];
-	unsigned max[4];
-	unsigned len[16];
-	unsigned handidx;
-	unsigned nrhands;
-	patternparam() :
-		total(0),
-		tosort(),
-		count{0,0,0,0},
-		len{0,0,0,0,
-			0,0,0,0,
-			0,0,0,0,
-			0,0,0,0},
-		handidx(0),
-		nrhands(0)
+struct GenericPattern {
+
+	GenericPattern();
+	/**
+	 * @return nth specific pattern of the generic pattern
+	 */
+	Pattern lengths(unsigned permutation) const;
+
+	unsigned maxPermutations() const;
+
+	/**
+	 * @return single suit length of the generic pattern
+	 */
+	unsigned suit(unsigned idx) const;
+
+	void print() const;
+
+	static unsigned addShape(unsigned s, unsigned h, unsigned d);
+	static bool isAllowedPattern(Pattern &p);
+	static unsigned fromPattern(const Pattern &p);
+	static unsigned nrGP;
+	static GenericPattern gpList[39];
+
+private:
+	void permutateDouble(Pattern &p, unsigned permutation,
+		unsigned x0, unsigned x1, unsigned x2, unsigned x3) const;
+
+	uint16_t suit0_ : 4; /* 4-13 */
+	uint16_t suit1_ : 4; /* 0-6 */
+	uint16_t suit2_ : 4; /* 0-4 */
+	uint16_t equals_ : 4; /* two same: c, 6, 3, three same: e, 7 */
+};
+
+GenericPattern::GenericPattern() :
+	suit0_(0),
+	suit1_(0),
+	suit2_(0),
+	equals_(0)
+{
+}
+
+unsigned GenericPattern::addShape(unsigned s, unsigned h, unsigned d)
+{
+	unsigned c = 13 - s - h - d;
+	unsigned equal = 0;
+	GenericPattern &cur = gpList[nrGP];
+
+	cur.suit0_ = s;
+	cur.suit1_ = h;
+	cur.suit2_ = d;
+
+	if (s == h)
+		equal |= 0xc;
+	if (h == d)
+		equal |= 0x6;
+	if (d == c)
+		equal |= 0x3;
+
+	cur.equals_ = equal;
+
+	return nrGP++;
+}
+
+bool GenericPattern::isAllowedPattern(Pattern &p)
+{
+	p.sort();
+	GenericPattern &cur = gpList[nrGP-1];
+
+	if (cur.suit0_ < p.lengths[0])
+		return false;
+	if (cur.suit0_ > p.lengths[0])
+		return true;
+
+	if (cur.suit1_ < p.lengths[1])
+		return false;
+	if (cur.suit1_ > p.lengths[1])
+		return true;
+
+	if (cur.suit2_ < p.lengths[2])
+		return false;
+	return true;
+}
+
+unsigned GenericPattern::fromPattern( const Pattern &p)
+{
+	return 0;
+}
+
+void GenericPattern::print() const
+{
+	unsigned c = 13 - suit0_ - suit1_ - suit2_;
+	unsigned bits = suit0_ << 12 |
+		suit1_ << 8 |
+		suit2_ << 4 |
+		c;
+
+	printf("%X %d", bits, popcount(equals_));
+}
+
+unsigned GenericPattern::maxPermutations() const
+{
+	switch(equals_) {
+	case 3:
+	case 6:
+	case 12:
+		return 12;
+	case 14:
+	case 7:
+		return 4;
+	default:
+		return 24;
+	}
+}
+
+void GenericPattern::permutateDouble(Pattern &p, unsigned permutation,
+		unsigned x0, unsigned x1, unsigned x2, unsigned x3) const
+{
+	if (permutation & 0x1)
+		std::swap(p.lengths[x2], p.lengths[x3]);
+
+	permutation >>= 1;
+
+	switch (permutation) {
+	case 0:
+	case 1:
+	case 2:
+		std::swap(p.lengths[x1], p.lengths[(x1+permutation) % 4]);
+		break;
+	case 3:
+		std::swap(p.lengths[x1], p.lengths[x2]);
+		std::swap(p.lengths[x0], p.lengths[x1]);
+		break;
+	case 4:
+		std::swap(p.lengths[x1], p.lengths[x3]);
+		std::swap(p.lengths[x0], p.lengths[x1]);
+		break;
+	case 5:
+		std::swap(p.lengths[x1], p.lengths[x3]);
+		std::swap(p.lengths[x0], p.lengths[x2]);
+		break;
+	}
+}
+
+Pattern GenericPattern::lengths(unsigned permutation) const
+{
+	unsigned c = 13 - suit0_ - suit1_ - suit2_;
+	unsigned idxh, idxm;
+	Pattern rv(suit0_, suit1_, suit2_, c);
+
+	switch (equals_) {
+	default:
+		if (permutation & 0x1)
+			std::swap(rv.lengths[2], rv.lengths[3]);
+
+		permutation >>= 1;
+
+		idxm = permutation % 3;
+		idxh = permutation / 3;
+		std::swap(rv.lengths[1], rv.lengths[1+idxm]);
+		std::swap(rv.lengths[0], rv.lengths[0+idxh]);
+		break;
+	case 14:
+		idxh = permutation;
+		std::swap(rv.lengths[3], rv.lengths[3-idxh]);
+		break;
+	case 7:
+		idxh = permutation;
+		std::swap(rv.lengths[0], rv.lengths[0+idxh]);
+		break;
+	case 3:
+		permutateDouble(rv, permutation, 2, 3, 0, 1);
+		break;
+	case 6:
+		permutateDouble(rv, permutation, 1, 2, 0, 3);
+		break;
+	case 12:
+		permutateDouble(rv, permutation, 0, 1, 2, 3);
+		break;
+	}
+
+	return rv;
+}
+
+/** 4333, 4441, 7222, a111, d000 */
+
+/**
+ * 4432,
+ * 5332, 5422, 5440, 5521, 5530,
+ * 6322, 6331, 6511, 6610,
+ * 7330, 7411, 7600,
+ * 8221, 8311, 8500
+ * 9211, 9400,
+ * a300,
+ * b110, b200,
+ * c100,
+ */
+
+/**
+ * 5431
+ */
+GenericPattern GenericPattern::gpList[39];
+unsigned GenericPattern::nrGP;
+
+/**
+ */
+struct SpecificPattern {
+
+	SpecificPattern();
+	SpecificPattern(unsigned id, unsigned permutation);
+
+	const GenericPattern &ghp() const;
+	unsigned id() const {return ghpidx_;}
+	unsigned permutation() const;
+
+	SpecificPattern &operator++();
+	bool operator<(const SpecificPattern &b) const;
+	bool operator!=(const SpecificPattern &b) const;
+
+	operator unsigned() const;
+
+	void print() const;
+private:
+	uint16_t ghpidx_ : 6; /* 0-37 */
+	uint16_t permutation_ : 5; /* 0-3, 0-11, 0-23 */
+};
+
+SpecificPattern::SpecificPattern(unsigned id, unsigned permutation) :
+	ghpidx_(id),
+	permutation_(permutation)
+{
+}
+
+SpecificPattern::SpecificPattern()
+{
+}
+
+unsigned SpecificPattern::permutation() const
+{
+	return permutation_;
+}
+
+const GenericPattern &SpecificPattern::ghp() const
+{
+	return GenericPattern::gpList[ghpidx_];
+}
+
+SpecificPattern::operator unsigned int() const
+{
+	return permutation_;
+}
+
+SpecificPattern &SpecificPattern::operator++()
+{
+	permutation_++;
+	return *this;
+}
+
+bool SpecificPattern::operator<(const SpecificPattern &b) const
+{
+	return ghpidx_ < b.ghpidx_;
+}
+
+bool SpecificPattern::operator!=(const SpecificPattern &b) const
+{
+	return ghpidx_ != b.ghpidx_;
+}
+
+void SpecificPattern::print() const
+{
+	const GenericPattern &gp = ghp();
+
+	Pattern p = gp.lengths(permutation());
+
+	printf("%X%X%X%X",
+			p.lengths[0],
+			p.lengths[1],
+			p.lengths[2],
+			p.lengths[3]
+			);
+}
+
+template<class CountType, unsigned nrhands>
+struct Combinations {
+	Combinations() :
+		count_(1),
+		totals_{13,13,13,13},
+		factor_(0)
 	{
 	}
+
+	bool operator<(const Combinations &b) const;
+
+	bool addPattern(unsigned nr, const SpecificPattern &sp);
+	bool filterPattern(const SpecificPattern &sp) const;
+
+	bool samePatterns() const;
+
+	void print() const
+	{
+		unsigned h;
+		for (h = 0; h < nrhands; h++) {
+			sp_[h].print();
+			putchar(' ');
+		}
+		if (nrhands == 3) {
+			printf("%X%X%X%X ",
+					totals_.lengths[0],
+					totals_.lengths[1],
+					totals_.lengths[2],
+					totals_.lengths[3]);
+		}
+		const unsigned lshift = sizeof(count_) > 8 ? 64 : 31;
+		if (sizeof(count_) > 8 && UINT64_MAX < count_)
+			printf("%02u %" PRIx64"%016" PRIx64, factor_, (uint64_t)(count_ >> lshift), (uint64_t)count_);
+		else
+			printf("%02u %" PRIx64, factor_, (uint64_t)count_);
+	}
+
+	void factor() {factor_++; }
+	void factor() const {const_cast<Combinations<CountType, nrhands>*>(this)->factor(); }
+
+	void sort()
+	{
+		suitprint_.sort();
+	}
+private:
+	CountType count_; /* Number of combinations */
+	Pattern totals_;
+	Pattern suitprint_;
+	SpecificPattern sp_[nrhands == 3 ? 4 : nrhands]; /* Patterns for hands */
+	unsigned factor_;
 };
 
-void patterncalcminmax(unsigned *min, unsigned *max, struct patternparam *p, unsigned level)
+template<class CountType, unsigned nrhands>
+bool Combinations<CountType, nrhands>::filterPattern(const SpecificPattern &sp) const
 {
-	unsigned i, dealt = 0, freeafter = 0;
-	for (i = 0; i < level; i++) {
-		dealt += p->len[i];
-	}
-	for (i = level + 1; i < 4; i++) {
-		freeafter += p->max[i];
-	}
-
-	*min = 0;
-	*max = 13 - dealt;
-
-	if (freeafter < *max)
-		*min = *max - freeafter;
-
-	if (*max > p->max[level])
-		*max = p->max[level];
-
-	*max += 1;
-}
-
-static void patternhand(struct patternparam *p);
-
-static void patternrunloop(struct patternparam *p)
-{
-	unsigned ma0, ma1, ma2;
-	unsigned mi0, mi1, mi2;
-	patterncalcminmax(&mi0, &ma0, p, 0);
-	for (p->len[0] = mi0; p->len[0] < ma0; p->len[0]++) {
-		patterncalcminmax(&mi1, &ma1, p, 1);
-		for (p->len[1] = mi1; p->len[1] < ma1; p->len[1]++) {
-			patterncalcminmax(&mi2, &ma2, p, 2);
-			for (p->len[2] = mi2; p->len[2] < ma2; p->len[2]++) {
-				p->len[3] = 13 - p->len[0] - p->len[1] - p->len[2];
-				p->count[0] = ncrgen(p->max[0], p->len[0]) *
-					ncrgen(p->max[1], p->len[1]) *
-					ncrgen(p->max[2], p->len[2]) *
-					ncrgen(p->max[3], p->len[3]);
-				patternhand(p);
-			}
-		}
-	}
-}
-
-static void patternprintstats(struct patternparam *p)
-{
+	Pattern p = sp.ghp().lengths(sp.permutation());
 	unsigned i;
-	int128 cnt = 1;
-	printf("%03u: ", p->handidx);
-
-	for (i = 3; i < 4; i--) {
-		if (p->count[i] == 0)
-			continue;
-		cnt *= p->count[i];
-		printf("%x%x%x%x ",
-				p->len[0 + i*4],
-				p->len[1 + i*4],
-				p->len[2 + i*4],
-				p->len[3 + i*4]);
+	for (i = 0; i < 4; i++) {
+		if (totals_.lengths[i] < p.lengths[i])
+			return true;
 	}
-	p->total += cnt;
-	printf("%10" PRId64": %16" PRIx64" %16" PRIx64"\n",
-			(uint64_t)cnt, (uint64_t)(p->total >> 64), (uint64_t)p->total);
-	p->handidx++;
-	p->count[0] = 1;
+	return false;
 }
 
-static void patternstore(struct patternparam *p)
+template<class CountType, unsigned nrhands>
+bool Combinations<CountType, nrhands>::addPattern(unsigned nr,
+		const SpecificPattern &sp)
 {
+	Pattern p = sp.ghp().lengths(sp.permutation());
 	unsigned i;
-	patternentry e;
-
-	for (i = 3; i < 4; i--) {
-		if (p->count[i] == 0)
-			continue;
-		e.count *= p->count[i];
-		e.len[i] = p->len[0 + i*4] << 0;
-		e.len[i] |= p->len[1 + i*4] << 4;
-		e.len[i] |= p->len[2 + i*4] << 8;
-	}
-	p->tosort.push_back(e);
-	p->count[0] = 1;
-}
-
-static void patternprintstatsuniq(struct patternparam *p)
-{
-	unsigned i,j;
-	unsigned idxchange = 1;
-	unsigned equals[4] = {0,0,0,0};
-	int128 cnt = 1;
-	unsigned filter = 0;
-	unsigned same = 0;
-
-	for (i = 0; i < 3; i++) {
-		if (p->len[i] < p->len[i + 1]) {
-			filter = i << 16;
-			goto out;
-		}
+	uint64_t comb = 1;
+	Pattern totalsCopy(totals_);
+	for (i = 0; i < 4; i++) {
+		totalsCopy.lengths[i] -= p.lengths[i];
 	}
 
-	for (i = 1; i < 4; i++) {
-		if (p->count[i] == 0)
-			continue;
-
-		unsigned temp[4] = {
-			p->len[0 + i*4],
-			p->len[1 + i*4],
-			p->len[2 + i*4],
-			p->len[3 + i*4],
-		};
-
-		std::sort(temp, temp + 4, [](unsigned a, unsigned b) {return a > b;});
-
-		/* Limit generated second distributions only to smaller than
-		 * or equal to first. This avoids generating same pairs again
-		 */
-		if (temp[0] > p->len[0]) {
-			filter = 1 << 2;
-			goto out;
-		}
-		if (temp[0] == p->len[0]) {
-			if (temp[1] > p->len[1]) {
-				filter = 2 << 4;
-				goto out;
-			}
-			if (temp[1] == p->len[1]) {
-				if (temp[2] > p->len[2]) {
-					filter = 3 << 4;
-					goto out;
-				}
-			}
-		}
-		/* If first has two or more equals filter out duplicates
-		 * from reordering the second
-		 */
-		for (j = 0; j < 3; j++) {
-			if (p->len[j + (i-1)*4] == p->len[j + 1 + (i-1)*4] &&
-					p->len[j + i*4] < p->len[j + 1 + i*4]) {
-				filter = j << 8;
-				goto out;
-			}
-		}
-
-		if (temp[0] == p->len[0] &&
-			temp[1] == p->len[1] &&
-			temp[2] == p->len[2] &&
-			temp[3] == p->len[3]) {
-
-			/* With equal shape and two equal suit lengths
-			 * duplicates can be generated that needs to be
-			 * filtered.
-			 */
-			for (j = 0; j < 3; j++) {
-				if (temp[j] != temp[j+1])
-					continue;
-				if (j < 2 && temp[j] == temp[j+2])
-					break;
-				unsigned x = (j + 2) % 4;
-				unsigned y = (j + 3) % 4;
-				if (x > y)
-					std::swap(x, y);
-
-				if (p->len[x + i*4] == temp[y] &&
-						p->len[y + i*4] == temp[j]) {
-					filter = 1 << 12;
-					goto out;
-				}
-			}
-		}
-	}
-	printf("%4u: ", p->handidx);
-
-	/* Count how many ways this pair needs to be generated.
-	 * All 4 in both unique length (5431 opposite 6431) can be done
-	 * 4*3*2=24 ways. There is 24 unique entries.
-	 * There is two equals in one of hands (5431 opposite 4432) can be done
-	 * 4*3*2=24 ways. There is 12 unique entries.
-	 * There is three equals in one of hands (5431 opposite 4333) can be
-	 * done 4*3*2=24 ways. There is 4 unique entries.
-	 * There is two equals in both hands (4432 opposite 4432) can be done
-	 * (3+2+1)*2=12 ways. There is 6 unique entries three with double factor
-	 * and one with quadruple factor.
-	 * There is two equals and three equals (4432 opposite 4333) can be done
-	 * (3+2+1)*2*2=24 ways. There is 3 unique entries with one having double
-	 * factor.
-	 * There is three and three equals (4333 oposite 4333) can be done
-	 * 4 ways. There is 2 unique entries with one having triple factor.
-	 */
+	if (nr == 2 && !GenericPattern::isAllowedPattern(totalsCopy))
+		return false;
 
 	for (i = 0; i < 4; i++) {
+		comb *= ncrgen(totals_.lengths[i], p.lengths[i]);
+		totals_.lengths[i] -= p.lengths[i];
+		if (nr == 2) {
+			unsigned h4 = totals_.lengths[i];
+			unsigned h3 = p.lengths[i];
+			unsigned h2 = suitprint_.lengths[i] >> 4;
+			unsigned h1 = suitprint_.lengths[i] & 0xf;
 
-		unsigned temp[4] = {
-			p->len[0 + i*4],
-			p->len[1 + i*4],
-			p->len[2 + i*4],
-			p->len[3 + i*4],
-		};
+			if (h4 < h3)
+				std::swap(h3, h4);
+			if (h4 < h2)
+				std::swap(h2, h4);
+			if (h3 < h2) {
+				std::swap(h2, h3);
+				if (h2 < h1)
+					std::swap(h1, h2);
+			}
 
-		if (i > 0)
-			std::sort(temp, temp + 4, [](unsigned a, unsigned b) {return a > b;});
-
-		if (i == 1)
-			same = temp[0] == p->len[0] &&
-				temp[1] == p->len[1] &&
-				temp[2] == p->len[2];
-
-		for (j = 0; j < 3; j++) {
-			if (temp[j] == temp[j + 1])
-				equals[i]++;
+			suitprint_.lengths[i] = h4 << 12 |
+				h3 << 8 |
+				h2 << 4 |
+				h1;
+			continue;
 		}
-	}
-	if (equals[0] == 0 || equals[1] == 0) {
-		idxchange = 24;
-		if (!same)
-			idxchange *= 2;
-	} else if (equals[0] == 2 && equals[1] == 2) {
-		idxchange = 4;
-		i = 3;
-		if (p->len[0] != p->len[1])
-			i = 0;
-
-		if (p->len[4] != p->len[5]) {
-			j = p->len[5] == p->len[6] ? 4 : 5;
+		if (nr > 0 && (suitprint_.lengths[i] & 0xf) < p.lengths[i]) {
+			suitprint_.lengths[i] |= p.lengths[i] << 4;
 		} else {
-			j = p->len[6] != p->len[4] ? 6 : 7;
-		}
-
-		if (!same)
-			idxchange *= 2;
-		if (i + 4 != j)
-			idxchange *= 3;
-	} else if (equals[0] == 1 && equals[1] == 1) {
-		idxchange = 24;
-		unsigned x, y;
-		for (x = 0; x < 3; x++) {
-			if (p->len[x] == p->len[x+1])
-				break;
-		}
-		y = x + 1;
-
-		for (i = 0; i < 3; i++) {
-			for (j = i+1; j < 4; j++) {
-				if (p->len[i+4] == p->len[j+4])
-					break;
-			}
-			if (j < 4)
-				break;
-		}
-
-		unsigned imatch = i == x || i == y;
-		unsigned jmatch = j == x || j == y;
-
-		if (!imatch && !jmatch) {
-			idxchange = 24;
-			if (!same)
-				idxchange *= 2;
-		} else if (imatch ^ jmatch) {
-			idxchange = 24;
-			if (!same)
-				idxchange *= 2;
-			else {
-				x = 0;
-				if (x == i)
-					x = j == 1 ? 2 : 1;
-				y = x + 1;
-				if (y == i || y == j)
-					y = j == y + 1 ? y + 2 : y + 1;
-
-				if (p->len[x] != p->len[x + 4] &&
-						p->len[y] != p->len[y + 4])
-					idxchange *= 2;
-			}
-		} else {
-			idxchange = 12;
-			if (!same)
-				idxchange *= 2;
-		}
-
-	} else if (equals[0] == 2) {
-		idxchange = 24;
-		unsigned uniq = 3;
-		if (p->len[0] != p->len[1])
-			uniq = 0;
-
-		for (i = 0; i < 3; i++) {
-			for (j = i+1; j < 4; j++) {
-				if (p->len[i+4] == p->len[j+4])
-					break;
-			}
-			if (j < 4)
-				break;
-		}
-		if (uniq == i || uniq == j)
-			idxchange *= 2;
-	} else {
-		idxchange = 24;
-		unsigned uniq = 0;
-		assert(equals[0] == 1);
-		assert(equals[1] == 2);
-		for (uniq = 1; uniq < 4; uniq++) {
-			if (p->len[4] != p->len[uniq+4])
-					break;
-		}
-		if (p->len[(uniq+1) % 4 + 4] != p->len[4])
-			uniq = 0;
-
-		for (i = 0; i < 4; i++) {
-			if (i == uniq)
-				continue;
-			if (p->len[i] == p->len[uniq])
-				idxchange = 48;
+			suitprint_.lengths[i] = (suitprint_.lengths[i] & 0xf00) |
+				(suitprint_.lengths[i] & 0xf) << 4 |
+				p.lengths[i];
 		}
 	}
 
-	for (i = 3; i < 4; i--) {
-		if (p->count[i] == 0)
-			continue;
-		cnt *= p->count[i];
-		printf("%x%x%x%x ",
-				p->len[0 + i*4],
-				p->len[1 + i*4],
-				p->len[2 + i*4],
-				p->len[3 + i*4]);
-	}
-	p->total += cnt;
-	printf("%10" PRIu64": %16" PRIx64" %16" PRIx64", %u\n",
-			(uint64_t)cnt, (uint64_t)(p->total >> 64),
-			(uint64_t)p->total, idxchange);
-	p->handidx+=idxchange;
-out:
-	if (filter && false) {
-		printf("%4x: ", filter);
-		for (i = 3; i < 4; i--) {
-			if (p->count[i] == 0)
-				continue;
-			cnt *= p->count[i];
-			printf("%x%x%x%x ",
-					p->len[0 + i*4],
-					p->len[1 + i*4],
-					p->len[2 + i*4],
-					p->len[3 + i*4]);
+	if (nr == 2)
+	printf("%X %X %X %X\n",
+			suitprint_.lengths[0],
+			suitprint_.lengths[1],
+			suitprint_.lengths[2],
+			suitprint_.lengths[3]);
+
+	sp_[nr] = sp;
+	if (nr == 2) {
+		unsigned id = GenericPattern::fromPattern(totalsCopy);
+		SpecificPattern newsp(id, 0);
+		unsigned max = newsp.ghp().maxPermutations();
+		for (; newsp < max; ++newsp) {
+			if (std::equal(totals_.lengths, totals_.lengths + 4,
+						newsp.ghp().lengths(newsp.permutation()).lengths))
+				break;
 		}
-		printf("%lu\n", p->count[0]);
+		sp_[3] = newsp;
+		std::sort(sp_ + 1, sp_ + 4,
+				[](const SpecificPattern &a, const SpecificPattern &b)
+				{return a.id() > b.id();});
 	}
-	p->count[0] = 1;
+	count_ *= comb;
+	return true;
 }
 
-static void patternprintlookup(struct patternparam *p) {
-	uint64_t cnt = 1;
-	unsigned i;
-	for (i = 3; i < 4; i--) {
-		if (p->count[i] == 0)
-			continue;
-		cnt *= p->count[i];
-	}
-	printf("%" PRIu64",%s",
-			cnt,((p->handidx % 8) == 0 && p->handidx != 0) ? "\n\t": " ");
-	p->handidx++;
-	p->count[0] = 1;
-}
-
-static void patternprintstored(struct patternparam *p, int uniq)
+template<class CountType, unsigned nrhands>
+bool Combinations<CountType, nrhands>::operator<(
+		const Combinations<CountType, nrhands> &b) const
 {
-	p->count[0] = p->count[1] = p->count[2] = p->count[3] = 0;
-	unsigned i;
-	for (i = 0; i < p->nrhands; i++)
-		p->count[i] = 1;
+	if (sp_[0] < b.sp_[0])
+		return true;
+	if (sp_[0] != b.sp_[0] || nrhands == 1)
+		return false;
+	if (sp_[1] < b.sp_[1])
+		return true;
+	if (sp_[1] != b.sp_[1])
+		return false;
 
-	for (const patternentry &e : p->tosort) {
-		for (i = 0; i < p->nrhands; i++) {
-			p->len[0 + i*4] = e.len[i] & 0xF;
-			p->len[1 + i*4] = e.len[i] >> 4 & 0xF;
-			p->len[2 + i*4] = e.len[i] >> 8 & 0xF;
-			p->len[3 + i*4] = 13 -
-				p->len[0 + i*4] -
-				p->len[1 + i*4] -
-				p->len[2 + i*4];
+	if (nrhands == 3) {
+		if (sp_[2] < b.sp_[2])
+			return true;
+		if (sp_[2] != b.sp_[2])
+			return false;
+	}
+
+	Pattern x(suitprint_);
+	Pattern y(b.suitprint_);
+
+	if (false && !(sp_[0] != SpecificPattern(6,0)) &&
+		!(sp_[1] != SpecificPattern(6,0)))
+	printf("%x %x %x %x < %x %x %x %x\n",
+			x.lengths[0],
+			x.lengths[1],
+			x.lengths[2],
+			x.lengths[3],
+			y.lengths[0],
+			y.lengths[1],
+			y.lengths[2],
+			y.lengths[3]
+			);
+
+	return x < y;
+}
+
+template<class CountType, unsigned nrhands>
+bool Combinations<CountType, nrhands>::samePatterns() const
+{
+	return !(sp_[0] != sp_[1]);
+}
+
+/**
+ * @param Type std::dequeue or std::set to store generated hands
+ * @param nrhands The number of hands to include in the generation
+ */
+template<class Storage, unsigned nrhands, bool unique>
+struct PatternGenerator {
+
+	typedef typename Storage::value_type Entry;
+
+	void operator()();
+
+	void doGenericPatterns();
+
+	template<bool first>
+	void handleGenericPattern(Entry &entry, SpecificPattern sp,
+			unsigned gpId, unsigned remainingHands)
+	{
+		unsigned max = unique && first ?
+			1 : sp.ghp().maxPermutations();
+		for (; (unsigned)sp < max; ++sp) {
+			if (!first && entry.filterPattern(sp))
+				continue;
+			Entry entryNext(entry);
+			doSpecificPattern(entryNext, gpId, remainingHands - 1, sp);
 		}
-		p->count[0] = e.count;
-		if (uniq)
-			patternprintstatsuniq(p);
-		else
-			patternprintstats(p);
+	}
+
+	void doSpecificPattern(Entry &entry,
+			unsigned gpId, unsigned remainingHands,
+			const SpecificPattern &sp) {
+		unsigned i;
+		if (!entry.addPattern(nrhands - remainingHands - 1, sp))
+			return;
+
+		if (remainingHands == 0) {
+			entry.sort();
+			auto pos = outList.insert(entry);
+			pos.first->factor();
+			if (nrhands == 2 && !entry.samePatterns())
+				pos.first->factor();
+			return;
+		}
+		for (i = 0; i <= gpId; i++) {
+			SpecificPattern sp(i, 0);
+			handleGenericPattern<false>(entry, sp, gpId, remainingHands);
+		}
+	}
+
+	void print() const
+	{
+		for (const Entry &e : outList) {
+			e.print();
+			putchar('\n');
+		}
+	}
+
+private:
+	Storage outList;
+};
+
+template<class Storage, unsigned nrhands, bool unique>
+void PatternGenerator<Storage, nrhands, unique>::doGenericPatterns()
+{
+	unsigned s, h, d;
+
+	for (s = 4; s < 14; s++) {
+		/* remaining cards divided by 3 and modulo divided by higher
+		 * suits. */
+		unsigned hmax = std::min(s, 13 - s);
+		for (h = (13 - s + 2)/3; h <= hmax; h++) {
+			unsigned dmax = std::min(h, 13 - s - h);
+			for (d = (13 - s - h + 1)/2; d <= dmax; d++) {
+				unsigned gpId = GenericPattern::addShape(s, h, d);
+
+				Entry entry;
+				SpecificPattern sp(gpId, 0);
+				handleGenericPattern<true>(entry, sp, gpId, nrhands);
+			}
+		}
 	}
 }
 
-static void patternhand(struct patternparam *p)
+template <class S, unsigned nr, bool uniq>
+static int patternstatistics3()
 {
-	unsigned i;
-	if (p->nrhands == 1) {
-		p->complete(p);
-		return;
-	}
-	p->nrhands--;
-	for (i = 11; i > 3; i--)
-		p->len[4+i] = p->len[i];
-	for (i = 0; i < 4; i++) {
-		p->len[4+i] = p->len[i];
-		p->max[i] = p->max[i] - p->len[i];
-	}
-	for (i = 3; i > 0; i--)
-		p->count[i] = p->count[i - 1];
-	patternrunloop(p);
-	p->nrhands++;
-	for (i = 0; i < 3; i++)
-		p->count[i] = p->count[i + 1];
-	p->count[3] = 0;
-	for (i = 0; i < 4; i++) {
-		p->len[i] = p->len[4+i];
-		p->max[i] = p->max[i] + p->len[i];
-	}
-	for (i = 4; i < 12; i++)
-		p->len[i] = p->len[i+4];
+	PatternGenerator<S, nr, uniq> gen;
+
+	gen.doGenericPatterns();
+	gen.print();
+	return 0;
+}
+
+template <class S, unsigned nr>
+static int patternstatistics2(bool uniq)
+{
+	if (uniq)
+		return patternstatistics3<S, nr, true>();
+	else
+		return patternstatistics3<S, nr, false>();
+}
+
+template <unsigned nr>
+static int patternstatistics1(bool uniq)
+{
+	if (nr < 3)
+		return patternstatistics2<std::set<Combinations<uint64_t, nr> >, nr>(uniq);
+	else
+		return patternstatistics2<std::set<Combinations<int128, nr> >, nr>(uniq);
 }
 
 static int patternstatistics(int nrhands, int uniq, int sort)
 {
-	struct patternparam param;
-	param.nrhands = nrhands;
-	param.max[0] = param.max[1] = param.max[2] = param.max[3] = 13;
-	param.complete = sort ? patternstore :
-		(uniq ? patternprintstatsuniq : patternprintstats);
+	(void)nrhands;
+	(void)uniq;
+	(void)sort;
 
-	printf("idx  shdc%s%s %10s %20s\n",
-		(nrhands > 1 ? " shdc" : ""),
-		(nrhands > 2 ? " shdc" : ""),
-		"count", "total");
-	patternrunloop(&param);
-	if (sort) {
-		std::sort(param.tosort.begin(), param.tosort.end(),
-				[](const patternentry &a, const patternentry &b) {
-					return a.count > b.count;
-				});
-		patternprintstored(&param, uniq);
+	switch (nrhands) {
+		case 1:
+			patternstatistics1<1>(uniq);
+			break;
+		case 2:
+			patternstatistics1<2>(uniq);
+			break;
+		case 3:
+			patternstatistics1<3>(uniq);
+			break;
 	}
 	return 0;
 }
@@ -786,7 +937,10 @@ static int help(const char *prog)
 
 static int dopatterntables(const char *prog, const char *arg)
 {
+	(void)prog;
+	(void)arg;
 	if (arg[0] >= '1' && arg[0] <= '3') {
+#if 0
 		struct patternparam param;
 		param.nrhands = arg[0] - '0';
 		param.max[0] = param.max[1] = param.max[2] = param.max[3] = 13;
@@ -795,6 +949,7 @@ static int dopatterntables(const char *prog, const char *arg)
 		printf("const uint64_t parttern%dh[] = {\n\t", param.nrhands);
 		patternrunloop(&param);
 		puts("};");
+#endif
 	} else {
 		printf("Unssupported (%s) hand number. 1-3 are supported.\n", arg);
 		help(prog);
