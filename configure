@@ -32,8 +32,10 @@ host='${build}'
 host_help='Cross-compiler prefix for target system'
 build=''
 build_help='Host system compiler prefix'
+utf8=''
+utf8_help='Setting to yes forces UTF-8 output support.'
 
-pathlist="prefix exec_prefix bindir datarootdir datadir sysconfdir includedir docdir libdir libexecdir localedir mandir host build"
+pathlist="prefix exec_prefix bindir datarootdir datadir sysconfdir includedir docdir libdir libexecdir localedir mandir host build utf8"
 varlist="CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS"
 
 print_help () {

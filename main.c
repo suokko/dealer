@@ -65,7 +65,11 @@ void yyerror (char *);
 
 
 const char ucrep[14] = "23456789TJQKA";
-const char *ucsep[4]  = {"♣","♦","♥","♠"};
+#ifdef UTF8_SUPPORTED
+const char *ucsep[4]  = {u8"♣",u8"♦",u8"♥",u8"♠"};
+#else
+const char *ucsep[4]  = {"C","D","H","S"};
+#endif
 
 
 static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
@@ -319,10 +323,10 @@ void newpack (struct pack *d, const char *initialpack) {
     } else {
       const char *initer = initialpack;
       const char *suitsymbols[4][4] = {
-        {"C","c","♣","♧"},
-        {"D","d","♦","♤"},
-        {"H","h","♥","♡"},
-        {"S","s","♠","♤"},
+        {"C","c",u8"♣",u8"♧"},
+        {"D","d",u8"♦",u8"♤"},
+        {"H","h",u8"♥",u8"♡"},
+        {"S","s",u8"♠",u8"♤"},
       };
       for (place = 0; place < 52; place++) {
         char suit, rank;

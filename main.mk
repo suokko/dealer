@@ -31,6 +31,14 @@ COMPILER:=unknown
 endif
 endif
 
+ifeq ($(OS),Windows_NT)
+    ifeq ($(utf8),yes)
+        CPPFLAGS += -DUTF8_SUPPORTED
+    endif
+else
+    CPPFLAGS += -DUTF8_SUPPORTED
+endif
+
 RELEASEFLAGS := -DNDEBUG
 ifeq (gcc,$(COMPILER))
 OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model
