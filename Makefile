@@ -152,6 +152,18 @@ clean_dir_${1}:
 
 endef
 
+define PROCESS_OBJECT_DEP
+$(call ADD_OBJECT_DEPS,$(${TARGET}_BUILDDIR),$(patsubst %.cpp,%.o,${1}),${2})
+$(call ADD_OBJECT_DEPS,$(${TARGET}_BUILDDIR),$(patsubst %.cpp,%.cov.o,${1}),${2})
+$(call ADD_OBJECT_DEPS,$(${TARGET}_BUILDDIR),$(patsubst %.cpp,%.prof.o,${1}),${2})
+endef
+
+define PROCESS_OBJECT_DEPS
+$(foreach SOURCE,${${1}},\
+$(if ${${SOURCE}_DEP},\
+$(call PROCESS_OBJECT_DEP,${SOURCE},${${SOURCE}_DEP})))
+endef
+
 define MAKE_VERSIONED
 #Remove dependecy tracking
 CPPFLAG := $$(filter-out -M%,$$(DCPPFLAGS))
@@ -242,6 +254,8 @@ endif
 ${1}_SRC := $$(call WILDCARD,$$(DIR),$${${1}_SRC})
 ${1}_MV_SRC := $$(call WILDCARD,$$(DIR),$${${1}_MV_SRC})
 ${1}_SRC := $$(filter-out $$(${1}_MV_SRC),$$(${1}_SRC))
+
+$$(eval $$(call PROCESS_OBJECT_DEPS,${1}_SRC))
 
 # Figure correct path for the target
 ifeq (${2},0)
@@ -502,6 +516,11 @@ $(call CONCAT,${1},${2}): $(call CONCAT,$(call CONCAT,${1},..),${3})
 
 $(call CONCAT,${1},${2}): $(call CONCAT,${1},${3})
 	${4}
+endef
+
+define ADD_OBJECT_DEPS
+$(call CONCAT,${1},${2}): ${3}
+
 endef
 
 # Generate actual rule body for C sources

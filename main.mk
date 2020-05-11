@@ -85,6 +85,7 @@ SRMDIR = $(RMDIR)
 SINSTALL = $(INSTALL)
 SPOD2MAN = $(POD2MAN)
 SGEN   = 
+SGIT   = git
 else
 SCC    = @echo "  CC    " ${notdir $@} && $(host)$(CC)
 SAR    = @echo "  AR    " ${notdir $@} && $(host)$(AR)
@@ -97,5 +98,6 @@ SRMDIR = @echo "  RMDIR " $@ && $(RMDIR)
 SINSTALL = @echo "  INST  " ${notdir $@} && $(INSTALL)
 SPOD2MAN = @echo "  P2M   " ${notdir $@} && $(POD2MAN)
 SGEN   = @echo "  GEN   " $$@ && 
+SGIT   = @echo "  GIT   " ${notdir $@} && git
 endif
 

@@ -46,4 +46,12 @@ libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt $(FPMATH) -DMVDEFAULT=popc
 libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 $(FPMATH) -DMVDEFAULT=ss4
 libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mavx2 $(FPMATH) -DMVDEFAULT=avx2
 
+# Rule to make sure git submodule has been fetched
+
+dds/README.md:
+	$(SGIT) submodule init
+	$(SGIT) submodule update
+
+dds.cpp_DEP := dds/README.md
+
 SUBDIRS := */Rules.mk
