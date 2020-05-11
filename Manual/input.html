@@ -273,14 +273,17 @@ Besides that, special operators useful in a bridge-program are provided:
        minimum opening bid is about 1200, rather than 12.00 as expressed in
        the text.
    <li><B> <A NAME="trick">tricks(compass, strain)</A></B><BR>
-   	Runs GIB's double-dummy engine (BRIDGE under Linux, BRIDGE.EXE
-	under Windows/NT or /98), which must be present on the path or
-	in the same directory as the Dealer executable (together with,
-	on Windows, SH.EXE and CYGWIN.DLL from Cygnus' free Cygwin
-	package; this latter is not necessary in Paul Baxter's version), to
-    compute the number of tricks that, at double-dummy
-	par, will be taken by the given declarer in the given strain
-	(suit or notrumps).
+       Calculates double dummy tricks available for <i>compass</i> declarer and
+       <i>strain</i> contract. It uses dds double dummy library to calculate
+       available tricks. Requires optional dependency from git submodule in
+       <i>dds</i> directory. Shared library must be in system library search
+       path.
+   <li><B> <A NAME="trick">leadtricks(compass, strain)</A></B><BR>
+        Calculates double dummy tricks available for <i>compass</i> declarer and
+       <i>strain</i> contract. It returns an array of tricks for each card in
+       opening lead hand. Array can be passed to <i>frequency</i> function to
+       output histogram for available tricks over all produced hands. It
+       requires dds library like <i>tricks</i> function.
     <li><B> score(vulnerability, contract, tricks)</B><BR>
     	Returns the positive or negative score that declarer will make if
 	the given contract, at the given vulnerability condition, is
