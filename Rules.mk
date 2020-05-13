@@ -7,7 +7,9 @@ tables_OUT := tables.c
 
 dealer_LIBS := libdealer.a librand.a libcpudetect.a
 
-dealer_SRC := main.c \
+dealer_SRC := \
+	initrandom.cpp \
+	main.c \
 	pbn.c \
 	pointcount.c \
 	defs.y \

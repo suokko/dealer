@@ -6,6 +6,7 @@
 #include <limits.h>
 
 #include "bittwiddle.h"
+#include "initrandom.h"
 
 char* input_file = 0;
 
@@ -241,53 +242,6 @@ struct rng {
   unsigned idx;
 };
 
-static struct rng *initrng()
-{
-  struct rng *r;
-  struct rng rvalue = {0, {0}, 0};
-  /* Some paths to try in order for the random device */
-  const char *paths[] = { "/dev/urandom", "/dev/random" };
-  unsigned i;
-  for (i = 0; i < sizeof(*paths)/sizeof(paths[0]); i++) {
-    FILE *f = fopen(paths[i], "r");
-    if (!f)
-      continue;
-    setvbuf(f, NULL, _IONBF, sizeof(r->random));
-    rvalue.f = f;
-    rvalue.idx = sizeof(rvalue.random);
-    break;
-  }
-  if (rvalue.f == 0)
-    error("No random device could be opened");
-  r = malloc(sizeof(*r));
-  *r = rvalue;
-  return r;
-}
-
-static int nextpos(struct rng *r, int place)
-{
-  int rv;
-  unsigned char v;
-  do {
-    if (r->idx == sizeof(r->random)) {
-      rv = fread(r->random, sizeof(r->random), 1, r->f);
-      r->idx = 0;
-      if (rv != 1)
-        error("Failed to read random state");
-    }
-    v = r->random[r->idx++];
-    rv = v % (52 - place);
-  } while(place - rv > 255 - v);
-  return rv;
-}
-
-static void freerng(struct rng *r)
-{
-  if (r->f)
-    fclose(r->f);
-  free(r);
-}
-
 card make_card (char rankchar, char suitchar);
 
 void newpack (struct pack *d, const char *initialpack) {
@@ -306,10 +260,10 @@ void newpack (struct pack *d, const char *initialpack) {
     char *iter = statetext;
 
     if (strcmp(initialpack, "rng") == 0) {
-      struct rng *state = initrng();
+      struct initrng *state = irng_open();
 
       for (place = 0; place < 51; place++) {
-        int pos = nextpos(state, place) + place;
+        int pos = irng_next(state, place, 51);
         assert (pos < 52);
         assert (pos >= place);
         card t = d->c[pos];
@@ -319,7 +273,7 @@ void newpack (struct pack *d, const char *initialpack) {
       }
       card t = d->c[place];
       iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
-      freerng(state);
+      irng_close(state);
     } else {
       const char *initer = initialpack;
       const char *suitsymbols[4][4] = {
