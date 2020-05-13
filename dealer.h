@@ -73,7 +73,7 @@ struct handstat hs[4] ;
 
 int imps (int scorediff) __attribute__ ((pure));
 struct value score (int vuln, int suit, int level, int dbl, struct value tricks) __attribute__ ((pure));
-void error (char *s) __attribute__ ((noreturn, pure));
+void error (char *s) __attribute__ ((noreturn));
 void clearpointcount ();
 void clearpointcount_alt (int cin);
 void pointcount (int index, int value);
