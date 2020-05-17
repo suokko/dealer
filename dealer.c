@@ -37,6 +37,10 @@
 
 #include "Random/SFMT.h"
 
+#if __BMI2__
+#include <x86intrin.h>
+#endif
+
 void yyerror (char *);
 
 #define TWO_TO_THE_13 (1<<13)
@@ -77,23 +81,23 @@ static struct selected_prng zero52;
 /* Function definitions */
 static int true_dd (const struct board *d, int l, int c); /* prototype */
 
-  /* Special variables for exhaustive mode 
+  /* Special variables for exhaustive mode
      Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
-  static int exh_verctordeal;
-  static int exh_vect_length;
-  /* a exh_verctordeal is a binary *word* of at most 26 bits: there are at most
+  static unsigned exh_vectordeal;
+  static unsigned exh_vect_length;
+  /* a exh_vectordeal is a binary *word* of at most 26 bits: there are at most
      26 cards to deal between two players.  Each card to deal will be
      affected to a given position in the vector.  Example : we need to deal
      the 26 minor cards between north and south (what a double fit !!!)
      Then those cards will be represented in a binary vector as shown below:
           Card    : DA DK ... D2 CA CK ... C4 C3 C2
-          Bit-Pos : 25 24     13 12 11      2  1  0  
+          Bit-Pos : 25 24     13 12 11      2  1  0
      The two players will be respectively represented by the bit values 0 and
      1. Let's say north gets the 0, and south the 1. Then the vector
      11001100000001111111110000 represents the following hands :
           North: D QJ8765432 C 5432
           South: D AKT9      C AKQJT9876
-     A suitable exh_verctordeal is a vector deal with hamming weight equal to 13. 
+     A suitable exh_vectordeal is a vector deal with hamming weight equal to 13.
      For computing those vectors, we use a straightforward
      meet in the middle approach.  */
   static card exh_card_at_bit[26];
@@ -203,7 +207,7 @@ static int get_tricks (int pn, int dn) {
 static int true_dd (const struct board *d, int l, int c) {
   if (gp->loading && libdeal.valid) {
     int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
-    /* This will get the number of tricks EW can get.  If the user wanted NS, 
+    /* This will get the number of tricks EW can get.  If the user wanted NS,
        we have to subtract 13 from that number. */
     return ((l == 0) || (l == 2)) ? 13 - resu : resu;
   } else {
@@ -214,7 +218,7 @@ static int true_dd (const struct board *d, int l, int c) {
 static void evalcontract () {
   int s;
   for (s = 0; s < 5; s++) {
-    gp->results[1][s][dd (&gp->curboard, 2, s)]++;      /* south declarer */ 
+    gp->results[1][s][dd (&gp->curboard, 2, s)]++;      /* south declarer */
     gp->results[0][s][dd (&gp->curboard, 0, s)]++;      /* north declarer */
   }
 }
@@ -594,7 +598,7 @@ retry_read:
     }
   } else {
     /* Algorithm according to Knuth. For each card exchange with a random
-       other card. This is supposed to be the perfect shuffle algorithm. 
+       other card. This is supposed to be the perfect shuffle algorithm.
        It only depends on a valid random number generator.  */
     shuffle_bias(d);
     int dealtcnt = hand_count_cards(dealtcardsmask);
@@ -690,12 +694,15 @@ static void exh_map_cards (struct board *b) {
   }
 
   /* Fill in all cards not predealt */
-  for (i = 0, bit_pos = 0; i < 52; i++) {
-    card c = hand_has_card(~predeal, gp->curpack.c[i]);
-    if (c) {
-      exh_set_bit_values (bit_pos, c);
-      bit_pos++;
-    }
+  hand shuffle = ~predeal & all_suits_mask;
+  for (bit_pos = 0; shuffle;) {
+    // remove lowest set bit
+    hand next_shuffle = (shuffle - 1) & shuffle;
+    // Isolate the changed card
+    card c = next_shuffle ^ shuffle;
+    shuffle = next_shuffle;
+    exh_set_bit_values (bit_pos, c);
+    bit_pos++;
   }
 
   int p1cnt = 13 - hand_count_cards(gp->predealt.hands[exh_player[1]]);
@@ -703,14 +710,14 @@ static void exh_map_cards (struct board *b) {
   exh_vect_length = bit_pos;
   /* Set N lower bits that will be moved to high bits */
   for (i = 1; i < p1cnt; i++) {
-    exh_verctordeal |= 1 << i;
+    exh_vectordeal |= 1 << i;
     p1 |= exh_card_at_bit[i];
   }
   for (i = 0; i < bit_pos - p1cnt; i++)
     p0 |= exh_card_at_bit[i + p1cnt];
   /* Lowest bit goes to wrong hand so first shuffle can flip it. */
   if (p1cnt > 0) {
-    exh_verctordeal |= 1 << 0;
+    exh_vectordeal |= 1 << 0;
     p0 |= exh_card_at_bit[0];
   } else {
     p1 |= exh_card_at_bit[0];
@@ -720,6 +727,12 @@ static void exh_map_cards (struct board *b) {
   assert(hand_count_cards(((p0 | b->hands[exh_player[0]])) ^ exh_card_at_bit[0]) == 13);
   b->hands[exh_player[0]] |= p0;
   b->hands[exh_player[1]] |= p1;
+#if __BMI2__
+  card allbits = 0;
+  for (i = 0; i < bit_pos; ++i)
+    allbits |= exh_card_at_bit[i];
+  exh_card_at_bit[0] = allbits;
+#endif
 }
 
 static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
@@ -731,21 +744,36 @@ static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   printf ("  Totalpoints: %2d\n", hs->hs_points[s*2+1]);
 }
 
+static inline void exh_print_cards (hand vector)
+{
+#if __BMI2__
+  hand hand = _pdep_u64(vector, exh_card_at_bit[0]);
+  while (hand) {
+    card c = hand_extract_card(hand);
+    printcard(c);
+    hand = hand_remove_card(hand, c);
+  }
+#else
+  for (unsigned i = 0; i < exh_vect_length; i++) {
+    if ((1 & (vector >> i))) {
+      card onecard = exh_card_at_bit[i];
+      printcard(onecard);
+    }
+  }
+#endif
+}
+
 static inline void exh_print_vector (struct handstat *hs) {
-  int i, s, r;
-  int onecard;
+  int s;
   struct handstat *hsp;
   int hs_length[4];
 
+  hand mask = 1;
+  mask <<= exh_vect_length;
+  mask--;
+
   printf ("Player %d: ", exh_player[0]);
-  for (i = 0; i < exh_vect_length; i++) {
-    if (!(1 & (exh_verctordeal >> i))) {
-      onecard = exh_card_at_bit[i];
-      s = C_SUIT (onecard);
-      r = C_RANK (onecard);
-      printf ("%c%d ", ucrep[r], s);
-    }
-  }
+  exh_print_cards(~exh_vectordeal & mask);
   printf ("\n");
   hsp = hs + exh_player[0];
   for (s = SUIT_CLUB; s <= NSUITS; s++) {
@@ -755,14 +783,7 @@ static inline void exh_print_vector (struct handstat *hs) {
   }
   exh_print_stats (hsp, hs_length);
   printf ("Player %d: ", exh_player[1]);
-  for (i = 0; i < exh_vect_length; i++) {
-    if ((1 & (exh_verctordeal >> i))) {
-      onecard = exh_card_at_bit[i];
-      s = C_SUIT (onecard);
-      r = C_RANK (onecard);
-      printf ("%c%d ", ucrep[r], s);
-    }
-  }
+  exh_print_cards(exh_vectordeal);
   printf ("\n");
   hsp = hs + exh_player[1];
   for (s = SUIT_CLUB; s <= NSUITS; s++)
@@ -770,23 +791,26 @@ static inline void exh_print_vector (struct handstat *hs) {
   exh_print_stats (hsp, hs_length);
 }
 
-static void exh_shuffle (int vector, int prevvect, struct board *b) {
-  int p;
+static void exh_shuffle (unsigned vector, unsigned prevvect, struct board *b) {
   hand bitstoflip = 0;
 
-  int changed = vector ^ prevvect;
+  unsigned changed = vector ^ prevvect;
 
+#if __BMI2__
+  bitstoflip = _pdep_u64(changed, exh_card_at_bit[0]);
+#else
   do {
     int last = __builtin_ctz(changed);
     bitstoflip |= exh_card_at_bit[last];
     changed &= changed - 1;
   } while (changed);
+#endif
 
   b->hands[exh_player[0]] ^= bitstoflip;
   b->hands[exh_player[1]] ^= bitstoflip;
 
-  for (p = 0; p < 4; p++)
-    assert(hand_count_cards(b->hands[p]) == 13);
+  assert(hand_count_cards(b->hands[exh_player[0]]) == 13);
+  assert(hand_count_cards(b->hands[exh_player[1]]) == 13);
 }
 
 static int bitpermutate(int vector)
@@ -1282,7 +1306,7 @@ static void action () {
         }
         break;
 
-      case ACT_PRINTES: 
+      case ACT_PRINTES:
         { struct expr *pex = (struct expr *) acp->ac_expr1;
           while (pex) {
             if (pex->ex_tr) {
@@ -1406,11 +1430,12 @@ int DEFUN(deal_main) (struct globals *g) {
 
         exh_get2players ();
         exh_map_cards (&g->curboard);
-        int prevvect = exh_verctordeal ^ 1;
-        for (; exh_verctordeal < (1 << exh_vect_length); exh_verctordeal = bitpermutate(exh_verctordeal)) {
+        unsigned prevvect = exh_vectordeal ^ 1;
+        for (; exh_vectordeal < (1u << exh_vect_length);
+                exh_vectordeal = bitpermutate(exh_vectordeal)) {
           gp->ngen++;
-          exh_shuffle (exh_verctordeal, prevvect, &g->curboard);
-          prevvect = exh_verctordeal;
+          exh_shuffle (exh_vectordeal, prevvect, &g->curboard);
+          prevvect = exh_vectordeal;
           if (interesting ()) {
             /*  exh_print_vector(hs); */
             action ();
