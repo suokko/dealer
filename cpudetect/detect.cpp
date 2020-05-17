@@ -1,6 +1,6 @@
 #include "detect.h"
 #include <set>
-#include <string>
+#include <regex>
 #if defined(__i386__) || defined(__x86_64__)
 int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
 {
@@ -19,9 +19,35 @@ int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c
 }
 #endif
 
-typedef std::set<std::string> feature_set;
+unsigned features = 0;
 
-unsigned features;
+static void check_env()
+{
+	const char* env = getenv("CPUSUPPORTS");
+	if (!env)
+		return;
+
+	if (std::regex_search(env,std::regex{"nocmov(,|$)"}))
+		features &= ~CPUCMOV;
+	if (std::regex_search(env,std::regex{"nosse(,|$)"}))
+		features &= ~CPUSSE;
+	if (std::regex_search(env,std::regex{"nosse2(,|$)"}))
+		features &= ~CPUSSE2;
+	if (std::regex_search(env,std::regex{"nosse3(,|$)"}))
+		features &= ~CPUSSE3;
+	if (std::regex_search(env,std::regex{"nopopcnt(,|$)"}))
+		features &= ~CPUPOPCNT;
+	if (std::regex_search(env,std::regex{"nosse41(,|$)"}))
+		features &= ~CPUSSE41;
+	if (std::regex_search(env,std::regex{"nosse42(,|$)"}))
+		features &= ~CPUSSE42;
+	if (std::regex_search(env,std::regex{"noavx(,|$)"}))
+		features &= ~CPUAVX;
+	if (std::regex_search(env,std::regex{"nobmi2(,|$)"}))
+		features &= ~CPUBMI2;
+	if (std::regex_search(env,std::regex{"noavx2(,|$)"}))
+		features &= ~CPUAVX2;
+}
 
 static void x86_cpu_init()
 {
@@ -200,6 +226,7 @@ static void x86_cpu_init()
 void cpu_init()
 {
 	x86_cpu_init();
+	check_env();
 }
 
 bool cpu_supports(enum cpufeatures feature)
