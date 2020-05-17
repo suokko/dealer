@@ -11,7 +11,7 @@ INSTALL	 ?= install
 POD2MAN  ?= pod2man
 
 CFLAGS   ?=
-CPPFLAGS ?= -march=native  -flto
+CPPFLAGS ?= -flto
 CXXFLAGS ?=
 LDFLAGS  ?=
 DESTDIR  ?=

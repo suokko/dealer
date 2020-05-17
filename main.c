@@ -378,7 +378,7 @@ void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablec
           fprintf (f, "%c", ucrep[r]);
       if (s > 0) fprintf (f, ".");
     }
-    /* OK to use \n as this is mainly intended for internal dealer use. */ 
+    /* OK to use \n as this is mainly intended for internal dealer use. */
     fprintf (f, ononeline && p != COMPASS_WEST ? " " : "\n");
   }
 }
@@ -387,7 +387,7 @@ void printdeal (const struct board *d) {
   int suit, player, rank, cards;
 
   printf ("%4d.\n", (gptr->nprod+1));
-  
+
   for (suit = SUIT_SPADE; suit >= SUIT_CLUB; suit--) {
     cards = 10;
     for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
@@ -672,21 +672,24 @@ int main (int argc, char **argv) {
   extern char *optarg;
   int c;
   int errflg = 0;
-  enum {
+  const enum {
     NONE,
     SSE2,
     POPCNT,
     SSE4,
+    BMI2,
     AVX2,
-  } compilerfeatures = NONE;
+  } compilerfeatures =
 #ifdef __AVX2__
-  compilerfeatures = AVX2;
+  AVX2;
+#elif defined(__BMI2__)
+  BMI2;
 #elif defined(__SSE4_2__)
-  compilerfeatures = SSE4;
+  SSE4;
 #elif defined(__POPCNT__)
-  compilerfeatures = POPCNT;
+  POPCNT;
 #elif defined(__SSE2__)
-  compilerfeatures = SSE2;
+  SSE2;
 #endif
 
   struct timeval tvstart, tvstop;
@@ -731,7 +734,7 @@ int main (int argc, char **argv) {
         seed_provided = 1;
         gp->seed = atol (optarg);
         if (gp->seed == LONG_MIN || gp->seed == LONG_MAX) {
-            fprintf (stderr, "Seed overflow: seed must be between %ld and %ld\n", 
+            fprintf (stderr, "Seed overflow: seed must be between %ld and %ld\n",
               LONG_MIN, LONG_MAX);
             exit (-1);
         }
@@ -782,6 +785,8 @@ int main (int argc, char **argv) {
 #if defined(__x86_64__) || defined(__i386__)
   if (compilerfeatures < AVX2 && cpu_supports(CPUAVX2)) {
     r = avx2_deal_main(gp);
+  } else if(compilerfeatures < BMI2 && cpu_supports(CPUBMI2)) {
+    r = bmi2_deal_main(gp);
   } else if(compilerfeatures < SSE4 && cpu_supports(CPUSSE42)) {
     r = sse4_deal_main(gp);
   } else if(compilerfeatures < POPCNT && cpu_supports(CPUPOPCNT)) {
@@ -801,7 +806,7 @@ int main (int argc, char **argv) {
     printf ("Generated %d hands\n", gp->ngen);
     printf ("Produced %d hands\n", gp->nprod);
     printf ("Initial random seed %lu\n", gp->seed);
-    printf ("Time needed %8.3f sec%s", 
+    printf ("Time needed %8.3f sec%s",
              (tvstop.tv_sec + tvstop.tv_usec / 1000000.0 -
              (tvstart.tv_sec + tvstart.tv_usec / 1000000.0)), crlf);
   }

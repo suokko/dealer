@@ -135,6 +135,7 @@ int default_deal_main (struct globals *g);
 int sse2_deal_main (struct globals *g);
 int popcnt_deal_main (struct globals *g);
 int sse4_deal_main (struct globals *g);
+int bmi2_deal_main (struct globals *g);
 int avx2_deal_main (struct globals *g);
 
 #ifdef MVDEFAULT

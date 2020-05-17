@@ -36,7 +36,7 @@ libdealer.a_SRC := dealer.c \
 	tables.c
 
 libdealer.a_MV_SRC := dealer.c c4.c
-libdealer.a_MV_CFG := default sse2 popcnt sse4 avx2
+libdealer.a_MV_CFG := default sse2 popcnt sse4 bmi2 avx2
 
 libdealer.a_MV_default := -DMVDEFAULT=default
 
@@ -45,8 +45,9 @@ FPMATH := -mfpmath=sse
 endif
 libdealer.a_MV_sse2 := -msse -msse2 $(FPMATH) -DMVDEFAULT=sse2
 libdealer.a_MV_popcnt := -msse -msse2 -msse3 -mpopcnt $(FPMATH) -DMVDEFAULT=popcnt
-libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 $(FPMATH) -DMVDEFAULT=ss4
-libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mavx2 $(FPMATH) -DMVDEFAULT=avx2
+libdealer.a_MV_sse4 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 $(FPMATH) -DMVDEFAULT=sse4
+libdealer.a_MV_bmi2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mbmi2 $(FPMATH) -DMVDEFAULT=bmi2
+libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mbmi2 -mavx2 $(FPMATH) -DMVDEFAULT=avx2
 
 # Rule to make sure git submodule has been fetched
 
