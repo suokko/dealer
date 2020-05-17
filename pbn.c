@@ -1,4 +1,4 @@
-/*  This routine prints a hand in PBN format 
+/*  This routine prints a hand in PBN format
     Added by Henk Uijterwaal, Feb 1999            */
 
 #include <stdio.h>
@@ -27,9 +27,6 @@ int printpbn (int board, const struct board *d) {
   char timearray[12];
   int player, suit, rank;
 
-  /* Suppress verbose output unless we really want it */
-  verbose ^= 1;
-
   printf ("[Event \"Hand simulated by dealer with file %s, seed %lu\"]\n",
   input_file, gptr->seed);
 
@@ -41,20 +38,20 @@ int printpbn (int board, const struct board *d) {
   printf ("[Date \"%s\"]\n", timearray);
 
   printf ("[Board \"%d\"]\n", board+1);
- 
-  /* Blank tags for the players */ 
+
+  /* Blank tags for the players */
   printf ("[West \"-\"]\n");
   printf ("[North \"-\"]\n");
   printf ("[East \"-\"]\n");
   printf ("[South \"-\"]\n");
-   
+
   /* Dealer, rotates unless set by the user */
-  if ((gptr->maxdealer < 0) || (gptr->maxdealer > 3)) { 
+  if ((gptr->maxdealer < 0) || (gptr->maxdealer > 3)) {
      printf ("[Dealer \"%s\"]\n", dealer_name[board%4]);
   } else {
     printf ("[Dealer \"%s\"]\n", dealer_name[gptr->maxdealer]);
   }
-  
+
   /* Vulnerability, rotates unless set by the user */
   if ((gptr->maxvuln < 0) || (gptr->maxvuln > 3)) {
      printf ("[Vulnerable \"%s\"]\n", vulner_name[board_vul[board%16]]);
@@ -83,6 +80,5 @@ int printpbn (int board, const struct board *d) {
   printf ("[Result \"?\"]\n");
   printf ("\n");
 
-  verbose ^= 1;
   return 0;
 }

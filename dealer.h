@@ -11,7 +11,6 @@ extern "C" {
 
 extern const char * const player_name[4];
 
-int verbose;
 
 /* Changes for cccc and quality */
 struct context {
