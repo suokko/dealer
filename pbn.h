@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int printpbn (int, const struct board *b);
+int printpbn (int, const union board *b);
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,7 @@ tables_SRC := pregen.cpp
 tables_PARAM := -irn
 tables_OUT := tables.c
 
-dealer_LIBS := libdealer.a librand.a libcpudetect.a
+dealer_LIBS := libdealer.a libcpudetect.a
 
 dealer_SRC := \
 	initrandom.cpp \
@@ -17,8 +17,7 @@ dealer_SRC := \
 
 dealer_INCDIR := .
 
-dealergenlib_SRC := genlib.c
-dealergenlib_LIBS := librand.a
+dealergenlib_SRC := genddslib.cpp
 
 # libdds support
 ifeq ($(subst mingw,,$(host)),$(host))
@@ -28,16 +27,23 @@ dealer_SRC += dds.cpp
 
 ifneq ($(subst mingw,,$(host)),$(host))
 dealer_LIBS += -lws2_32
-dealergenlib_LIBS += -lws2_32 librand.a
+dealergenlib_LIBS += -lws2_32
 endif
 
-libdealer.a_SRC := dealer.c \
+libdealer.a_SRC := \
 	c4.c \
-	tables.c
+	dealer.c \
+	tables.c \
+	shuffle.cpp \
+#
 
-libdealer.a_MV_SRC := dealer.c c4.c
+libdealer.a_MV_SRC := \
+	c4.c \
+	dealer.c \
+	shuffle.cpp \
+#
+
 libdealer.a_MV_CFG := default sse2 popcnt sse4 bmi2 avx2
-
 libdealer.a_MV_default := -DMVDEFAULT=default
 
 ifneq (gcc,$(COMPILER))
@@ -51,10 +57,16 @@ libdealer.a_MV_avx2 := -msse -msse2 -msse3 -mpopcnt -msse4.1 -msse4.2 -mavx -mbm
 
 # Rule to make sure git submodule has been fetched
 
-dds/README.md:
+.git/modules/pcg-cpp:
 	$(SGIT) submodule init
 	$(SGIT) submodule update
 
+dds/README.md: .git/modules/pcg-cpp
+
+pcg-cpp/README.md: .git/modules/pcg-cpp
+
 dds.cpp_DEP := dds/README.md
+pregen.cpp_DEP := pcg-cpp/README.md
+shuffle.cpp_DEP := pcg-cpp/README.md
 
 SUBDIRS := */Rules.mk

@@ -12,7 +12,7 @@
 
 extern char* input_file;
 
-int printpbn (int board, const struct board *d) {
+int printpbn (int board, const union board *d) {
 
   /* Symbols for the cards */
   char representation[] = "23456789TJQKA";

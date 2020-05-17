@@ -6,6 +6,8 @@
 
 #include "bittwiddle.h"
 
+#include <x86intrin.h>
+
 /* Card is a 64 bit integer where each two bytes is one suit.
  * That makes a hand simple bitwise-or of all cards in the hand.
  * Board for compuation contains 4*64=256 bits in 4 hand vectors.
@@ -17,18 +19,22 @@
 typedef uint64_t card;
 typedef card hand;
 
-struct board {
+union board {
 	hand hands[4];
-} __attribute__  ((aligned(16)));
+	__m256i vec256;
+	__m128i vec128[2];
+};
 
 /* First hand tells if card is NS or EW, second hand tells which one from partnership */
 struct stored_board {
 	hand hands[2];
-} __attribute__  ((aligned(16)));
+};
 
 /* pack for shuffling */
-struct pack {
+union pack {
 	card c[52];
+	__m256i vec256[13];
+	__m128i vec128[26];
 };
 
 /* Suit numbering */
@@ -128,7 +134,7 @@ static inline hand hand_add_card(const hand h, const card c)
 
 /* Conversion to and from stored board */
 
-static inline void board_to_stored(struct stored_board *s, const struct board *b)
+static inline void board_to_stored(struct stored_board *s, const union board *b)
 {
 	s->hands[0] = b->hands[0] | b->hands[2];
 	assert(hand_count_cards(s->hands[0]) == 26);
@@ -136,7 +142,7 @@ static inline void board_to_stored(struct stored_board *s, const struct board *b
 	assert(hand_count_cards(s->hands[1]) == 26);
 }
 
-static inline void board_from_stored(struct board *b, const struct stored_board *s)
+static inline void board_from_stored(union board *b, const struct stored_board *s)
 {
 	hand ns = s->hands[0];
 	b->hands[0] = s->hands[1] & ns;

@@ -1,51 +1,51 @@
 -s1 Descr.test_swapping
    1.
--                   7 4                 A J T 9 8           K Q 6 5 3 2 
-7 5 2               A K 8 4 3           Q J T 9 6           - 
-K Q J T 8 6 4 2     A 9 7               -                   5 3 
-Q 7                 8 6 4               K 3 2               A J T 9 5 
+Q 4 3               J 8 5 2             K 9                 A T 7 6 
+7 6 4 3             J 8 5               A T                 K Q 9 2 
+A K 3               8 4 2               Q J 9 7 5           T 6 
+Q 4 2               K 9 7               A 8 6 5             J T 3 
 
    2.
-9 7 2               K Q T 8 6 3         A 4                 J 5 
-K 8 2               Q 7 4 3             T 9 6 5             A J 
-5 2                 A J T               K 8 6               Q 9 7 4 3 
-Q 9 7 6 4           -                   J T 3 2             A K 8 5 
+K 8 6 5             A T 7 3             Q 2                 J 9 4 
+A 8 6 2             3                   J 9 4               K Q T 7 5 
+A J 2               K T 7 5 3           9 6 4               Q 8 
+9 7                 Q J 8               A T 5 3 2           K 6 4 
 
    3.
-K J T 4 2           Q 8 6 5             A 9 3               7 
-K Q T 4             J 6 3               A 7 5 2             9 8 
-5 2                 K Q 6 3             A 9 7               J T 8 4 
-7 3                 9 4                 K Q T               A J 8 6 5 2 
+A K 6 2             8 7 5 4             T                   Q J 9 3 
+6 4                 J T 9 3 2           K 8 7               A Q 5 
+A Q 4               K J 2               T 7 6 3             9 8 5 
+K T 7 6             8                   Q 5 4 3 2           A J 9 
 
    4.
-J T 8               A 7 3               K 9 6 5             Q 4 2 
-J 9 3               A 2                 7 5 4               K Q T 8 6 
-Q J 9 2             A K 5 4             T 7                 8 6 3 
-T 5 2               A 7 6 4             K J 8 3             Q 9 
+T 7 3               A 6                 K J 9 8 5           Q 4 2 
+8 5 4 2             A Q J 6 3           K 7                 T 9 
+K Q J 4             -                   9 7 5 2             A T 8 6 3 
+Q 8                 J T 9 7 6 3         5 2                 A K 4 
 
    5.
-Q 3                 A J T 6 5           9 7 2               K 8 4 
-K 4                 2                   T 9 8 7 6 5         A Q J 3 
-K 9 8 3 2           A J 5               7 4                 Q T 6 
-K Q T 9             A J 4 3             7 5                 8 6 2 
+A Q 3               K 5 4               J 9 8 7 6           T 2 
+8 5 3               A T                 Q J 4               K 9 7 6 2 
+K 5 4 2             Q J 9 6             A T                 8 7 3 
+A 9 3               T 6 4 2             Q 8 7               K J 5 
 
    6.
-6 4                 K Q 7 3             A J 5 2             T 9 8 
-Q T 9 6             8 5                 A 7 4               K J 3 2 
-8 2                 9 5 4               A J T 7 6 3         K Q 
-A J 8 7 4           K Q 9 5             -                   T 6 3 2 
+T 8 7               A K Q 5             9 6 2               J 4 3 
+Q 5 3 2             A T 8               9 7 6 4             K J 
+J 9                 T 8 7 4 2           K Q 6               A 5 3 
+7 6 4 3             J                   K 9 2               A Q T 8 5 
 
    7.
-Q T 3 2             A 9 8               6 5                 K J 7 4 
-5 2                 A 9 8 6 4           K J T 7             Q 3 
-Q 8 5               A K J 6             T 9 4 2             7 3 
-A Q 9 3             7                   8 5 4               K J T 6 2 
+K Q J 7             9 5                 T 3 2               A 8 6 4 
+T 3                 Q 8 7 6             A K J 9 2           5 4 
+A Q                 K 7 5 3 2           J T 9               8 6 4 
+K Q 7 4 2           9 5                 J 8                 A T 6 3 
 
    8.
-Q 9 7               A 8 6 4 3 2         K T                 J 5 
-Q 4                 J 8 6               7 5 2               A K T 9 3 
-K J 5 3 2           Q 9                 A T 8 4             7 6 
-A 8 4               K 9                 T 7 6 2             Q J 5 3 
+J 9 8 4             T 2                 A 6 5               K Q 7 3 
+Q 7 6               A 8 4               K J 9 5 3           T 2 
+K 6 5               8 2                 A J T               Q 9 7 4 3 
+A 8 6               Q T 9 7 5 4         J 3                 K 2 
 
 Generated 8 hands
 Produced 8 hands
@@ -53,52 +53,52 @@ Initial random seed 1
 Time needed    0.000 sec
 -0s1 Descr.test_swapping
    1.
--                   7 4                 A J T 9 8           K Q 6 5 3 2 
-7 5 2               A K 8 4 3           Q J T 9 6           - 
-K Q J T 8 6 4 2     A 9 7               -                   5 3 
-Q 7                 8 6 4               K 3 2               A J T 9 5 
+Q 4 3               J 8 5 2             K 9                 A T 7 6 
+7 6 4 3             J 8 5               A T                 K Q 9 2 
+A K 3               8 4 2               Q J 9 7 5           T 6 
+Q 4 2               K 9 7               A 8 6 5             J T 3 
 
    2.
-9 7 2               K Q T 8 6 3         A 4                 J 5 
-K 8 2               Q 7 4 3             T 9 6 5             A J 
-5 2                 A J T               K 8 6               Q 9 7 4 3 
-Q 9 7 6 4           -                   J T 3 2             A K 8 5 
+K 8 6 5             A T 7 3             Q 2                 J 9 4 
+A 8 6 2             3                   J 9 4               K Q T 7 5 
+A J 2               K T 7 5 3           9 6 4               Q 8 
+9 7                 Q J 8               A T 5 3 2           K 6 4 
 
    3.
-K J T 4 2           Q 8 6 5             A 9 3               7 
-K Q T 4             J 6 3               A 7 5 2             9 8 
-5 2                 K Q 6 3             A 9 7               J T 8 4 
-7 3                 9 4                 K Q T               A J 8 6 5 2 
+A K 6 2             8 7 5 4             T                   Q J 9 3 
+6 4                 J T 9 3 2           K 8 7               A Q 5 
+A Q 4               K J 2               T 7 6 3             9 8 5 
+K T 7 6             8                   Q 5 4 3 2           A J 9 
 
    4.
-J T 8               A 7 3               K 9 6 5             Q 4 2 
-J 9 3               A 2                 7 5 4               K Q T 8 6 
-Q J 9 2             A K 5 4             T 7                 8 6 3 
-T 5 2               A 7 6 4             K J 8 3             Q 9 
+T 7 3               A 6                 K J 9 8 5           Q 4 2 
+8 5 4 2             A Q J 6 3           K 7                 T 9 
+K Q J 4             -                   9 7 5 2             A T 8 6 3 
+Q 8                 J T 9 7 6 3         5 2                 A K 4 
 
    5.
-Q 3                 A J T 6 5           9 7 2               K 8 4 
-K 4                 2                   T 9 8 7 6 5         A Q J 3 
-K 9 8 3 2           A J 5               7 4                 Q T 6 
-K Q T 9             A J 4 3             7 5                 8 6 2 
+A Q 3               K 5 4               J 9 8 7 6           T 2 
+8 5 3               A T                 Q J 4               K 9 7 6 2 
+K 5 4 2             Q J 9 6             A T                 8 7 3 
+A 9 3               T 6 4 2             Q 8 7               K J 5 
 
    6.
-6 4                 K Q 7 3             A J 5 2             T 9 8 
-Q T 9 6             8 5                 A 7 4               K J 3 2 
-8 2                 9 5 4               A J T 7 6 3         K Q 
-A J 8 7 4           K Q 9 5             -                   T 6 3 2 
+T 8 7               A K Q 5             9 6 2               J 4 3 
+Q 5 3 2             A T 8               9 7 6 4             K J 
+J 9                 T 8 7 4 2           K Q 6               A 5 3 
+7 6 4 3             J                   K 9 2               A Q T 8 5 
 
    7.
-Q T 3 2             A 9 8               6 5                 K J 7 4 
-5 2                 A 9 8 6 4           K J T 7             Q 3 
-Q 8 5               A K J 6             T 9 4 2             7 3 
-A Q 9 3             7                   8 5 4               K J T 6 2 
+K Q J 7             9 5                 T 3 2               A 8 6 4 
+T 3                 Q 8 7 6             A K J 9 2           5 4 
+A Q                 K 7 5 3 2           J T 9               8 6 4 
+K Q 7 4 2           9 5                 J 8                 A T 6 3 
 
    8.
-Q 9 7               A 8 6 4 3 2         K T                 J 5 
-Q 4                 J 8 6               7 5 2               A K T 9 3 
-K J 5 3 2           Q 9                 A T 8 4             7 6 
-A 8 4               K 9                 T 7 6 2             Q J 5 3 
+J 9 8 4             T 2                 A 6 5               K Q 7 3 
+Q 7 6               A 8 4               K J 9 5 3           T 2 
+K 6 5               8 2                 A J T               Q 9 7 4 3 
+A 8 6               Q T 9 7 5 4         J 3                 K 2 
 
 Generated 8 hands
 Produced 8 hands
@@ -106,105 +106,105 @@ Initial random seed 1
 Time needed    0.000 sec
 -2s1 Descr.test_swapping
    1.
--                   7 4                 A J T 9 8           K Q 6 5 3 2 
-7 5 2               A K 8 4 3           Q J T 9 6           - 
-K Q J T 8 6 4 2     A 9 7               -                   5 3 
-Q 7                 8 6 4               K 3 2               A J T 9 5 
+Q 4 3               J 8 5 2             K 9                 A T 7 6 
+7 6 4 3             J 8 5               A T                 K Q 9 2 
+A K 3               8 4 2               Q J 9 7 5           T 6 
+Q 4 2               K 9 7               A 8 6 5             J T 3 
 
    2.
--                   K Q 6 5 3 2         A J T 9 8           7 4 
-7 5 2               -                   Q J T 9 6           A K 8 4 3 
-K Q J T 8 6 4 2     5 3                 -                   A 9 7 
-Q 7                 A J T 9 5           K 3 2               8 6 4 
+Q 4 3               A T 7 6             K 9                 J 8 5 2 
+7 6 4 3             K Q 9 2             A T                 J 8 5 
+A K 3               T 6                 Q J 9 7 5           8 4 2 
+Q 4 2               J T 3               A 8 6 5             K 9 7 
 
    3.
-9 7 2               K Q T 8 6 3         A 4                 J 5 
-K 8 2               Q 7 4 3             T 9 6 5             A J 
-5 2                 A J T               K 8 6               Q 9 7 4 3 
-Q 9 7 6 4           -                   J T 3 2             A K 8 5 
+K 8 6 5             A T 7 3             Q 2                 J 9 4 
+A 8 6 2             3                   J 9 4               K Q T 7 5 
+A J 2               K T 7 5 3           9 6 4               Q 8 
+9 7                 Q J 8               A T 5 3 2           K 6 4 
 
    4.
-9 7 2               J 5                 A 4                 K Q T 8 6 3 
-K 8 2               A J                 T 9 6 5             Q 7 4 3 
-5 2                 Q 9 7 4 3           K 8 6               A J T 
-Q 9 7 6 4           A K 8 5             J T 3 2             - 
+K 8 6 5             J 9 4               Q 2                 A T 7 3 
+A 8 6 2             K Q T 7 5           J 9 4               3 
+A J 2               Q 8                 9 6 4               K T 7 5 3 
+9 7                 K 6 4               A T 5 3 2           Q J 8 
 
    5.
-K J T 4 2           Q 8 6 5             A 9 3               7 
-K Q T 4             J 6 3               A 7 5 2             9 8 
-5 2                 K Q 6 3             A 9 7               J T 8 4 
-7 3                 9 4                 K Q T               A J 8 6 5 2 
+A K 6 2             8 7 5 4             T                   Q J 9 3 
+6 4                 J T 9 3 2           K 8 7               A Q 5 
+A Q 4               K J 2               T 7 6 3             9 8 5 
+K T 7 6             8                   Q 5 4 3 2           A J 9 
 
    6.
-K J T 4 2           7                   A 9 3               Q 8 6 5 
-K Q T 4             9 8                 A 7 5 2             J 6 3 
-5 2                 J T 8 4             A 9 7               K Q 6 3 
-7 3                 A J 8 6 5 2         K Q T               9 4 
+A K 6 2             Q J 9 3             T                   8 7 5 4 
+6 4                 A Q 5               K 8 7               J T 9 3 2 
+A Q 4               9 8 5               T 7 6 3             K J 2 
+K T 7 6             A J 9               Q 5 4 3 2           8 
 
    7.
-J T 8               A 7 3               K 9 6 5             Q 4 2 
-J 9 3               A 2                 7 5 4               K Q T 8 6 
-Q J 9 2             A K 5 4             T 7                 8 6 3 
-T 5 2               A 7 6 4             K J 8 3             Q 9 
+T 7 3               A 6                 K J 9 8 5           Q 4 2 
+8 5 4 2             A Q J 6 3           K 7                 T 9 
+K Q J 4             -                   9 7 5 2             A T 8 6 3 
+Q 8                 J T 9 7 6 3         5 2                 A K 4 
 
    8.
-J T 8               Q 4 2               K 9 6 5             A 7 3 
-J 9 3               K Q T 8 6           7 5 4               A 2 
-Q J 9 2             8 6 3               T 7                 A K 5 4 
-T 5 2               Q 9                 K J 8 3             A 7 6 4 
+T 7 3               Q 4 2               K J 9 8 5           A 6 
+8 5 4 2             T 9                 K 7                 A Q J 6 3 
+K Q J 4             A T 8 6 3           9 7 5 2             - 
+Q 8                 A K 4               5 2                 J T 9 7 6 3 
 
 Generated 8 hands
 Produced 8 hands
 Initial random seed 1
-Time needed    0.001 sec
+Time needed    0.000 sec
 -3s1 Descr.test_swapping
    1.
--                   7 4                 A J T 9 8           K Q 6 5 3 2 
-7 5 2               A K 8 4 3           Q J T 9 6           - 
-K Q J T 8 6 4 2     A 9 7               -                   5 3 
-Q 7                 8 6 4               K 3 2               A J T 9 5 
+Q 4 3               J 8 5 2             K 9                 A T 7 6 
+7 6 4 3             J 8 5               A T                 K Q 9 2 
+A K 3               8 4 2               Q J 9 7 5           T 6 
+Q 4 2               K 9 7               A 8 6 5             J T 3 
 
    2.
--                   K Q 6 5 3 2         A J T 9 8           7 4 
-7 5 2               -                   Q J T 9 6           A K 8 4 3 
-K Q J T 8 6 4 2     5 3                 -                   A 9 7 
-Q 7                 A J T 9 5           K 3 2               8 6 4 
+Q 4 3               A T 7 6             K 9                 J 8 5 2 
+7 6 4 3             K Q 9 2             A T                 J 8 5 
+A K 3               T 6                 Q J 9 7 5           8 4 2 
+Q 4 2               J T 3               A 8 6 5             K 9 7 
 
    3.
--                   K Q 6 5 3 2         7 4                 A J T 9 8 
-7 5 2               -                   A K 8 4 3           Q J T 9 6 
-K Q J T 8 6 4 2     5 3                 A 9 7               - 
-Q 7                 A J T 9 5           8 6 4               K 3 2 
+Q 4 3               A T 7 6             J 8 5 2             K 9 
+7 6 4 3             K Q 9 2             J 8 5               A T 
+A K 3               T 6                 8 4 2               Q J 9 7 5 
+Q 4 2               J T 3               K 9 7               A 8 6 5 
 
    4.
--                   7 4                 K Q 6 5 3 2         A J T 9 8 
-7 5 2               A K 8 4 3           -                   Q J T 9 6 
-K Q J T 8 6 4 2     A 9 7               5 3                 - 
-Q 7                 8 6 4               A J T 9 5           K 3 2 
+Q 4 3               J 8 5 2             A T 7 6             K 9 
+7 6 4 3             J 8 5               K Q 9 2             A T 
+A K 3               8 4 2               T 6                 Q J 9 7 5 
+Q 4 2               K 9 7               J T 3               A 8 6 5 
 
    5.
--                   A J T 9 8           K Q 6 5 3 2         7 4 
-7 5 2               Q J T 9 6           -                   A K 8 4 3 
-K Q J T 8 6 4 2     -                   5 3                 A 9 7 
-Q 7                 K 3 2               A J T 9 5           8 6 4 
+Q 4 3               K 9                 A T 7 6             J 8 5 2 
+7 6 4 3             A T                 K Q 9 2             J 8 5 
+A K 3               Q J 9 7 5           T 6                 8 4 2 
+Q 4 2               A 8 6 5             J T 3               K 9 7 
 
    6.
--                   A J T 9 8           7 4                 K Q 6 5 3 2 
-7 5 2               Q J T 9 6           A K 8 4 3           - 
-K Q J T 8 6 4 2     -                   A 9 7               5 3 
-Q 7                 K 3 2               8 6 4               A J T 9 5 
+Q 4 3               K 9                 J 8 5 2             A T 7 6 
+7 6 4 3             A T                 J 8 5               K Q 9 2 
+A K 3               Q J 9 7 5           8 4 2               T 6 
+Q 4 2               A 8 6 5             K 9 7               J T 3 
 
    7.
-9 7 2               K Q T 8 6 3         A 4                 J 5 
-K 8 2               Q 7 4 3             T 9 6 5             A J 
-5 2                 A J T               K 8 6               Q 9 7 4 3 
-Q 9 7 6 4           -                   J T 3 2             A K 8 5 
+K 8 6 5             A T 7 3             Q 2                 J 9 4 
+A 8 6 2             3                   J 9 4               K Q T 7 5 
+A J 2               K T 7 5 3           9 6 4               Q 8 
+9 7                 Q J 8               A T 5 3 2           K 6 4 
 
    8.
-9 7 2               J 5                 A 4                 K Q T 8 6 3 
-K 8 2               A J                 T 9 6 5             Q 7 4 3 
-5 2                 Q 9 7 4 3           K 8 6               A J T 
-Q 9 7 6 4           A K 8 5             J T 3 2             - 
+K 8 6 5             J 9 4               Q 2                 A T 7 3 
+A 8 6 2             K Q T 7 5           J 9 4               3 
+A J 2               Q 8                 9 6 4               K T 7 5 3 
+9 7                 K 6 4               A T 5 3 2           Q J 8 
 
 Generated 8 hands
 Produced 8 hands

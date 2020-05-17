@@ -7,14 +7,10 @@ extern "C" {
 #endif
 
 struct prngtable {
-	const unsigned char *table;
-	struct entry {
-		unsigned int idx;
-		unsigned int mask;
-	} entries[51];
+	unsigned int reject_limit;
 };
 
-extern const struct prngtable prnglookup;
+extern const struct prngtable prnglookup[];
 
 /* Watch out for double evaluation */
 /* The last element of row is read from next row */

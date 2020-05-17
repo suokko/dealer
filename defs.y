@@ -650,8 +650,6 @@ char *holding;
 #define TRUNCZ(x) ((x)<0?0:(x))
 
 extern int biasdeal[4][4];
-static char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
-
 
 int bias_len(int compass){
   return

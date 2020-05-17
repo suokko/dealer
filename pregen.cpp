@@ -13,6 +13,8 @@
 #include "pregen.h"
 #include "bittwiddle.h"
 
+#include "pcg-cpp/include/pcg_random.hpp"
+
 static uint64_t ncrtablegen[ncridx(52,14)];
 
 static uint64_t ncrgen(int n, int r)
@@ -70,106 +72,38 @@ static int doincludes(void)
 
 static int doprngtables(void)
 {
-	int64_t cards, pot, idx = 32; // Starts with pot table
-	const int64_t ratelimit = 64;
+	using rng_t = pcg32_fast;
+	rng_t::result_type cards;
 
 	struct entry {
-		unsigned mask;
-		unsigned idx;
+		unsigned reject_limit;
 
-		entry() : mask(0), idx(0)
+		entry() : reject_limit(0)
 		{}
 	};
 
 	struct entry results[52];
 
-	for (cards = 2; cards < 52; cards++) {
-		int64_t bestreminder = INT64_MAX;
-		int64_t bestrate = ratelimit - 1;
-		int64_t bestpot = 0;
-		if (((cards - 1) & cards) == 0)
-			continue;
-		for (pot = ratelimit; pot < (1LL << 56); pot <<= 1) {
-			if (cards > pot)
-				continue;
-			int64_t reminder = pot % cards;
-			int64_t missrate = pot / (reminder);
-			if (missrate > bestrate)
-				bestrate = missrate;
-			else
-				continue;
+	for (cards = 1; cards <= 52; cards++) {
 
-			if (reminder >= bestreminder)
-				break;
+		// calculate upper limit value to accept for uniform result
+		unsigned limit = -cards % cards;
 
-			bestreminder = reminder;
-			bestpot = pot;
-		}
-
-		results[cards - 2].mask = bestpot - 1;
-		results[cards - 2].idx = idx;
-		idx += bestpot;
-	}
-	// 52 cards remaining is common case so make it use larger table
-	results[cards - 2].mask = (1 << 13) - 1;
-	results[cards - 2].idx = idx;
-
-	// Print the lookup table
-	puts("static const unsigned char _prngtable[] = {");
-
-	char buffer[1024];
-	char *iter = buffer;
-	char termination[] = "\t255,255,255,255,255,255,255,255," // 8
-		"255,255,255,255,255,255,255,255," // 16
-		"255,255,255,255,255,255,255,255," // 24
-		"255,255,255,255,255,255,255,255," // 32
-		"255,255,255,255,255,255,255,255," // 40
-		"255,255,255,255,255,255,255,255," // 48
-		"255,255,255,255"; // 52
-
-	iter += sprintf(iter, "\t0,");
-	putchar('\t');
-	for (cards = 0; cards < 32; cards++) {
-		printf("%d,", (int)cards);
-	}
-	putchar('\n');
-
-	for (cards = 2; cards < 53; cards++) {
-
-		iter += sprintf(iter, "%" PRId64 ",", cards - 1);
-
-		if (results[cards - 2].mask == 0) {
-			results[cards - 2].mask = cards - 1;
-			continue;
-		}
-
-		unsigned count;
-
-		for (count = 0; count + cards <= results[cards - 2].mask; count += cards) {
-			puts(buffer);
-		}
-
-		count = results[cards - 2].mask - count + 1;
-
-		fwrite(termination, 1, count*4+1, stdout);
-		putchar('\n');
+		results[cards - 1].reject_limit = limit;
 	}
 
-	puts("};\n");
 	// print the headers
 
-	puts("const struct prngtable prnglookup = {\n"
-		"\t.table = _prngtable,\n"
-		"\t.entries = {");
-	for (cards = 2; cards < 53; cards++) {
-		unsigned mask = results[cards - 2].mask;
-		unsigned lidx = results[cards - 2].idx;
+	puts("const struct prngtable prnglookup[] = {\n");
+	printf("\t{.reject_limit = %u,}, // %u\n",
+			0u, cards = 0);
+	for (cards = 1; cards < 53; cards++) {
+		unsigned limit = results[cards - 1].reject_limit;
 
-		printf("\t\t{.idx = %u, // %" PRIu64"\n"
-			"\t\t.mask = %u,},\n",
-			lidx, cards, mask);
+		printf("\t{.reject_limit = %u,}, // %u\n",
+			limit, cards);
 	}
-	puts("\t}\n};");
+	puts("};\n");
 	return 0;
 }
 

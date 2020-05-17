@@ -3,23 +3,24 @@
 
 #include "card.h"
 #include "pointcount.h"
-#include "Random/SFMT.h"
+
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const char * const player_name[4];
-
+extern const char* const player_name[4];
+extern const char* const suit_name[4];
 
 /* Changes for cccc and quality */
 struct context {
-  struct board *pd;
+  union board *pd;
   struct handstat *ps ; /* Pointer to stats of current deal */
-} c;
+};
 
 
-int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);
+int suitlength (const union board *d, struct handstat *hsbase, int compass, int suit);
 
 struct handstat {
     int hs_points[(NSUITS + 1)*2];  /* 4321 HCP per suit or total */
@@ -29,9 +30,9 @@ struct handstat {
 } ;
 
 struct globals {
-    sfmt_t rngstate __attribute__  ((aligned (32)));;
     long seed;
     const char *initialpack;
+    struct shuffle* shuffle;
     int maxgenerate;
     int maxproduce;
     int nprod;
@@ -46,10 +47,10 @@ struct globals {
     struct stored_board *deallist;
     double average;
 
-    struct pack curpack;
-    struct board predealt;
-    struct board curboard;
+    union board predealt;
+    union board curboard;
     int16_t distrbitmaps[14];
+    uint16_t libtricks[5];
 
     struct treebase *decisiontree;
     struct action *actionlist;
@@ -68,21 +69,19 @@ enum { STAT_MODE, EXHAUST_MODE };
 
 extern const struct globals *gptr;
 
-struct handstat hs[4] ;
-
 int imps (int scorediff) __attribute__ ((pure));
 struct value score (int vuln, int suit, int level, int dbl, struct value tricks) __attribute__ ((pure));
 void error (const char* s) __attribute__ ((noreturn));
 void clearpointcount ();
 void clearpointcount_alt (int cin);
 void pointcount (int index, int value);
-void newpack (struct pack *d, const char *initialpack);
+void newpack (union pack *d, const char *initialpack);
 card make_card (char rankchar, char suitchar) __attribute__ ((pure));
 int make_contract (char suitchar, char trickchar, char dbl) __attribute__ ((pure));
-void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablecompass);
-void printdeal (const struct board *d);
-void printhands (int boardno, const struct board *dealp, int player, int nhands);
-void printew (const struct board *d);
+void fprintcompact (FILE * f, const union board *d, int ononeline, int disablecompass);
+void printdeal (const union board *d);
+void printhands (int boardno, const union board *dealp, int player, int nhands);
+void printew (const union board *d);
 
 struct value_array {
   int key[13];
@@ -104,7 +103,7 @@ struct value {
 
 typedef struct value (*evaltreeptr)(struct treebase *b);
 extern evaltreeptr evaltreefunc;
-typedef card (*hascardptr) (const struct board *d, int player, card onecard);
+typedef card (*hascardptr) (const union board *d, int player, card onecard);
 extern hascardptr hascard;
 
 static inline int getshapenumber (unsigned cl, unsigned di, unsigned ht)
@@ -146,7 +145,7 @@ int avx2_deal_main (struct globals *g);
 #endif
 
 #define suitlength DEFUN(suitlength)
-int suitlength (const struct board *d,
+int suitlength (const union board* d,
                 int compass,
                 int suit);
 

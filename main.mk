@@ -12,7 +12,7 @@ POD2MAN  ?= pod2man
 
 CFLAGS   ?=
 CPPFLAGS ?= -flto
-CXXFLAGS ?=
+CXXFLAGS ?= -faligned-new
 LDFLAGS  ?=
 DESTDIR  ?=
 

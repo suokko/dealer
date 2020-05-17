@@ -3,17 +3,17 @@
 5 % 3: 2
 5 == 3: 0
 Frequency rnd(10):
-    0	   10043
-    1	   10111
-    2	   10043
-    3	    9934
-    4	    9829
-    5	    9895
-    6	   10047
-    7	   10074
-    8	   10057
-    9	    9967
+    0	   10106
+    1	   10038
+    2	   10039
+    3	   10020
+    4	   10126
+    5	   10000
+    6	    9946
+    7	   10016
+    8	    9936
+    9	    9773
 Generated 100000 hands
 Produced 100000 hands
 Initial random seed 1
-Time needed    0.082 sec
+Time needed    0.070 sec

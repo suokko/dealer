@@ -19,7 +19,10 @@
 
 #include <errno.h>
 
-#include "Random/SFMT.h"
+#include "pcg-cpp/include/pcg_random.hpp"
+
+#include <random>
+#include <thread>
 
 static void usage(const char *name, int exitcode, const char *msg, ...)
 {
@@ -33,9 +36,9 @@ static void usage(const char *name, int exitcode, const char *msg, ...)
       "\t-o <file>\tSelect output file <stdout>\n"
       "\t-a <file>\tAppend output to the file\n"
       "\t-g <number>\tSet number of deals to generate <100>\n"
-      "\t-s <nr|nr,nr,>\tSet random the seed for random number generator. <current time>\n"
-      "\t\t\t%ld <= nr <= %ld or \"dev\" for /dev/urandom.\n"
-      "\t\t\tThe useful number of numbers is 1,2,5,9,17,33.\n"
+      "\t-s <nr|nr,nr>\tSet random the seed for random number generator. <current time>\n"
+      "\t\t\t%ld <= nr <= %ld or \"dev\" for std::random_device.\n"
+      "\t\t\tThe useful number of numbers is 1 or 2.\n"
       "\t-c <number>\tSet number of threads to use <a thread per core>\n"
       "\t-q\t\tBe quiet\n"
       "\t-v\t\tBe verbose\n",
@@ -148,9 +151,8 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
    * from the previous call
    */
   if (p->partial) {
-    char *end = memchr(p->partial, '\0', 256);
-    long len = end - p->partial;
-    memmove(buffer + len, buffer, (char *)memchr(buffer, '\0', 256) - buffer);
+    long len = strlen(p->partial);
+    memmove(buffer + len, buffer, strlen(buffer));
     memcpy(buffer, p->partial, len);
     free(p->partial);
     p->partial = NULL;
@@ -161,7 +163,7 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
     return;
   /*output written to file gen-0-1-52-20.txt*/
   if (strncmp(buffer, filenamestart, strlen(filenamestart)) == 0) {
-    const char * const outfile = buffer + strlen(filenamestart);
+    char * const outfile = buffer + strlen(filenamestart);
     strchr(outfile, '\n')[0] = '\0';
     if (verbosity >= 2) {
       fprintf(stderr, "%sRemoving '%s'\n", (linefeed ? "\n": ""), outfile);
@@ -174,7 +176,7 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
   /* Match the giblib line from the input */
   if (sscanf(buffer, "%ld %16s %16s %16s %16s:%20s",
         &deal, west, north, east, south, results) == 6) {
-    struct tagLibdeal libdeal = {{0},{0},0};
+    struct tagLibdeal libdeal = {{0},{0}};
     parsedeal(&libdeal, north, east, south, west, results, verbosity);
 
     /* Store dds result in 26 bytes. Actual libdeal struct has extra "valid"
@@ -190,7 +192,7 @@ static void parseLine(char *buffer, FILE *out, struct process *p, unsigned long 
 
     if (verbosity >= 1 &&
         (100 * generate / gen > 100 * (generate - 1) / gen ||
-         generate / 100 > (generate - 1) / 100)) { 
+         generate / 100 > (generate - 1) / 100)) {
       fprintf(stderr, "Completed %ld/%ld deals (%ld%%)\r",
           generate, gen, 100 * generate / gen);
       linefeed = 1;
@@ -220,16 +222,16 @@ static FILE *nonblockpopen(const char *cmd, const char *mode)
 }
 
 /* Setup command line and store state information for the sub process */
-static int makeprocess(struct process *p, unsigned long gen, unsigned long seed, int verbosity)
+static int makeprocess(struct process *p, unsigned long gen, unsigned seed, int verbosity)
 {
   char ddscmd[256];
   FILE *f;
 
   assert(p->f == NULL);
-  sprintf(ddscmd, "gen-%ld-%ld-52-20.txt", seed, gen);
+  sprintf(ddscmd, "gen-%u-%ld-52-20.txt", seed, gen);
   remove(ddscmd);
 
-  sprintf(ddscmd, "ddd -genseed=%ld -gen=%ld -gentricks=20", seed, gen);
+  sprintf(ddscmd, "ddd -genseed=%u -gen=%ld -gentricks=20", seed, gen);
 
   if (verbosity >= 2) {
     fprintf(stderr, "%sRunning '%s'\n", (linefeed ? "\n": ""), ddscmd);
@@ -263,20 +265,15 @@ int main(int argc, char * const argv[])
   char *output = NULL;
   char buffer[1024];
   unsigned long gen = 100;
-  long seed[33];
+  unsigned seed[2];
+  unsigned seedpos = 0;
   char c;
-  int mul = 0, seedpos = 0;
+  int mul = 0;
   FILE *out;
   int verbosity = 1, running = 0;
   struct timespec tp;
   char mode[] = "w";
-  sfmt_t sfmt;
-  int cores =
-#if defined(WIN32) || defined(__WIN32)
-    1;
-#else
-    sysconf (_SC_NPROCESSORS_CONF);
-#endif
+  int cores = std::thread::hardware_concurrency();
   unsigned long blocksize;
   struct process *process;
 
@@ -317,25 +314,12 @@ int main(int argc, char * const argv[])
         char *startptr = optarg;
         /* Read seed from /dev/urandom */
         if (strcmp("dev", optarg) == 0) {
-          FILE *dev = fopen("/dev/urandom", "r");
-          int r;
-          if (!dev) {
-            perror("opening /dev/urandom");
-            return 12;
-          }
-          do {
-            r = fread(seed, sizeof seed[0], sizeof seed/sizeof seed[0], dev);
-          } while (r != sizeof seed/sizeof seed[0] && errno == EINTR);
-
-          if (r != sizeof seed/sizeof seed[0]) {
-            perror("fread /dev/random");
-            return 13;
-          }
-          seedpos = sizeof seed/sizeof seed[0];
-          fclose(dev);
+          std::random_device dev;
+          for (seedpos = 0; seedpos < sizeof seed/sizeof seed[0]; seedpos++)
+            seed[seedpos] = dev();
           break;
         }
-        for (; seedpos < 33; seedpos++) {
+        for (; seedpos < sizeof seed/sizeof seed[0]; seedpos++) {
           char *endptr;
           unsigned long s;
           errno = 0;
@@ -358,6 +342,7 @@ int main(int argc, char * const argv[])
       break;
     case 'a':
       mode[0] = 'a';
+      /* fallthrough */
     case 'o':
       output = strdup(optarg);
       break;
@@ -366,7 +351,7 @@ int main(int argc, char * const argv[])
 
   freopen("/dev/null", "r", stdin);
 
-  process = alloca(sizeof(process[0])*cores);
+  process = static_cast<struct process*>(alloca(sizeof(process[0])*cores));
   memset(process, 0, sizeof(process[0])*cores);
 
   /* Calculate reasonable block sizes for the cpu configuration */
@@ -383,11 +368,16 @@ int main(int argc, char * const argv[])
   if (blocksize >= (1 << 20)/20)
     blocksize = (1 << 20)/20;
 
-  int i, pos = 0;
-  sfmt_init_by_array(&sfmt, (uint32_t*)&seed[0], (seedpos - 1)*(sizeof(seed[0])/sizeof(uint32_t)));
-  pos = sprintf(buffer, "%ld", seed[0]);
+  unsigned i, pos = 0;
+  pcg32_k2 rng;
+  if (seedpos < 2)
+    rng.seed(seed[0]);
+  else
+    rng.seed(seed);
+
+  pos = sprintf(buffer, "%u", seed[0]);
   for (i = 1; i < seedpos; i++)
-    pos += sprintf(&buffer[pos], ",%ld", seed[i]);
+    pos += sprintf(&buffer[pos], ",%u", seed[i]);
 
 
   if (verbosity >= 1)
@@ -416,7 +406,7 @@ int main(int argc, char * const argv[])
       if (b == 0)
         break;
 
-      if ((fd = makeprocess(&process[c], b, sfmt_genrand_uint64(&sfmt), verbosity)) < 0)
+      if ((fd = makeprocess(&process[c], b, rng(), verbosity)) < 0)
         return 20;
       running++;
 
@@ -457,7 +447,7 @@ int main(int argc, char * const argv[])
               unsigned long b = gen - scheduled > blocksize ?
                 blocksize : gen - scheduled;
 
-              if ((fd = makeprocess(&process[p], b, sfmt_genrand_uint64(&sfmt), verbosity)) < 0)
+              if ((fd = makeprocess(&process[p], b, rng(), verbosity)) < 0)
                 return 20;
 
               running++;

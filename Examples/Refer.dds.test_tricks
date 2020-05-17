@@ -1,97 +1,98 @@
-n .752.KQJT8642.Q7
-e 74.AK843.A97.864
-s AJT98.QJT96..K32
-w KQ6532..53.AJT95
-n 972.K82.52.Q9764
-e KQT863.Q743.AJT.
-s A4.T965.K86.JT32
-w J5.AJ.Q9743.AK85
-n KJT42.KQT4.52.73
-e Q865.J63.KQ63.94
-s A93.A752.A97.KQT
-w 7.98.JT84.AJ8652
-n JT8.J93.QJ92.T52
-e A73.A2.AK54.A764
-s K965.754.T7.KJ83
-w Q42.KQT86.863.Q9
-n Q3.K4.K9832.KQT9
-e AJT65.2.AJ5.AJ43
-s 972.T98765.74.75
-w K84.AQJ3.QT6.862
-n 64.QT96.82.AJ874
-e KQ73.85.954.KQ95
-s AJ52.A74.AJT763.
-w T98.KJ32.KQ.T632
-n QT32.52.Q85.AQ93
-e A98.A9864.AKJ6.7
-s 65.KJT7.T942.854
-w KJ74.Q3.73.KJT62
+n Q43.7643.AK3.Q42
+e J852.J85.842.K97
+s K9.AT.QJ975.A865
+w AT76.KQ92.T6.JT3
+n K865.A862.AJ2.97
+e AT73.3.KT753.QJ8
+s Q2.J94.964.AT532
+w J94.KQT75.Q8.K64
+n AK62.64.AQ4.KT76
+e 8754.JT932.KJ2.8
+s T.K87.T763.Q5432
+w QJ93.AQ5.985.AJ9
+n T73.8542.KQJ4.Q8
+e A6.AQJ63..JT9763
+s KJ985.K7.9752.52
+w Q42.T9.AT863.AK4
+n AQ3.853.K542.A93
+e K54.AT.QJ96.T642
+s J9876.QJ4.AT.Q87
+w T2.K9762.873.KJ5
+n T87.Q532.J9.7643
+e AKQ5.AT8.T8742.J
+s 962.9764.KQ6.K92
+w J43.KJ.A53.AQT85
+n KQJ7.T3.AQ.KQ742
+e 95.Q876.K7532.95
+s T32.AKJ92.JT9.J8
+w A864.54.864.AT63
 Frequency tricks n♣:
-    2	       1
-    3	       1
-    4	       1
-    5	       2
-    7	       2
+    1	       2
+    6	       2
+    8	       1
+    9	       1
+   10	       1
 Frequency tricks n♦:
-    3	       3
-    4	       1
+    2	       1
+    5	       2
     6	       1
+    7	       1
     8	       1
     9	       1
 Frequency tricks n♥:
-    2	       1
-    4	       3
-    6	       1
-    9	       1
-   12	       1
+    1	       1
+    3	       2
+    6	       3
+   10	       1
 Frequency tricks n♠:
     1	       1
-    2	       1
-    3	       2
     4	       1
-    7	       1
-   11	       1
+    5	       2
+    6	       1
+    8	       1
+   10	       1
 Frequency tricks nN:
-    1	       1
-    2	       1
-    3	       1
+    1	       2
     4	       2
-    9	       1
+    7	       1
+    8	       1
    10	       1
 Frequency tricks e♣:
+    3	       1
+    4	       1
+    5	       1
+    7	       2
+   11	       1
+   12	       1
+Frequency tricks e♦:
+    4	       1
+    5	       1
+    6	       1
+    7	       2
+    8	       1
+   11	       1
+Frequency tricks e♥:
+    3	       1
     6	       2
     7	       1
     8	       1
-    9	       1
    10	       1
-   11	       1
-Frequency tricks e♦:
-    3	       1
-    4	       1
-    7	       1
-    9	       2
-   10	       2
-Frequency tricks e♥:
-    1	       1
-    3	       1
-    4	       1
-    9	       3
-   11	       1
+   12	       1
 Frequency tricks e♠:
-    2	       1
-    6	       1
+    3	       1
+    5	       1
+    7	       2
     8	       1
-    9	       2
-   10	       1
+    9	       1
    12	       1
 Frequency tricks eN:
-    2	       1
-    4	       1
+    3	       1
+    5	       2
+    7	       1
     8	       1
-    9	       2
+   10	       1
    11	       1
-   12	       1
 Generated 7 hands
 Produced 7 hands
 Initial random seed 1
-Time needed   21.943 sec
+Time needed    7.400 sec

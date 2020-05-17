@@ -77,7 +77,9 @@ static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  3
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
                  1990, 2240, 2490, 2990, 3490, 3990};
 
-static const char * const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
+const char* const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
+
+
 const char * const player_name[] = { "North", "East", "South", "West" };
 
 /* Various handshapes can be asked for. For every shape the user is
@@ -244,7 +246,7 @@ struct rng {
 
 card make_card (char rankchar, char suitchar);
 
-void newpack (struct pack *d, const char *initialpack) {
+void newpack (union pack *d, const char *initialpack) {
   int suit, rank, place;
 
   place = 0;
@@ -367,7 +369,7 @@ int make_contract (char suitchar, char trickchar, char dbl) {
   return MAKECONTRACT (suit, trick) + (dbl == 'x' ? 64 : 0);
 }
 
-void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablecompass) {
+void fprintcompact (FILE * f, const union board *d, int ononeline, int disablecompass) {
   char pt[] = "nesw";
   int s, p, r;
   for (p = COMPASS_NORTH; p <= COMPASS_WEST; p++) {
@@ -383,7 +385,7 @@ void fprintcompact (FILE * f, const struct board *d, int ononeline, int disablec
   }
 }
 
-void printdeal (const struct board *d) {
+void printdeal (const union board *d) {
   int suit, player, rank, cards;
 
   printf ("%4d.\n", (gptr->nprod+1));
@@ -431,7 +433,7 @@ void predeal (int player, card onecard) {
     yyerror("More than 13 cards for one player");
 }
 
-void printhands (int boardno, const struct board *dealp, int player, int nhands) {
+void printhands (int boardno, const union board *dealp, int player, int nhands) {
   int i, suit, rank, cards;
 
   for (i = 0; i < nhands; i++)
@@ -466,7 +468,7 @@ int yywrap () {
   return 1;
 }
 
-void printew (const struct board*d) {
+void printew (const union board*d) {
   /* This function prints the east and west hands only (with west to the
      left of east), primarily intended for examples of auctions with 2
      players only.  HU.  */
@@ -545,7 +547,7 @@ static void cleanup_action () {
             continue;
           printf ("\n\n%s hands:\n\n\n\n", player_name[player]);
           for (i = 0; i < gptr->nprod; i += 4) {
-            struct board b[4];
+            union board b[4];
             int j;
             for (j = 0; j < 4 && j < gptr->nprod - i; j++)
               board_from_stored(&b[j], &gptr->deallist[i + j]);

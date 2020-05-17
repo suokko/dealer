@@ -17,17 +17,17 @@ namespace dds {
 static decltype(SetMaxThreads)* ddSetMaxThreads = NULL;
 static decltype(SolveBoard)* ddSolveBoard = NULL;
 static decltype(ErrorMessage)* ddErrorMessage = NULL;
-static int noSolve(const struct board *, int, int)
+static int noSolve(const union board *, int, int)
 {
 	return 0;
 }
 
-static void noSolveLead(const struct board *, int, int, card, char res[13])
+static void noSolveLead(const union board *, int, int, card, char res[13])
 {
 	std::memset(res, 0, sizeof(*res));
 }
 
-static void cardsToDeal(struct deal *dl, const struct board *d)
+static void cardsToDeal(struct deal *dl, const union board *d)
 {
 	unsigned h, s;
 	for (h = 0; h < 4; h++) {
@@ -37,7 +37,7 @@ static void cardsToDeal(struct deal *dl, const struct board *d)
 	}
 }
 
-static int Solve(const struct board *d, int declarer, int contract)
+static int Solve(const union board *d, int declarer, int contract)
 {
 	int r;
 	struct deal dl = {
@@ -67,7 +67,7 @@ static int Solve(const struct board *d, int declarer, int contract)
 	return 13 - futp.score[0];
 }
 
-static void SolveLead(const struct board *d, int declarer, int contract, card cards, char res[13])
+static void SolveLead(const union board *d, int declarer, int contract, card cards, char res[13])
 {
 	int r;
 	struct deal dl = {
@@ -133,13 +133,13 @@ static void loadLib()
 	}
 }
 
-static int loadSolve(const struct board *d, int declarer, int contract)
+static int loadSolve(const union board *d, int declarer, int contract)
 {
 	loadLib();
 	return solve(d, declarer, contract);
 }
 
-static void loadSolveLead(const struct board *d, int declarer, int contract, card cards, char res[13])
+static void loadSolveLead(const union board *d, int declarer, int contract, card cards, char res[13])
 {
 	loadLib();
 	solveLead(d, declarer, contract, cards, res);
@@ -147,5 +147,5 @@ static void loadSolveLead(const struct board *d, int declarer, int contract, car
 
 }
 
-int (*solve)(const struct board *d, int declarer, int contract) = dds::loadSolve;
-void (*solveLead)(const struct board *d, int declarer, int contract, card cards, char res[13]) = dds::loadSolveLead;
+int (*solve)(const union board *d, int declarer, int contract) = dds::loadSolve;
+void (*solveLead)(const union board *d, int declarer, int contract, card cards, char res[13]) = dds::loadSolveLead;

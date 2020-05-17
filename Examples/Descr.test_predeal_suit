@@ -3,4 +3,19 @@ predeal spades(north) == 5
 generate 100000
 
 action
-	frequency (spades(north),0,13)
+	frequency "NS" (spades(north),0,13),
+	frequency "NH" (hearts(north),0,13),
+	frequency "ND" (diamonds(north),0,13),
+	frequency "NC" (clubs(north),0,13),
+	frequency "ES" (spades(east),0,13),
+	frequency "EH" (hearts(east),0,13),
+	frequency "ED" (diamonds(east),0,13),
+	frequency "EC" (clubs(east),0,13),
+	frequency "SS" (spades(south),0,13),
+	frequency "SH" (hearts(south),0,13),
+	frequency "SD" (diamonds(south),0,13),
+	frequency "SC" (clubs(south),0,13),
+	frequency "WS" (spades(west),0,13),
+	frequency "WH" (hearts(west),0,13),
+	frequency "WD" (diamonds(west),0,13),
+	frequency "WC" (clubs(west),0,13),

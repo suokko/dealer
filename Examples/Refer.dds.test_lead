@@ -1,11 +1,12 @@
 Frequency lead:
          ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
-  10      1      0      1      2      0      0      0      2      2      8
-  11      2      2      2      1      3      3      3      1      1     18
+   9      0      0      0      1      0      0      0      1      1      3
+  10      1      0      1      1      1      1      1      1      1      8
+  11      2      2      2      1      2      2      2      1      1     15
   12      0      1      0      0      0      0      0      0      0      1
 Sum       3      3      3      3      3      3      3      3      3     27
 
-Generated 250244 hands
+Generated 659692 hands
 Produced 3 hands
 Initial random seed 1
-Time needed    0.394 sec
+Time needed    0.815 sec

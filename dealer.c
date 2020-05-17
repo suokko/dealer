@@ -9,21 +9,6 @@
 #include "pregen.h"
 #include "dds.h"
 
-#if defined(_MSC_VER) || defined(__WIN32) || defined(WIN32)
-  /* with VC++6, winsock2 declares ntohs and struct timeval */
-#ifdef _MSC_VER
-  #pragma warning (disable : 4115)
-#endif
-  #include <winsock2.h>
-  #include <fcntl.h>
-#ifdef _MSC_VER
-  #pragma warning (default : 4115)
-#endif
-#else
-  /* else we assume we can get ntohs/ntohl from netinet */
-  #include <netinet/in.h>
-#endif /* _MSC_VER */
-
 #include <getopt.h>
 
 #include "tree.h"
@@ -32,10 +17,9 @@
 #include "c4.h"
 #include "pbn.h"
 #include "genlib.h"
+#include "shuffle.h"
 
 #include "card.h"
-
-#include "Random/SFMT.h"
 
 #if __BMI2__
 #include <x86intrin.h>
@@ -43,11 +27,7 @@
 
 void yyerror (char *);
 
-#define TWO_TO_THE_13 (1<<13)
 #define DEFAULT_MODE STAT_MODE
-#define RANDBITS 13
-#define NRANDVALS (1<<RANDBITS)
-#define NRANDMASK (NRANDVALS-1)
 
 #ifdef MSDOS
   static const char * const crlf = "\r\n";
@@ -57,12 +37,7 @@ void yyerror (char *);
 
 /* Global variables */
 
-static int biastotal = 0;
-
-static const char * const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
-static hand dealtcardsmask;
-
-static int swapindex = 0;
+static struct handstat hs[4];
 
 /* Various handshapes can be asked for. For every shape the user is
    interested in a number is generated. In every distribution that fits that
@@ -70,16 +45,8 @@ static int swapindex = 0;
    This makes looking up a shape a small constant cost.
 */
 
-struct selected_prng {
-	const unsigned char *table;
-	unsigned int mask;
-        unsigned int end;
-};
-
-static struct selected_prng zero52;
-
 /* Function definitions */
-static int true_dd (const struct board *d, int l, int c); /* prototype */
+static int true_dd (const union board *d, int l, int c); /* prototype */
 
   /* Special variables for exhaustive mode
      Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
@@ -107,42 +74,6 @@ static int true_dd (const struct board *d, int l, int c); /* prototype */
 
 struct globals *gp;
 
-static inline uint16_t random16()
-{
-  if (gp->rngstate.idx == SFMT_N*sizeof(w128_t)/2) {
-    gp->rngstate.idx = 0;
-    sfmt_gen_rand_all(&gp->rngstate);
-  }
-  return gp->rngstate.u16state[gp->rngstate.idx++];
-}
-
-static inline uint32_t random32()
-{
-  uint32_t r1 = random16();
-  uint32_t r2 = random16();
-  return (r2 << 16) | r1;
-}
-
-static uint16_t uniform_random(uint16_t max) {
-  uint16_t rnd;
-  uint16_t val;
-  do {
-    val = random16();
-    rnd = val % max;
-  } while (max - rnd > UINT16_MAX - val);
-  return rnd;
-}
-
-static inline uint16_t uniform_random_table() {
-	uint16_t rnd;
-        unsigned mask = zero52.mask;
-        unsigned end = zero52.end;
-	do {
-		rnd = random16() & mask;
-	} while (rnd >= end);
-	return zero52.table[rnd];
-}
-
 static void initevalcontract () {
   int i, j, k;
   for (i = 0; i < 2; i++)
@@ -151,7 +82,7 @@ static void initevalcontract () {
         gp->results[i][j][k] = 0;
 }
 
-static int dd (const struct board *d, int l, int c) {
+static int dd (const union board *d, int l, int c) {
   /* results-cached version of dd() */
   /* the dd cache, and the gp->ngen it refers to */
   static int cached_ngen = -1;
@@ -171,7 +102,7 @@ static int dd (const struct board *d, int l, int c) {
   return cached_tricks[l][c];
 }
 
-static struct value lead_dd (const struct board *d, int l, int c) {
+static struct value lead_dd (const union board *d, int l, int c) {
   char res[13];
   struct value r;
   struct value_array *arr = mycalloc(1, sizeof(*arr));
@@ -195,18 +126,16 @@ static struct value lead_dd (const struct board *d, int l, int c) {
   return r;
 }
 
-struct tagLibdeal libdeal;
-
 static int get_tricks (int pn, int dn) {
-  int tk = libdeal.tricks[dn];
+  int tk = gp->libtricks[dn];
   int resu;
   resu = (pn ? (tk >> (4 * pn)) : tk) & 0x0F;
   return resu;
 }
 
-static int true_dd (const struct board *d, int l, int c) {
-  if (gp->loading && libdeal.valid) {
-    int resu = get_tricks ((l + 1) % 4, (c + 1) % 5);
+static int true_dd (const union board *d, int l, int c) {
+  if (gp->loading) {
+    int resu = get_tricks (l, c);
     /* This will get the number of tricks EW can get.  If the user wanted NS,
        we have to subtract 13 from that number. */
     return ((l == 0) || (l == 2)) ? 13 - resu : resu;
@@ -231,7 +160,7 @@ static int checkshape (int nr, struct shape *s)
   return r;
 }
 
-static card statichascard (const struct board *d, int player, card onecard) {
+static card statichascard (const union board *d, int player, card onecard) {
   return hand_has_card(d->hands[player], onecard);
 }
 
@@ -243,7 +172,7 @@ static card statichascard (const struct board *d, int player, card onecard) {
  * @param compass The player to calculate stats for
  * @param suit    The suit to calculate or 4 for complete hand
  */
-static int hcp (const struct board *d, struct handstat *hsbase, int compass, int suit)
+static int hcp (const union board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
       assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
@@ -262,7 +191,7 @@ static int hcp (const struct board *d, struct handstat *hsbase, int compass, int
       return hs->hs_points[suit*2+1];
 }
 
-static int control (const struct board *d, struct handstat *hsbase, int compass, int suit)
+static int control (const union board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
       assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
@@ -283,7 +212,7 @@ static int control (const struct board *d, struct handstat *hsbase, int compass,
 /**
  * Assume that popcnt is fast enough operation not needing caching.
  */
-static inline int staticsuitlength (const struct board *d,
+static inline int staticsuitlength (const union board* d,
         int compass,
         int suit)
 {
@@ -293,7 +222,7 @@ static inline int staticsuitlength (const struct board *d,
   return hand_count_cards(h);
 }
 
-int suitlength (const struct board *d,
+int suitlength (const union board* d,
         int compass,
         int suit)
 {
@@ -303,7 +232,7 @@ int suitlength (const struct board *d,
 /**
  * The nit position in shape bitmap for this board is calculated from length of suits.
  */
-static int distrbit (const struct board *d, struct handstat *hsbase, int compass)
+static int distrbit (const union board* d, struct handstat *hsbase, int compass)
 {
   assert(compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
   struct handstat *hs = &hsbase[compass];
@@ -316,7 +245,7 @@ static int distrbit (const struct board *d, struct handstat *hsbase, int compass
   }
   return hs->hs_bits[1];
 }
-static int loser (const struct board *d, struct handstat *hsbase, int compass, int suit)
+static int loser (const union board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
       assert ((suit >= SUIT_CLUB && suit <= SUIT_SPADE) || suit == 4);
@@ -367,294 +296,12 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
       return hs->hs_loser[suit*2+1];
 }
 
-static void setup_bias (void) {
-  int p, s;
-  char err[256];
-  int len[4] = {0}, lenset[4] = {0};
-  for (p = 0; p < 4; p++) {
-    int totset = 0;
-    int tot = 0;
-    for (s = 0; s < 4; s++) {
-      const int predealcnt = hand_count_cards(gp->predealt.hands[p] & suit_masks[s]);
-      if (gp->biasdeal[p][s] >= 0) {
-        if (predealcnt > gp->biasdeal[p][s]) {
-          sprintf(err, "More predeal cards than bias allows for %s in %s\n", player_name[p], suit_name[s]);
-          error(err);
-        }
-        len[s] += gp->biasdeal[p][s];
-        lenset[s]++;
-        tot += gp->biasdeal[p][s];
-        totset++;
-        biastotal += gp->biasdeal[p][s] - predealcnt;
-        /* Remove predealt cards from bias length */
-      } else {
-        len[s] += predealcnt;
-        tot += predealcnt;
-      }
-    }
-    if (tot > 13 || (totset == 4 && tot < 13)) {
-      sprintf(err, "%d cards predealt for %s in %d suits\n", tot, player_name[p], totset);
-      error(err);
-    }
-  }
-  for (s = 0; s < 4; s++) {
-    if (len[s] > 13 || (lenset[s] == 4 && len[s] < 13)) {
-      sprintf(err, "%d cards predealt to %s in %d hands\n", len[s], suit_name[s], lenset[s]);
-      error(err);
-    }
-  }
-}
-
-static card bias_pickcard(int start, int pos, hand mask) {
-  int i;
-  for (i = 0; i < start; i++) {
-    if (hand_has_card(mask, gp->curpack.c[i])) {
-      if (pos-- == 0)
-        break;
-    }
-  }
-  assert(i < start);
-  card temp = gp->curpack.c[start - 1];
-  gp->curpack.c[start - 1]  = gp->curpack.c[i];
-  gp->curpack.c[i] = temp;
-  return gp->curpack.c[start - 1];
-}
-
-static int biasfiltercounter;
-
-static void shuffle_bias(struct board *d) {
-  /* Set predealt cards */
-  int p, s;
-  *d = gp->predealt;
-  dealtcardsmask = 0;
-  for (p = 0; p < 4; p++)
-    dealtcardsmask |= gp->predealt.hands[p];
-  if (biastotal == 0)
-    return;
-  int totsuit[4] = {0}, totplayer[4] = {0};
-
-  biasfiltercounter = 5200 * 1000;
-
-  /* For each player and suit deal length bias cards */
-  int predealcnt = hand_count_cards(dealtcardsmask);
-  for (p = 0; p < 4; p++) {
-    for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-      const int dealt = hand_count_cards(gp->predealt.hands[p] & suit_masks[s]);
-      int bias = gp->biasdeal[p][s], b, left;
-      bias -= dealt;
-      if (bias <= 0)
-        continue;
-
-      totsuit[s] += bias;
-      totplayer[p] += bias;
-
-      hand suit = suit_masks[s] & ~dealtcardsmask;
-      left = hand_count_cards(suit);
-      for (b = 0; b < bias; b++) {
-        int pos = uniform_random(left--);
-        card c = bias_pickcard(52 - predealcnt++, pos, suit);
-        dealtcardsmask |= c;
-        gp->curboard.hands[p] |= c;
-      }
-    }
-  }
-}
-
-static int bias_filter(const struct pack *d, int pos, int idx, const int postoplayer[52]) {
-  if (biastotal == 0)
-    return 0;
-  if (biasfiltercounter-- == 0)
-    error("Bias filter called too many time for a single dealer. Likely impossible bias compination.\n");
-  const int player1 = postoplayer[pos];
-  const int suit1 = C_SUIT(d->c[idx]);
-  const int player2 = postoplayer[idx];
-  const int suit2 = C_SUIT(d->c[pos]);
-  return gp->biasdeal[player1][suit1] >= 0 || gp->biasdeal[player2][suit2] >= 0;
-}
-
-static void initprogram (const char *initialpack) {
-  int i = 0, p, j = 0;
-
-  struct pack temp;
-
+static void initprogram (void)
+{
   initpc();
 
   /* clear the handstat cache */
   memset(hs, -1, sizeof(hs));
-
-  newpack(&temp, initialpack);
-
-  setup_bias();
-
-  /* Move predealtcards to begin of pack */
-  hand predeal = 0;
-  for (p = 0; p < 4; p++)
-    predeal |= gp->predealt.hands[p];
-
-  const int predealcnt = hand_count_cards(predeal);
-  /* Move all matching cards to begin */
-  for (i = 0; i < 52; i++) {
-    if (hand_has_card(predeal, temp.c[i])) {
-      gp->curpack.c[51 - j] = temp.c[i];
-      j++;
-    } else {
-      gp->curpack.c[i - j] = temp.c[i];
-    }
-  }
-
-  /* Now initialize array zero52 with numbers 0..51 repeatedly. This whole
-     charade is just to prevent having to do divisions. */
-  j = 52 - biastotal - predealcnt;
-  assert(j >= 2);
-  zero52.table = prnglookup.table + prnglookup.entries[j - 2].idx;
-  zero52.mask = prnglookup.entries[j - 2].mask;
-  unsigned end = zero52.mask;
-  for (; zero52.table[end] == 0xff; end--);
-  zero52.end = end + 1;
-}
-
-static void swap2 (struct board *d, int p1, int p2) {
-  /* functions to assist "simulated" shuffling with player
-     swapping or loading from Ginsberg's library.dat -- AM990423 */
-  hand h;
-  h = d->hands[p1];
-  d->hands[p1] = d->hands[p2];
-  d->hands[p2] = h;
-}
-
-static FILE * find_library (const char *basename, const char *openopt) {
-  static const char *prefixes[] = { "", "./", "../", "../../", "c:/", "c:/data/",
-    "d:/myprojects/dealer/", "d:/arch/games/gib/", 0 };
-  int i;
-  char buf[256];
-  FILE *result = 0;
-  for (i = 0; prefixes[i]; ++i) {
-    strcpy (buf, prefixes[i]);
-    strcat (buf, basename);
-    result = fopen (buf, openopt);
-    if (result) break;
-  }
-  return result;
-}
-
-static int shuffle (struct board *d) {
-
-  if (gp->loading) {
-    static FILE *lib = 0;
-    if (!lib) {
-      lib = find_library ("library.dat", "rb");
-      if (!lib) {
-        fprintf (stderr, "Cannot find or open library file\n");
-        exit (-1);
-      }
-      fseek (lib, 26 * gp->loadindex, SEEK_SET);
-    }
-retry_read:
-    if (fread (&libdeal, 26, 1, lib)) {
-      int i, suit, rank, pn;
-      unsigned long su;
-      libdeal.valid = 1;
-      memset(d->hands,0,sizeof(d->hands));
-      for (i = 0; i <= 4; ++i) {
-        libdeal.tricks[i] = ntohs (libdeal.tricks[i]);
-      }
-      for (suit = 0; suit < 4; ++suit) {
-        su = libdeal.suits[suit];
-        su = ntohl (su);
-        for (rank = 0; rank < 13; ++rank) {
-          pn = su & 0x03;
-          su >>= 2;
-          d->hands[pn] = hand_add_card(d->hands[pn], MAKECARD(suit, 12 - rank));
-          if (hand_count_cards(d->hands[pn]) > 13) {
-            fprintf(stderr, "Deal %d is broken\n", gp->ngen);
-            fprintcompact(stderr, d, 1, 0);
-            libdeal.valid = 0;
-            gp->ngen++;
-            goto retry_read;
-          }
-        }
-      }
-      return 1;
-    } else {
-      libdeal.valid = 0;
-      return 0;
-    }
-  }
-
-  if (swapindex) {
-    switch (swapindex) {
-      case 1:
-        swap2 (d, 1, 3);
-        break;
-      case 2:
-        swap2 (d, 2, 3);
-        break;
-      case 3:
-        swap2 (d, 1, 2);
-        break;
-      case 4:
-        swap2 (d, 1, 3);
-        break;
-      case 5:
-        swap2 (d, 2, 3);
-        break;
-    }
-  } else {
-    /* Algorithm according to Knuth. For each card exchange with a random
-       other card. This is supposed to be the perfect shuffle algorithm.
-       It only depends on a valid random number generator.  */
-    shuffle_bias(d);
-    int dealtcnt = hand_count_cards(dealtcardsmask);
-    const int predealend = 52 - dealtcnt;
-    int p, i = 0;
-    if (biastotal > 0) {
-      int postoplayer[52];
-      for (p = 0; p < 4; p++) {
-        int playercnt = 13 - hand_count_cards(d->hands[p]) + i;
-        for (;i < playercnt; i++) {
-          postoplayer[i] = p;
-        }
-      }
-      assert(i == predealend);
-
-      for (i = 0; i < predealend; i++) {
-        int pos;
-        do {
-          pos = uniform_random_table();
-        } while (bias_filter(&gp->curpack, pos, i, postoplayer));
-        card t = gp->curpack.c[pos];
-        gp->curpack.c[pos] = gp->curpack.c[i];
-        gp->curpack.c[i] = t;
-      }
-
-    } else {
-      /* shuffle remaining cards */
-      for (i = 0; i < predealend; i++) {
-        int pos = uniform_random_table();
-        card t = gp->curpack.c[pos];
-        gp->curpack.c[pos] = gp->curpack.c[i];
-        gp->curpack.c[i] = t;
-      }
-    }
-    /* Assign remaining cards to a player */
-    i = 0;
-    int playerend = 0;
-    for (p = 0; p < 4; p++) {
-      playerend += 13 - hand_count_cards(d->hands[p]);
-      hand temp = d->hands[p];
-      for (; i < playerend; i++) {
-        card t = gp->curpack.c[i];
-        temp = hand_add_card(temp, t);
-      }
-      d->hands[p] = temp;
-    }
-  }
-  if (gp->swapping) {
-    ++swapindex;
-    if ((gp->swapping == 2 && swapindex > 1) || (gp->swapping == 3 && swapindex > 5))
-      swapindex = 0;
-  }
-  return 1;
 }
 
 /* Specific routines for EXHAUST_MODE */
@@ -684,7 +331,7 @@ static void exh_set_bit_values (int bit_pos, card onecard) {
   exh_card_at_bit[bit_pos] = onecard;
 }
 
-static void exh_map_cards (struct board *b) {
+static void exh_map_cards (union board *b) {
   int i;
   int bit_pos;
   hand predeal = 0;
@@ -794,7 +441,7 @@ static inline void exh_print_vector (struct handstat *hs) {
   exh_print_stats (hsp, hs_length);
 }
 
-static void exh_shuffle (unsigned vector, unsigned prevvect, struct board *b) {
+static void exh_shuffle (unsigned vector, unsigned prevvect, union board* b) {
   hand bitstoflip = 0;
 
   unsigned changed = vector ^ prevvect;
@@ -1178,11 +825,8 @@ static struct value evaltree (struct treebase *b) {
         r = evaltree(t->tr_leaf1);
         if (r.type != VAL_INT)
           error("Only int supported for RND");
-        double eval = r.intvalue;
-        unsigned random = random32();
-        double mul = eval * random;
-        double res = mul / (UINT_MAX + 1.0);
-        int rv = (int)(res);
+        unsigned random = DEFUN(random32)(gptr->shuffle, r.intvalue - 1);
+        int rv = (int)random;
         r.intvalue = rv;
         return r;
       }
@@ -1401,11 +1045,7 @@ int DEFUN(deal_main) (struct globals *g) {
   evaltreefunc = evaltree;
   hascard = statichascard;
 
-  /* The most suspect part of this program */
-  sfmt_init_gen_rand(&g->rngstate, g->seed);
-  g->rngstate.idx = SFMT_N * 8;
-
-  initprogram (g->initialpack);
+  initprogram ();
 
   setup_action ();
 
@@ -1414,9 +1054,10 @@ int DEFUN(deal_main) (struct globals *g) {
 
   switch (gp->computing_mode) {
     case STAT_MODE:
-      for (gp->ngen = gp->nprod = 0; gp->ngen < g->maxgenerate && gp->nprod < g->maxproduce; gp->ngen++) {
-        if (!shuffle (&g->curboard))
-          break;
+    {
+      g->shuffle = DEFUN(shuffle_factory)(g);
+      if (!g->shuffle) break;
+      while (!DEFUN(shuffle_next_hand) (g->shuffle, &g->curboard, g)) {
         if (interesting ()) {
           action ();
           gp->nprod++;
@@ -1427,7 +1068,9 @@ int DEFUN(deal_main) (struct globals *g) {
           }
         }
       }
+      DEFUN(shuffle_close)(g->shuffle);
       break;
+    }
     case EXHAUST_MODE:
       {
 
