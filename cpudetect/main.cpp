@@ -51,6 +51,10 @@ int main(void)
 	cur += sprintf(cur, "%sxop", sep);
 	sep = ", ";
 #endif
+#ifdef __BMI2__
+	cur += sprintf(cur, "%sbmi2", sep);
+	sep = ", ";
+#endif
 #ifdef __AVX2__
 	cur += sprintf(cur, "%savx2", sep);
 	sep = ", ";
@@ -81,7 +85,6 @@ int main(void)
 	if (cpu_supports(CPUSSE3)) {
 		cur += sprintf(cur, "%ssse3", sep);
 		sep = ", ";
-		sse3_test(55);
 	}
 	if (cpu_supports(CPUPOPCNT)) {
 		cur += sprintf(cur, "%spopcnt", sep);
@@ -95,12 +98,14 @@ int main(void)
 	if (cpu_supports(CPUSSE42)) {
 		cur += sprintf(cur, "%ssse4.2", sep);
 		sep = ", ";
-		sse4_test(55);
 	}
 	if (cpu_supports(CPUAVX)) {
 		cur += sprintf(cur, "%savx", sep);
 		sep = ", ";
-		avx_test(55);
+	}
+	if (cpu_supports(CPUBMI2)) {
+		cur += sprintf(cur, "%sbmi2", sep);
+		sep = ", ";
 	}
 /*	if (cpu_supports("xop")) {
 		cur += sprintf(cur, "%sxop", sep);
@@ -109,7 +114,6 @@ int main(void)
 	if (cpu_supports(CPUAVX2)) {
 		cur += sprintf(cur, "%savx2", sep);
 		sep = ", ";
-		avx2_test(55);
 	}
 #endif
 

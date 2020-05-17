@@ -16,7 +16,8 @@ enum cpufeatures {
 	CPUSSE41	= 0x040,
 	CPUSSE42	= 0x080,
 	CPUAVX		= 0x100,
-	CPUAVX2		= 0x200,
+	CPUBMI2		= 0x200,
+	CPUAVX2		= 0x400,
 };
 
 void cpu_init();

@@ -2,7 +2,21 @@
 #include <set>
 #include <string>
 #if defined(__i386__) || defined(__x86_64__)
-#include <cpuid.h>
+int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
+{
+	static unsigned max = 0;
+	if (op > max)
+		return -1;
+	asm ("\tcpuid\n"
+			: "=a" (a), "=b" (b), "=c"(c), "=d"(d)
+			: "0" (op), "2" (subop)
+			);
+
+	if (op == 0)
+		max = a;
+
+	return 0;
+}
 #endif
 
 typedef std::set<std::string> feature_set;
@@ -13,8 +27,17 @@ static void x86_cpu_init()
 {
 #if defined(__i386__) || defined(__x86_64__)
 	/* Fetch cpu features */
-	unsigned eax = 0, ebx = 0, ecx = 0, edx = 0, op = 1;
-	__get_cpuid(op, &eax, &ebx, &ecx, &edx);
+	unsigned eax = 0,
+			 ebx = 0,
+			 ecx = 0,
+			 edx = 0,
+			 op = 0,
+			 subop = 0;
+	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
+		return;
+	op = 1;
+	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
+		return;
 	/**
 	 * basic info
 	 */
@@ -138,7 +161,9 @@ static void x86_cpu_init()
 
 	/* Read more flags from op 7 */
 	op = 7;
-	__get_cpuid(op, &eax, &ebx, &ecx, &edx);
+	subop = 0;
+	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
+		return;
 
 	union extraflags {
 		uint32_t reg[4];
@@ -152,6 +177,9 @@ static void x86_cpu_init()
 			/* 4 */
 			uint32_t hle : 1;
 			uint32_t avx2 : 1;
+			uint32_t reserved2 : 1;
+			uint32_t smep : 1;
+			uint32_t bmi2 : 1;
 			/* rest not interesting yet */
 		} data;
 	};
@@ -162,6 +190,8 @@ static void x86_cpu_init()
 	flags.reg[2] = ecx;
 	flags.reg[3] = edx;
 
+	if (flags.data.bmi2)
+		features |= CPUBMI2;
 	if (flags.data.avx2)
 		features |= CPUAVX2;
 #endif
