@@ -170,7 +170,7 @@ struct value score (int vuln, int suit, int level, int dbl, struct value tricks)
   return tricks;
 }
 
-void error (char *s) {
+void error (const char* s) {
   fprintf (stderr, "%s%s", s, crlf);
   exit (10);
 }
