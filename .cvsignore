@@ -6,9 +6,9 @@ scan.c
 *.dll
 *.txt
 *~
-genlib
-genlib.cov
-genlib.prof
+dealergenlib
+dealergenlib.cov
+dealergenlib.prof
 dealer
 dealer.cov
 dealer.prof
@@ -20,3 +20,4 @@ tags
 etags
 build.mk
 cpudetect/cpudetect
+library.dat
