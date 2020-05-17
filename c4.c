@@ -6,15 +6,15 @@ It implements the cccc() and quality() functions.  Both quality and cccc
 use the algorithms described in _The Bridge World_, October 1982, with the
 single exception that the values are multiplied by 100 (so that we can use
 integers for them).  Thus, a minimum opening bid is about 1200, rather
-than 12.00 as expressed in the text.  
+than 12.00 as expressed in the text.
 
 In the original algorithm, everything was done with fractions.  Floating
 point rounding being what it is, I've decided to implement this instead as
-integer math, until the last step. 
+integer math, until the last step.
 
 As it happens, it is currently more convenient to use integers for the
 return value from these functions as well So for the moment, Rescale is
-basically a no-op. 
+basically a no-op.
 
 */
 
@@ -45,7 +45,7 @@ int eval_cccc (int seat) {
   int suit;
 
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; ++suit) {
-    int Length = suitlength(&gptr->curboard, hs, seat, suit);
+    int Length = suitlength(&gptr->curboard, seat, suit);
 
     int HasAce   = HAS_CARD2 (suit, RK_ACE);
     int HasKing  = HAS_CARD2 (suit, RK_KING);
@@ -118,7 +118,7 @@ int eval_cccc (int seat) {
 int suit_quality (int seat, int suit) {
   int Quality = 0;
 
-  int Length = suitlength(&gptr->curboard, hs, seat, suit);
+  int Length = suitlength(&gptr->curboard, seat, suit);
 
   int HasAce   = HAS_CARD2 (suit, RK_ACE);
   int HasKing  = HAS_CARD2 (suit, RK_KING);
@@ -138,7 +138,7 @@ int suit_quality (int seat, int suit) {
       HigherHonors++;
     }
 
-  /*KING*/ 
+  /*KING*/
   if (HasKing) {
       Quality += 3 * SuitFactor;
       HigherHonors++;

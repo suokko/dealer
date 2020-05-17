@@ -283,18 +283,21 @@ static int control (const struct board *d, struct handstat *hsbase, int compass,
 /**
  * Assume that popcnt is fast enough operation not needing caching.
  */
-static inline int staticsuitlength (const struct board *d, struct handstat *hsbase, int compass, int suit)
+static inline int staticsuitlength (const struct board *d,
+        int compass,
+        int suit)
 {
   assert (suit >= SUIT_CLUB && suit <= SUIT_SPADE);
   assert(compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
-  (void)hsbase;
   hand h = d->hands[compass] & suit_masks[suit];
   return hand_count_cards(h);
 }
 
-int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit)
+int suitlength (const struct board *d,
+        int compass,
+        int suit)
 {
-  return staticsuitlength(d, hsbase, compass, suit);
+  return staticsuitlength(d, compass, suit);
 }
 
 /**
@@ -307,9 +310,9 @@ static int distrbit (const struct board *d, struct handstat *hsbase, int compass
 
   if (hs->hs_bits[0] != gp->ngen) {
     hs->hs_bits[0] = gp->ngen;
-    hs->hs_bits[1] = getshapenumber(staticsuitlength(d, hsbase, compass, SUIT_CLUB),
-      staticsuitlength(d, hsbase, compass, SUIT_DIAMOND),
-      staticsuitlength(d, hsbase, compass, SUIT_HEART));
+    hs->hs_bits[1] = getshapenumber(staticsuitlength(d, compass, SUIT_CLUB),
+      staticsuitlength(d, compass, SUIT_DIAMOND),
+      staticsuitlength(d, compass, SUIT_HEART));
   }
   return hs->hs_bits[1];
 }
@@ -328,7 +331,7 @@ static int loser (const struct board *d, struct handstat *hsbase, int compass, i
           for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
             hs->hs_loser[4*2+1] += loser(d, hsbase, compass, suit);
         } else {
-          const int length = staticsuitlength(d, hsbase, compass, suit);
+          const int length = staticsuitlength(d, compass, suit);
           const hand h = d->hands[compass] & suit_masks[suit];
           int control = getpc(idxControlsInt, h);
           int winner = getpc(idxWinnersInt, h);
@@ -777,7 +780,7 @@ static inline void exh_print_vector (struct handstat *hs) {
   printf ("\n");
   hsp = hs + exh_player[0];
   for (s = SUIT_CLUB; s <= NSUITS; s++) {
-    hs_length[s] = staticsuitlength(&gp->curboard, hsp, exh_player[0], s);
+    hs_length[s] = staticsuitlength(&gp->curboard, exh_player[0], s);
     hcp(&gp->curboard, hsp, exh_player[0],  s);
     hcp(&gp->curboard, hsp, exh_player[1],  s);
   }
@@ -787,7 +790,7 @@ static inline void exh_print_vector (struct handstat *hs) {
   printf ("\n");
   hsp = hs + exh_player[1];
   for (s = SUIT_CLUB; s <= NSUITS; s++)
-    hs_length[s] = staticsuitlength(&gp->curboard, hsp, exh_player[1], s);
+    hs_length[s] = staticsuitlength(&gp->curboard, exh_player[1], s);
   exh_print_stats (hsp, hs_length);
 }
 
@@ -1029,7 +1032,7 @@ static struct value evaltree (struct treebase *b) {
       assert (t->tr_int1 >= SUIT_CLUB && t->tr_int1 <= SUIT_SPADE);
       assert (t->tr_int2 >= COMPASS_NORTH && t->tr_int2 <= COMPASS_WEST);
       {
-        r.intvalue = staticsuitlength(&gp->curboard, hs, t->tr_int2, t->tr_int1);
+        r.intvalue = staticsuitlength(&gp->curboard, t->tr_int2, t->tr_int1);
         r.type = VAL_INT;
         return r;
       }

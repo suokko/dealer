@@ -147,7 +147,9 @@ int avx2_deal_main (struct globals *g);
 #endif
 
 #define suitlength DEFUN(suitlength)
-int suitlength (const struct board *d, struct handstat *hsbase, int compass, int suit);
+int suitlength (const struct board *d,
+                int compass,
+                int suit);
 
 #ifdef __cplusplus
 }
