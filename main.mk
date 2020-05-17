@@ -57,7 +57,7 @@ endif
 #Disable inlining for coverage reports
 COVFLAGS := -fno-inline-small-functions -fno-indirect-inlining -fno-partial-inlining --coverage
 DCFLAGS   := -std=gnu11 $(CFLAGS)
-DCPPFLAGS := -MP -MD -Wall -Wextra -g $(CPPFLAGS) 
+DCPPFLAGS := -MP -MMD -Wall -Wextra -g $(CPPFLAGS)
 DCXXFLAGS := -std=c++11 $(CXXFLAGS)
 DLDFLAGS  := $(LDFLAGS)
 
