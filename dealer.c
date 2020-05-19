@@ -48,30 +48,6 @@ static struct handstat hs[4];
 /* Function definitions */
 static int true_dd (const union board *d, int l, int c); /* prototype */
 
-  /* Special variables for exhaustive mode
-     Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
-  static unsigned exh_vectordeal;
-  static unsigned exh_vect_length;
-  /* a exh_vectordeal is a binary *word* of at most 26 bits: there are at most
-     26 cards to deal between two players.  Each card to deal will be
-     affected to a given position in the vector.  Example : we need to deal
-     the 26 minor cards between north and south (what a double fit !!!)
-     Then those cards will be represented in a binary vector as shown below:
-          Card    : DA DK ... D2 CA CK ... C4 C3 C2
-          Bit-Pos : 25 24     13 12 11      2  1  0
-     The two players will be respectively represented by the bit values 0 and
-     1. Let's say north gets the 0, and south the 1. Then the vector
-     11001100000001111111110000 represents the following hands :
-          North: D QJ8765432 C 5432
-          South: D AKT9      C AKQJT9876
-     A suitable exh_vectordeal is a vector deal with hamming weight equal to 13.
-     For computing those vectors, we use a straightforward
-     meet in the middle approach.  */
-  static card exh_card_at_bit[26];
-  /* exh_card_at_bit[i] is the card pointed by the bit #i */
-  static unsigned char exh_player[2];
-  /* the two players that have unknown cards */
-
 struct globals *gp;
 
 static void initevalcontract () {
@@ -306,7 +282,7 @@ static void initprogram (void)
 
 /* Specific routines for EXHAUST_MODE */
 
-static void exh_get2players (void) {
+static void exh_get2players (unsigned exh_player[2]) {
   /* Just finds who are the 2 players for whom we make exhaustive dealing */
   int player, player_bit;
   for (player = COMPASS_NORTH, player_bit = 0; player<=COMPASS_WEST; player++) {
@@ -327,16 +303,19 @@ static void exh_get2players (void) {
   }
 }
 
-static void exh_set_bit_values (int bit_pos, card onecard) {
-  exh_card_at_bit[bit_pos] = onecard;
-}
-
-static void exh_map_cards (union board *b) {
+static unsigned exh_map_cards (union board* b,
+    unsigned exh_player[2],
+    unsigned* exh_vect_length,
+    card *exh_card_at_bit) {
   int i;
   int bit_pos;
   hand predeal = 0;
   hand p1 = 0;
   hand p0 = 0;
+  unsigned exh_vectordeal = 0;
+#if __BMI2__
+  hand allbits = 0;
+#endif
 
   for (i = 0; i < 4; i++) {
     predeal |= gp->predealt.hands[i];
@@ -349,40 +328,42 @@ static void exh_map_cards (union board *b) {
     // remove lowest set bit
     hand next_shuffle = (shuffle - 1) & shuffle;
     // Isolate the changed card
-    card c = next_shuffle ^ shuffle;
+    card onecard = next_shuffle ^ shuffle;
     shuffle = next_shuffle;
-    exh_set_bit_values (bit_pos, c);
+#if __BMI2__
+    allbits |= onecard;
+#else
+    exh_card_at_bit[bit_pos] = onecard;
+#endif
     bit_pos++;
   }
 
   int p1cnt = 13 - hand_count_cards(gp->predealt.hands[exh_player[1]]);
 
-  exh_vect_length = bit_pos;
+  *exh_vect_length = bit_pos;
   /* Set N lower bits that will be moved to high bits */
-  for (i = 1; i < p1cnt; i++) {
-    exh_vectordeal |= 1 << i;
-    p1 |= exh_card_at_bit[i];
-  }
-  for (i = 0; i < bit_pos - p1cnt; i++)
-    p0 |= exh_card_at_bit[i + p1cnt];
-  /* Lowest bit goes to wrong hand so first shuffle can flip it. */
-  if (p1cnt > 0) {
-    exh_vectordeal |= 1 << 0;
-    p0 |= exh_card_at_bit[0];
-  } else {
-    p1 |= exh_card_at_bit[0];
-  }
+  exh_vectordeal = (1u << p1cnt) - 1;
 
-  assert(hand_count_cards(((p1 | b->hands[exh_player[1]])) ^ exh_card_at_bit[0]) == 13);
-  assert(hand_count_cards(((p0 | b->hands[exh_player[0]])) ^ exh_card_at_bit[0]) == 13);
+  // Map cards to hands
+#if __BMI2__
+  exh_card_at_bit[0] = allbits;
+
+  p1 = _pdep_u64(exh_vectordeal, allbits);
+  unsigned mask = (1u << bit_pos) - 1;
+  p0 = _pdep_u64(~exh_vectordeal & mask, allbits);
+#else
+  for (i = 0; i < p1cnt; i++)
+    p1 |= exh_card_at_bit[i];
+  for (; i < bit_pos; i++)
+    p0 |= exh_card_at_bit[i];
+#endif
+
+  assert(hand_count_cards(p0 | b->hands[exh_player[0]]) == 13);
+  assert(hand_count_cards(p1 | b->hands[exh_player[1]]) == 13);
   b->hands[exh_player[0]] |= p0;
   b->hands[exh_player[1]] |= p1;
-#if __BMI2__
-  card allbits = 0;
-  for (i = 0; i < bit_pos; ++i)
-    allbits |= exh_card_at_bit[i];
-  exh_card_at_bit[0] = allbits;
-#endif
+
+  return exh_vectordeal;
 }
 
 static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
@@ -394,9 +375,12 @@ static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   printf ("  Totalpoints: %2d\n", hs->hs_points[s*2+1]);
 }
 
-static inline void exh_print_cards (hand vector)
+static inline void exh_print_cards (hand vector,
+    unsigned exh_vect_length,
+    card *exh_card_at_bit)
 {
 #if __BMI2__
+  (void)exh_vect_length;
   hand hand = _pdep_u64(vector, exh_card_at_bit[0]);
   while (hand) {
     card c = hand_extract_card(hand);
@@ -405,7 +389,7 @@ static inline void exh_print_cards (hand vector)
   }
 #else
   for (unsigned i = 0; i < exh_vect_length; i++) {
-    if ((1 & (vector >> i))) {
+    if (vector & (1u << i)) {
       card onecard = exh_card_at_bit[i];
       printcard(onecard);
     }
@@ -413,64 +397,42 @@ static inline void exh_print_cards (hand vector)
 #endif
 }
 
-static inline void exh_print_vector (struct handstat *hs) {
+static inline void exh_print_vector (struct handstat *hs,
+    unsigned exh_player[2],
+    unsigned exh_vectordeal,
+    unsigned exh_vect_length,
+    card *exh_card_at_bit)
+{
   int s;
-  struct handstat *hsp;
   int hs_length[4];
 
-  hand mask = 1;
-  mask <<= exh_vect_length;
-  mask--;
+  hand mask = (1u << exh_vect_length) - 1;
 
   printf ("Player %d: ", exh_player[0]);
-  exh_print_cards(~exh_vectordeal & mask);
+  exh_print_cards(~exh_vectordeal & mask, exh_vect_length, exh_card_at_bit);
   printf ("\n");
-  hsp = hs + exh_player[0];
-  for (s = SUIT_CLUB; s <= NSUITS; s++) {
+  for (s = SUIT_CLUB; s < NSUITS; s++) {
     hs_length[s] = staticsuitlength(&gp->curboard, exh_player[0], s);
-    hcp(&gp->curboard, hsp, exh_player[0],  s);
-    hcp(&gp->curboard, hsp, exh_player[1],  s);
+    hcp(&gp->curboard, hs, exh_player[0],  s);
+    hcp(&gp->curboard, hs, exh_player[1],  s);
   }
-  exh_print_stats (hsp, hs_length);
+  exh_print_stats (hs + exh_player[0], hs_length);
   printf ("Player %d: ", exh_player[1]);
-  exh_print_cards(exh_vectordeal);
+  exh_print_cards(exh_vectordeal, exh_vect_length, exh_card_at_bit);
   printf ("\n");
-  hsp = hs + exh_player[1];
-  for (s = SUIT_CLUB; s <= NSUITS; s++)
+  for (s = SUIT_CLUB; s < NSUITS; s++)
     hs_length[s] = staticsuitlength(&gp->curboard, exh_player[1], s);
-  exh_print_stats (hsp, hs_length);
+  exh_print_stats (hs + exh_player[1], hs_length);
 }
 
-static void exh_shuffle (unsigned vector, unsigned prevvect, union board* b) {
-  hand bitstoflip = 0;
-
-  unsigned changed = vector ^ prevvect;
-
-#if __BMI2__
-  bitstoflip = _pdep_u64(changed, exh_card_at_bit[0]);
-#else
-  do {
-    int last = __builtin_ctz(changed);
-    bitstoflip |= exh_card_at_bit[last];
-    changed &= changed - 1;
-  } while (changed);
-#endif
-
-  b->hands[exh_player[0]] ^= bitstoflip;
-  b->hands[exh_player[1]] ^= bitstoflip;
-
-  assert(hand_count_cards(b->hands[exh_player[0]]) == 13);
-  assert(hand_count_cards(b->hands[exh_player[1]]) == 13);
-}
-
-static int bitpermutate(int vector)
+static unsigned bitpermutate(unsigned vector)
 {
   /* set all lowest zeros to one */
-  int bottomones = vector | (vector - 1);
+  unsigned bottomones = vector | (vector - 1);
   /* Set the lowest zero bit in original */
-  int nextvector = bottomones + 1;
+  unsigned nextvector = bottomones + 1;
   /* flip bits */
-  int moveback = ~bottomones;
+  unsigned moveback = ~bottomones;
   /* select the lowest zero bit in bottomones */
   moveback &= 0 - moveback;
   /* set to ones all low bits that are ones in bottomones */
@@ -482,6 +444,31 @@ static int bitpermutate(int vector)
   moveback >>= __builtin_ctz(vector) + 1;
   /* combine the result vector to get next permutation */
   return nextvector | moveback;
+}
+
+static unsigned exh_shuffle (union board* b,
+    unsigned exh_player[2],
+    unsigned prevvect,
+    card *exh_card_at_bit) {
+  hand bitstoflip = 0;
+
+  unsigned exh_vectordeal = bitpermutate(prevvect);
+  unsigned changed = exh_vectordeal ^ prevvect;
+
+#if __BMI2__
+  bitstoflip = _pdep_u64(changed, exh_card_at_bit[0]);
+#else
+  do {
+    unsigned last = __builtin_ctz(changed);
+    bitstoflip |= exh_card_at_bit[last];
+    changed &= changed - 1;
+  } while (changed);
+#endif
+
+  b->hands[exh_player[0]] ^= bitstoflip;
+  b->hands[exh_player[1]] ^= bitstoflip;
+
+  return exh_vectordeal;
 }
 
 /* End of Specific routines for EXHAUST_MODE */
@@ -1073,17 +1060,47 @@ int DEFUN(deal_main) (struct globals *g) {
     }
     case EXHAUST_MODE:
       {
+        /* Special variables for exhaustive mode
+           Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
 
-        exh_get2players ();
-        exh_map_cards (&g->curboard);
-        unsigned prevvect = exh_vectordeal ^ 1;
-        for (; exh_vectordeal < (1u << exh_vect_length);
-                exh_vectordeal = bitpermutate(exh_vectordeal)) {
+        /* the two players that have unknown cards */
+        unsigned exh_player[2];
+        exh_get2players (exh_player);
+
+#if __BMI2__
+        /* bit mask for all shuffled cards */
+        hand exh_card_at_bit[1];
+#else
+        /* exh_card_at_bit[i] is the card pointed by the bit #i */
+        card exh_card_at_bit[26];
+#endif
+        unsigned exh_vect_length;
+        /* a exh_vectordeal is a binary *word* of at most 26 bits: there are at most
+           26 cards to deal between two players.  Each card to deal will be
+           affected to a given position in the vector.  Example : we need to deal
+           the 26 minor cards between north and south (what a double fit !!!)
+           Then those cards will be represented in a binary vector as shown below:
+                Card    : DA DK ... D2 CA CK ... C4 C3 C2
+                Bit-Pos : 25 24     13 12 11      2  1  0
+           The two players will be respectively represented by the bit values 0 and
+           1. Let's say north gets the 0, and south the 1. Then the vector
+           11001100000001111111110000 represents the following hands :
+                North: D QJ8765432 C 5432
+                South: D AKT9      C AKQJT9876
+           A suitable exh_vectordeal is a vector deal with hamming weight equal to 13.
+           For computing those vectors, we use a straightforward
+           meet in the middle approach.  */
+        unsigned exh_vectordeal = exh_map_cards (&g->curboard, exh_player, &exh_vect_length, exh_card_at_bit);
+        unsigned end = 1u << exh_vect_length;
+        for (; exh_vectordeal < end;
+            exh_vectordeal = exh_shuffle(&g->curboard, exh_player, exh_vectordeal, exh_card_at_bit)) {
+
+          assert(hand_count_cards(g->curboard.hands[exh_player[0]]) == 13);
+          assert(hand_count_cards(g->curboard.hands[exh_player[1]]) == 13);
+
           gp->ngen++;
-          exh_shuffle (exh_vectordeal, prevvect, &g->curboard);
-          prevvect = exh_vectordeal;
           if (interesting ()) {
-            /*  exh_print_vector(hs); */
+            /*  exh_print_vector(hs, exh_player, exh_vectordeal, exh_vect_length); */
             action ();
             gp->nprod++;
           }
