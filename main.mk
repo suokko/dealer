@@ -11,8 +11,8 @@ INSTALL	 ?= install
 POD2MAN  ?= pod2man
 
 CFLAGS   ?=
-CPPFLAGS ?= -flto
-CXXFLAGS ?= -faligned-new
+CPPFLAGS ?=
+CXXFLAGS ?=
 LDFLAGS  ?=
 DESTDIR  ?=
 
@@ -31,19 +31,11 @@ COMPILER:=unknown
 endif
 endif
 
-ifeq ($(OS),Windows_NT)
-    ifeq ($(utf8),yes)
-        CPPFLAGS += -DUTF8_SUPPORTED
-    endif
-else
-    CPPFLAGS += -DUTF8_SUPPORTED
-endif
-
 RELEASEFLAGS := -DNDEBUG
 ifeq (gcc,$(COMPILER))
-OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model
+OPTFLAGS := -O2 -ftree-vectorize -fvect-cost-model -flto=jobserver
 else
-OPTFLAGS := -O2 -ftree-vectorize
+OPTFLAGS := -O2 -ftree-vectorize -flto=jobserver
 endif
 PROFFLAGS := -fprofile-generate
 ifeq ($(filter release,$(MAKECMDGOALS)),release)
@@ -58,8 +50,17 @@ endif
 COVFLAGS := -fno-inline-small-functions -fno-indirect-inlining -fno-partial-inlining --coverage
 DCFLAGS   := -std=gnu11 $(CFLAGS)
 DCPPFLAGS := -MP -MMD -Wall -Wextra -g $(CPPFLAGS)
-DCXXFLAGS := -std=c++11 $(CXXFLAGS)
+DCXXFLAGS := -std=c++11 -faligned-new $(CXXFLAGS)
 DLDFLAGS  := $(LDFLAGS)
+
+ifeq ($(OS),Windows_NT)
+    ifeq ($(utf8),yes)
+        DCPPFLAGS += -DUTF8_SUPPORTED
+    endif
+else
+    DCPPFLAGS += -DUTF8_SUPPORTED
+endif
+
 
 prefix	?=/usr/local
 bindir	?=$(prefix)/bin
