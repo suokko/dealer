@@ -21,8 +21,6 @@ typedef card hand;
 
 union board {
 	hand hands[4];
-	__m256i vec256;
-	__m128i vec128[2];
 };
 
 /* First hand tells if card is NS or EW, second hand tells which one from partnership */
@@ -33,8 +31,6 @@ struct stored_board {
 /* pack for shuffling */
 union pack {
 	card c[52];
-	__m256i vec256[13];
-	__m128i vec128[26];
 };
 
 /* Suit numbering */

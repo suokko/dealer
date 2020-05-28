@@ -190,32 +190,13 @@ void random_hand::build_hands(board* d, unsigned cards_per_player)
 
     // Make hands from pack using order which is easy to vectorize
 
-#if __AVX2__
-    board temp;
-    temp.vec256 = pack_.vec256[cards_per_player - 1];
-#elif __SSE2__
-    board temp;
-    temp.vec128[0] = pack_.vec128[cards_per_player*2 - 2];
-    temp.vec128[1] = pack_.vec128[cards_per_player*2 - 1];
-#else
     board temp{0,0,0,0};
-#endif
-#if __AVX2__
-    for (unsigned c = cards_per_player - 1; c-- > 0;) {
-        temp.vec256 = _mm256_or_si256(temp.vec256, pack_.vec256[c]);
-#elif __SSE2__
-    for (unsigned c = cards_per_player - 1; c-- > 0;) {
-        __m128i *in = &pack_.vec128[(c+1)*2];
-        temp.vec128[0] = _mm_or_si128(temp.vec128[0], in[-2]);
-        temp.vec128[1] = _mm_or_si128(temp.vec128[1], in[-1]);
-#else
     for (unsigned c = 0; c < cards_per_player; c++) {
         card *in = &pack_.c[c*4];
         temp.hands[0] = hand_add_card(temp.hands[0], in[0]);
         temp.hands[1] = hand_add_card(temp.hands[1], in[1]);
         temp.hands[2] = hand_add_card(temp.hands[2], in[2]);
         temp.hands[3] = hand_add_card(temp.hands[3], in[3]);
-#endif
     }
 
     *d = temp;
