@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 extern const char* const player_name[4];
-extern const char* const suit_name[4];
+extern const char* const suit_name[5];
 
 /* Changes for cccc and quality */
 struct context {

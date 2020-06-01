@@ -77,7 +77,7 @@ static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  3
                   410,  490,  590,  740,  890, 1090, 1190, 1490, 1740,
                  1990, 2240, 2490, 2990, 3490, 3990};
 
-const char* const suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
+const char* const suit_name[] = {"Club", "Diamond", "Heart", "Spade", "Notrump"};
 
 
 const char * const player_name[] = { "North", "East", "South", "West" };

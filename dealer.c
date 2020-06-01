@@ -85,6 +85,14 @@ static struct value lead_dd (const union board *d, int l, int c) {
   unsigned idx, fill = 0;
   memset(res, -1, sizeof(res));
   card hand = gptr->predealt.hands[(l+1) % 4];
+  if (hand_count_cards(hand) != 13) {
+    char errmsg[512];
+    snprintf(errmsg, sizeof(errmsg),
+        "Opening lead hand (%s) doesn't have 13 cards defined with predeal when calling leadtricks(%s, %s).\n"
+        "Compass parameter to leadtriks function is the declarer of hand like tricks function.\n",
+        player_name[(l+1) % 4], player_name[l], suit_name[c]);
+    error(errmsg);
+  }
   solveLead(d, l, c, hand, res);
   for (idx = 0; idx < sizeof(res); idx++) {
     card c = hand_extract_card(hand);
