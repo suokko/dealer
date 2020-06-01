@@ -1,0 +1,22 @@
+predeal south SAQ4, HJ, DKJ6543, C632
+
+eastbal = shape(east, any 4333 + any 4432 + any 5422 + any 6322
+		- 6xxx - x6xx - 5xxx - x5xx + any 5332 - x2xx - x3xx)
+
+easthcp = hcp(east) > 19 && hcp(east) < 23
+
+westcards = hearts(west) == 4 && spades(west) < 7 &&
+	clubs(west) < 7 && diamonds(west) < 7 && hcp(west) > 3
+
+northlead = clubs(north) > 4 && top5(north, clubs) > 2
+
+lead = leadtricks(south, hearts)
+
+condition
+	eastbal && easthcp && westcards && northlead
+
+
+produce 3
+
+action
+	frequency "lead" (lead,0,13),

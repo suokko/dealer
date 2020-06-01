@@ -1,0 +1,3 @@
+Opening lead hand (West) doesn't have 13 cards defined with predeal when calling leadtricks(South, Heart).
+Compass parameter to leadtriks function is the declarer of hand like tricks function.
+
