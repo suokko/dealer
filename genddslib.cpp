@@ -221,6 +221,8 @@ static FILE *nonblockpopen(const char *cmd, const char *mode)
   return r;
 }
 
+static const char* command = "ddd";
+
 /* Setup command line and store state information for the sub process */
 static int makeprocess(struct process *p, unsigned long gen, unsigned seed, int verbosity)
 {
@@ -231,7 +233,7 @@ static int makeprocess(struct process *p, unsigned long gen, unsigned seed, int 
   sprintf(ddscmd, "gen-%u-%ld-52-20.txt", seed, gen);
   remove(ddscmd);
 
-  sprintf(ddscmd, "ddd -genseed=%u -gen=%ld -gentricks=20", seed, gen);
+  sprintf(ddscmd, "%s -genseed=%u -gen=%ld -gentricks=20", command, seed, gen);
 
   if (verbosity >= 2) {
     fprintf(stderr, "%sRunning '%s'\n", (linefeed ? "\n": ""), ddscmd);
@@ -348,8 +350,28 @@ int main(int argc, char * const argv[])
       break;
     }
   }
+#if _WIN32
+  const char* nulldev = "nul";
+#else
+  const char* nulldev = "/dev/null";
+#endif
 
-  freopen("/dev/null", "r", stdin);
+  // Try ddd
+  char cmd[256];
+  sprintf(cmd, "%s > %s", command, nulldev);
+  if (system(cmd)) {
+    command = "./ddd";
+    sprintf(cmd, "%s > %s", command, nulldev);
+    if (system(cmd)) {
+      perror("Cannot find ddd binary for popen call.");
+      return -1;
+    }
+  }
+
+  if (!freopen(nulldev, "r", stdin)) {
+    perror("freopen null device failed");
+    return -2;
+  }
 
   process = static_cast<struct process*>(alloca(sizeof(process[0])*cores));
   memset(process, 0, sizeof(process[0])*cores);

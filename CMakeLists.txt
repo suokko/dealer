@@ -75,6 +75,19 @@ include(CheckCCompilerFlag)
 include(coverage)
 include(pod2man)
 
+# Check that there is a working std::thread. The mingw might be missing std::thread support if using wrong threading model.
+check_cxx_source_compiles(
+"#include <thread>
+int main(void) {
+    int cores = std::thread::hardware_concurrency();
+    return 0;
+}
+" STD_THREAD_SUPPORTED)
+
+if (NOT STD_THREAD_SUPPORTED)
+    message(FATAL_ERROR "Compiler is missing std::thread support. If you use mingw then selecting alternative threading model potentially fixes the issue")
+endif (NOT STD_THREAD_SUPPORTED)
+
 # Enable testing system
 enable_testing()
 
@@ -176,7 +189,7 @@ add_subdirectory(Examples)
 add_executable(table_generator EXCLUDE_FROM_ALL pregen.cpp)
 add_custom_command(
     OUTPUT tables.c
-    COMMAND table_generator -irn > ${CMAKE_CURRENT_BINARY_DIR}/tables.c
+    COMMAND $<TARGET_FILE:table_generator> -irn > ${CMAKE_CURRENT_BINARY_DIR}/tables.c
     DEPENDS table_generator)
 
 # Add bison and flex compilations
@@ -229,7 +242,7 @@ add_executable(dealergenlib genddslib.cpp)
 
 if (WIN32)
     dealer_target_link_libraries(dealer ws2_32)
-    dealer_target_link_libraries(dealergenlib ws2_32)
+    target_link_libraries(dealergenlib ws2_32)
 endif (WIN32)
 
 # Make sure generated sources can find headers
