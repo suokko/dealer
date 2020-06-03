@@ -76,8 +76,8 @@ runs tools to create html report. The report is automatically opened in browser.
 ```
 mkdir -p build
 cd build
-cmake -G Ninja ..
-ninja check_coverage
+cmake ..
+make check_coverage
 ```
 
 4. Using dealer
