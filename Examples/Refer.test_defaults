@@ -1692,7 +1692,7 @@ Q                   T 9 7 5             A K 8 6 4 2         J 3
 Generated 200 hands
 Produced 200 hands
 Initial random seed 1
-Time needed    0.004 sec
+Time needed    0.003 sec
 -s 1 -g 2 Descr.test_defaults
    1.
 Q 4 3               J 8 5 2             K 9                 A T 7 6 
@@ -1980,5 +1980,5 @@ K T 6               Q 7 3               A 8 5 4             J 9 2
 Generated 40 hands
 Produced 40 hands
 Initial random seed 1
-Time needed    0.001 sec
+Time needed    0.000 sec
 -e Descr.test_defaults

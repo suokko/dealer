@@ -5,7 +5,7 @@
 # it against the theoretical holdings.  It should give a quick check if
 # the deals you are producing are sort-of random.
 #
-generate 10000000
+generate 2000000
 
 action 
         frequency  "HCP N"  (hcp(north), 0, 37),

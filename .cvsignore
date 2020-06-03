@@ -4,7 +4,6 @@ scan.c
 *.a
 *.swp
 *.dll
-*.txt
 *~
 dealergenlib
 dealergenlib.cov
@@ -21,3 +20,4 @@ etags
 build.mk
 cpudetect/cpudetect
 library.dat
+SourceVersion.cmake

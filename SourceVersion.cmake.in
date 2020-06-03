@@ -1,0 +1,1 @@
+set(SRC_VERSION "@SRC_VERSION@")

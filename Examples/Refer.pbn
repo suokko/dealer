@@ -1,7 +1,7 @@
 -s 1 Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -16,7 +16,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -31,7 +31,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -46,7 +46,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -61,7 +61,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -76,7 +76,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -91,7 +91,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -106,7 +106,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -121,7 +121,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -136,7 +136,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "10"]
 [West "-"]
 [North "-"]
@@ -156,7 +156,7 @@ Time needed    0.001 sec
 -s 1 -p 9 Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -171,7 +171,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -186,7 +186,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -201,7 +201,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -216,7 +216,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -231,7 +231,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -246,7 +246,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -261,7 +261,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -276,7 +276,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -296,7 +296,7 @@ Time needed    0.001 sec
 -s 1 -p 9 -v Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -311,7 +311,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -326,7 +326,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -341,7 +341,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -356,7 +356,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -371,7 +371,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -386,7 +386,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -401,7 +401,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -416,7 +416,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -438,7 +438,7 @@ Time needed    0.001 sec
 -s 1 -p 8 Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -453,7 +453,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -468,7 +468,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -483,7 +483,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -498,7 +498,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -513,7 +513,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -528,7 +528,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -543,7 +543,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -563,7 +563,7 @@ Time needed    0.001 sec
 -s 1 -p 8 -v Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -578,7 +578,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -593,7 +593,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -608,7 +608,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -623,7 +623,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -638,7 +638,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -653,7 +653,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -668,7 +668,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.05.16"]
+[Date "2020.06.03"]
 [Board "8"]
 [West "-"]
 [North "-"]

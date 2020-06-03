@@ -10,7 +10,6 @@ if ($exe eq "") {
   $exe = "../dealer"
 }
 
-print $exe
 #
 # Fixed seed so that the output should be the same from run to run
 #
@@ -22,18 +21,19 @@ sub replaceprogname {
   my ($exe, $file) = @_;
   $cov  = $exe;
   $orig = $exe;
-  $cov  =~ s/^.*\/([^\/]*[^.][^c][^o][^vf])(\.cov|\.prof|)$/\1.cov/;
-  $orig =~ s/^(.*\/)([^\/]*[^.][^c].[^v])(\.cov|)$/(\1|)\2/;
- 
-  open (IN, "+<$file");
-  @lines = <IN>;
+  $cov  =~ s/^.*\/([^\/]*[^vf])(\.cov|\.prof|)$/\1.cov/;
+  $orig =~ s/^(.*\/)([^\/]*[^v](\.cov|))$/(\1|)\2/;
 
-  seek IN,0,0;
+  open (IN, "<$file");
+  @lines = <IN>;
+  close IN;
+
+  open (OUT,">$file");
   foreach $line (@lines) {
     $line =~ s/$orig([^.\/][^cp])/$cov\2/g;
-    print IN $line;
+    print OUT "$line";
   }
-  close IN;
+  close OUT;
 }
 
 foreach $input (`ls $file`) {
@@ -58,11 +58,12 @@ foreach $input (`ls $file`) {
       my($rule, $arg) = split(',', $line);
       if (eval($rule)) {
         system ("echo $arg $input >> $output");
-        system ("$exe $arg $input 2>>$output.err >>$output");
+        system ("echo $arg $input >> $output.err");
+        system ("$exe $arg $input 2>> $output.err >> $output");
       }
     }
   } else {
-    system ("$exe -s $seed $input 2>$output.err >$output");
+    system ("$exe -s $seed $input 2> $output.err > $output");
   }
 
   replaceprogname($exe, "$output.err");

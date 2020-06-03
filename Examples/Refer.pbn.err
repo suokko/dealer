@@ -1,0 +1,9 @@
+-s 1 Descr.pbn
+-s 1 -p 9 Descr.pbn
+-s 1 -p 9 -v Descr.pbn
+-s 1 -p 9 -q Descr.pbn
+-s 1 -p 9 -q -v Descr.pbn
+-s 1 -p 8 Descr.pbn
+-s 1 -p 8 -v Descr.pbn
+-s 1 -p 8 -q Descr.pbn
+-s 1 -p 8 -q -v Descr.pbn

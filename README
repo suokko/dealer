@@ -38,32 +38,75 @@ checked too.
 
 1. Dependencies
 
-Recommended tools to build from source are
-* lcov
+Required dependecies are
+* cmake (>= 3.12)
+* Compiler with c and c++11 support
+
+Recommended dependencies for development:
+* perl
+* lcov if compiling with gcc
+* genhtml if compiling with gcc
 
 Recommended run time dependencies are
-* Bo's dds (http://privat.bahnhof.se/wb758135/)
+* Bo's dds [http://privat.bahnhof.se/wb758135/](http://privat.bahnhof.se/wb758135/)
+* dds-driver for dealergenlib
 
 libdds.so, libdds.dylib or dds.dll needs to be in runtime library search path to
 use double dummy solver in dealer scripts.
 
-2.  Build on linux:
+2.  Building from sources
 
+```
+mkdir -p build
+cd build
+cmake -G<Your favorite generator> ..
+```
 
- ./configure
- make
- make install
+Then you can compile sources using your selected build system.
 
-Running configure is not required but it is helpful if you want to customize
-install paths or use custom compiler or flags.
+Project settings can be modified using cmake GUI. (eg. `ccmake ..`)
 
-If you want to use nondefault compiler options they can be passed with CPPFLAGS
-make variable. CFLAGS or CXXFLAGS works too but that won't override -march=native.
+3. Testing
 
-You can also run the dealer from source directory.
+Build system adds two testing targets. `check` target runs test using binary
+compiled with flags for configuration. `check_coverage` runs same set of tests
+using specially instrumented coverage binary. After running test build system
+runs tools to create html report. The report is automatically opened in browser.
 
-3. Build on MAC OS
+```
+mkdir -p build
+cd build
+cmake -G Ninja ..
+ninja check_coverage
+```
 
-Notes (Old notes not tested after build system changes):
+4. Using dealer
 
-    make CPPFLAGS = -g -O0 -no-pedantic -DFRANCOIS
+Dealer uses a simple scripting language to allow user place conditions to
+generate hands, print hands and do statistical analyze. Example use would be to
+analyze number of control points in balanced hand with 20-22 HCP.
+
+```
+./dealer ../Examples/Descr.controls
+```
+
+The command use a source tree provide example script with limits and histogram
+printing action. Example output from the dealer command looks like
+
+```
+Frequency controls:
+    4	      16
+    5	     312
+    6	    1616
+    7	    3518
+    8	    3476
+    9	     988
+   10	      74
+Generated 1553663 hands
+Produced 10000 hands
+Initial random seed 1591209597
+Time needed    0.426 sec
+```
+
+More details about scripting language can be found from
+Manual/index.html.

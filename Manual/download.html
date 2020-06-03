@@ -11,70 +11,59 @@ platform, do:
 <ul>
  <li> gzip -dc dealer.tar.gz | tar xvf -
  <li> cd dealer
+ <li> mkdir -p build
+ <li> cd build
+ <li> cmake ..
  <li> make
 </ul>
 And you should end up with the <font color=red>dealer</font> executable in
 your current working directory.  Then test the program with
 <ul>
- <li> cd Examples
- <li> make test 
+ <li> make check
 </ul>
-This will process all examples in the Examples directory, store the 
-output for visual inspection and compare the output against a reference
-copy of the output.  The output from the test typically starts with:
-<FONT COLOR="blue">
-<PRE>
-test_dealer.pl
-------------------------------------------------------------------
-Now processing Descr.6c
-Done, output in Output.6c
-Comparing against reference output from Refer.6c
-6c6
-< Time needed  25.55 sec
----
-> Time needed  12.99 sec
-<I>...And so on for other examples...</I>
-</PRE>
-</FONT>
-The example that was run was "Descr.6c", output of this example 
-can be found in "Output.6c".  Comparing the output against the reference
-output showed 1 difference: the CPU time that was needed to process the 
-input file.  The example took 25.55s when it was just run, the machine
-where the reference copy was produced needed only 12.99 seconds.
 
 <P>
-This particular difference is, of course, harmless, as the CPU time needed
-to process an example varies from computer to computer.  Other differences
-that can be safely ignored are the dates in the PBN example.  However, if the
-program had crashed on this example, the output from the test had started with:
+In case of failure report shows difference between reference output and test
+case output. Following example shows potential output if dealer crashes.
 <FONT COLOR="blue">
 <PRE>
 test_dealer.pl
 ------------------------------------------------------------------
-Now processing Descr.6c
-Done, output in Output.6c
-Comparing against reference output from Refer.6c
-0a1,6
-> king drops: 0.573465
-> finesse: 0.749792
-> Generated 1000000 hands
-> Produced 110556 hands
-> Initial random seed 1
-> Time needed  12.99 sec
+  TEST   Descr.6c
+Error: stderr (Output.6c.err) not matching
+--- Refer.6c.err	2020-06-03 21:24:00.639230086 +0300
++++ Output.6c.err	2020-06-03 22:17:53.919172184 +0300
+@@ -1,2 +1,4 @@
+ -s 1 Descr.6c
++Aborted (core dumped)
+ -e -s 1 Descr.6c
++Aborted (core dumped)
+Error: output (Output.6c) not matching
+-king drops: 0.572475
+-finesse: 0.74634
+-score king drops: 749.639
+-score king drops nv: 513.402
+-score finesse: 997.121
+-score finesse nv: 673.95
+-finesse gains IMPs: 2.37682
+-finesse gains IMPs nv: 2.02909
+-Generated 1000000 hands
+-Produced 110534 hands
+-Initial random seed 1
+-king drops: 0.573532
+-finesse: 0.747711
+-score king drops: 751.223
+-score king drops nv: 514.457
+-score finesse: 999.134
+-score finesse nv: 675.279
+-finesse gains IMPs: 2.38032
+-finesse gains IMPs nv: 2.03196
+-Generated 705432 hands
+-Produced 77966 hands
+-Initial random seed 1
 </PRE>
 </FONT>
 and it would be time to start debugging.
-
-<h2>Problems when compiling</H2>
-
-<UL>
- <LI> Mike Zimmermann  <zimmy@nc.rr.com> reported that on MAC OS X (aka Darwin), the
-      line CPPFLAGS has to be:
-      <ul>
-       <li> CPPFLAGS= -g -DNDEBUG -DFRANCOIS -I.
-      </ul>
-
-</UL>
 
 <h1>Portability</H1>
 

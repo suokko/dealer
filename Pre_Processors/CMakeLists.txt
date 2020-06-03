@@ -1,0 +1,8 @@
+
+install(PROGRAMS dealer.dpp
+    DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES Dist.pm
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/perl5/Dealer)
+
+install(FILES README.dpp
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}/Pre_Processors)
