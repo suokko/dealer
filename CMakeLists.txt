@@ -81,12 +81,19 @@ check_cxx_source_compiles(
 int main(void) {
     int cores = std::thread::hardware_concurrency();
     return 0;
-}
-" STD_THREAD_SUPPORTED)
+}" STD_THREAD_SUPPORTED)
 
 if (NOT STD_THREAD_SUPPORTED)
     message(FATAL_ERROR "Compiler is missing std::thread support. If you use mingw then selecting alternative threading model potentially fixes the issue")
 endif (NOT STD_THREAD_SUPPORTED)
+
+# Check if getopt is supported
+check_c_source_compiles(
+"#include <unistd.h>
+int main(int argc, char* const argv[]) {
+    const char *opt = \"h\";
+    return getopt(argc, argv, opt);
+}" GETOPT_SUPPORTED)
 
 # Enable testing system
 enable_testing()
@@ -214,6 +221,10 @@ set (SRC
     tables.c
     tree.h
     )
+
+if (NOT GETOPT_SUPPORTED)
+    list(APPEND SRC getopt.c)
+endif (NOT GETOPT_SUPPORTED)
 
 # Build sources for different compiler optimization parameters
 set(MV_SRC
