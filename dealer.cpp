@@ -1125,7 +1125,7 @@ static int deal_main(struct globals *g) {
 } // namespace DEFUN()
 
 extern "C" {
-static int deal_main_c(struct globals *g) {
+static int DEFUN(deal_main)(struct globals *g) {
   return DEFUN()::deal_main(g);
 }
 }
@@ -1134,5 +1134,5 @@ namespace DEFUN() {
 
 auto dm_register = make_entry_register(cpu::detect::feature_id(),
     deal_main_entry,
-    deal_main_c);
+    DEFUN(deal_main));
 }
