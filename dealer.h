@@ -4,6 +4,8 @@
 #include "card.h"
 #include "pointcount.h"
 
+#include "cpudetect/entry.h"
+
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -18,9 +20,6 @@ struct context {
   union board *pd;
   struct handstat *ps ; /* Pointer to stats of current deal */
 };
-
-
-int suitlength (const union board *d, struct handstat *hsbase, int compass, int suit);
 
 struct handstat {
     int hs_points[(NSUITS + 1)*2];  /* 4321 HCP per suit or total */
@@ -130,12 +129,7 @@ void printcard(card c);
 
  #define HAS_CARD(d,p,c) hascard(d,p,c)
 
-int default_deal_main (struct globals *g);
-int sse2_deal_main (struct globals *g);
-int popcnt_deal_main (struct globals *g);
-int sse4_deal_main (struct globals *g);
-int bmi2_deal_main (struct globals *g);
-int avx2_deal_main (struct globals *g);
+extern int (*deal_main)(struct globals *g);
 
 #ifdef MVDEFAULT
 #define CONCAT2(a,b) a ##_## b
@@ -145,13 +139,15 @@ int avx2_deal_main (struct globals *g);
 #define DEFUN(x) default_##x
 #endif
 
-#define suitlength DEFUN(suitlength)
-int suitlength (const union board* d,
-                int compass,
-                int suit);
-
 #ifdef __cplusplus
 }
+
+extern entry<decltype(deal_main), &deal_main> deal_main_entry;
+
+namespace DEFUN() {
+int suitlength (const union board* d, int compass,int suit);
+}
+
 #endif
 
 #endif /* DEALER_H */

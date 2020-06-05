@@ -35,6 +35,7 @@ struct detect {
 
 	/// helper to check if cpu supports required feature
 	bool supports(enum cpufeatures feature) const;
+	bool supports(unsigned feature) const;
 
 	/// Return features supported by current compiler options
 	static constexpr unsigned compiler_supports() {
@@ -67,6 +68,15 @@ struct detect {
 			| CPUBMI2
 #endif
 			;
+	}
+
+	static constexpr unsigned feature_id()
+	{
+#ifdef MVDEFAULT
+		return CPUDEFAULT;
+#else
+		return compiler_supports();
+#endif
 	}
 private:
 	unsigned features_;

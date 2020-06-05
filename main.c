@@ -782,24 +782,7 @@ int main (int argc, char **argv) {
   if (gp->maxproduce == 0)
     gp->maxproduce = ((gp->actionlist == &defaultaction) || gp->will_print) ? 40 : gp->maxgenerate;
 
-  int r;
-#if defined(__x86_64__) || defined(__i386__)
-  if (compilerfeatures < AVX2 && cpu_supports(CPUAVX2)) {
-    r = avx2_deal_main(gp);
-  } else if(compilerfeatures < BMI2 && cpu_supports(CPUBMI2)) {
-    r = bmi2_deal_main(gp);
-  } else if(compilerfeatures < SSE4 && cpu_supports(CPUSSE42)) {
-    r = sse4_deal_main(gp);
-  } else if(compilerfeatures < POPCNT && cpu_supports(CPUPOPCNT)) {
-    r = popcnt_deal_main(gp);
-  } else if(compilerfeatures < SSE2 && cpu_supports(CPUSSE2)) {
-    r = sse2_deal_main(gp);
-  } else {
-    r = default_deal_main(gp);
-  }
-#else
-  r = default_deal_main(gp);
-#endif
+  int r = deal_main(gp);
 
   gettimeofday (&tvstop, (void *) 0);
   cleanup_action ();

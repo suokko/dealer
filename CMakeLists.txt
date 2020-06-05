@@ -218,6 +218,7 @@ set_source_files_properties(${BISON_defs_OUTPUTS}
 set (SRC
     dds.cpp
     dds.h
+    dealer_once.cpp
     initrandom.cpp
     initrandom.h
     main.c

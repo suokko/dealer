@@ -244,5 +244,10 @@ bool detect::supports(cpufeatures feature) const
 	return feature & features_;
 }
 
+bool detect::supports(unsigned feature) const
+{
+	return (feature & features_) == feature;
+}
+
 } // namespace cpu
 

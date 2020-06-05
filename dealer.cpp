@@ -29,6 +29,8 @@ void yyerror (char *);
 
 #define DEFAULT_MODE STAT_MODE
 
+namespace DEFUN() {
+
 /* Global variables */
 
 static struct handstat hs[4];
@@ -1012,7 +1014,7 @@ frequencylead:
     }
 }
 
-int DEFUN(deal_main) (struct globals *g) {
+static int deal_main(struct globals *g) {
 
   assert(0x107f == bitpermutate(0x0ff0));
   assert(0xfe02 == bitpermutate(0xfe01));
@@ -1118,4 +1120,19 @@ int DEFUN(deal_main) (struct globals *g) {
   if (g->progressmeter)
     fprintf (stderr, "                                      \r");
   return 0;
+}
+
+} // namespace DEFUN()
+
+extern "C" {
+static int deal_main_c(struct globals *g) {
+  return DEFUN()::deal_main(g);
+}
+}
+
+namespace DEFUN() {
+
+auto dm_register = make_entry_register(cpu::detect::feature_id(),
+    deal_main_entry,
+    deal_main_c);
 }

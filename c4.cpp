@@ -23,6 +23,8 @@ basically a no-op.
 #include "dealer.h"
 #include "c4.h"
 
+namespace DEFUN() {
+
 #define C4_TYPE int
 static C4_TYPE Rescale (int nValue) {
   return nValue;
@@ -187,3 +189,5 @@ int suit_quality (int seat, int suit) {
 
   return Quality;
 }
+
+} // namespace DEFUN()

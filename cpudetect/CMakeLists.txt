@@ -1,6 +1,10 @@
 
 # Helper library for shared cpu object code
-dealer_add_library(cpudetect OBJECT EXCLUDE_FROM_ALL detect.cpp)
+dealer_add_library(cpudetect OBJECT EXCLUDE_FROM_ALL
+    detect.cpp
+    detect.h
+    entry.h
+    )
 
 set(CPU_SRC
     main.cpp
