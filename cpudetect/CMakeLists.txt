@@ -5,18 +5,21 @@ dealer_add_library(cpudetect OBJECT EXCLUDE_FROM_ALL
     detect.h
     entry.h
     )
+dealer_target_link_libraries(cpudetect default_flags)
 
 set(CPU_SRC
     main.cpp
     )
 
 add_executable(testcpu ${CPU_SRC})
-target_link_libraries(testcpu cpudetect)
+target_link_libraries(testcpu cpudetect default_flags)
 
-set(CPUDETECT_CONFIGS default slowmul sse2 sse3 popcnt sse4 avx avx2)
-
+set(CPUDETECT_CONFIGS ${COMPILER_CONFIGS})
+list(APPEND CPUDETECT_CONFIGS slowmul)
+set(COMPILER_CONFIG_slowmul ${COMPILER_CONFIG_default})
 foreach (CFG ${CPUDETECT_CONFIGS})
-    add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL target.cpp)
+    add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL target.cpp target.h)
     target_compile_definitions(target_${CFG} PRIVATE MVDEFAULT=${CFG})
+    target_compile_options(target_${CFG} PRIVATE ${COMPILER_CONFIG_${CFG}})
     target_link_libraries(testcpu target_${CFG})
 endforeach (CFG ${CPUDETECT_CONFIGS})

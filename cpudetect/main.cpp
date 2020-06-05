@@ -71,7 +71,6 @@ int main(void)
 	if (cpu_supports(CPUSSE2)) {
 		cur += sprintf(cur, "%ssse2", sep);
 		sep = ", ";
-		sse2_test(55);
 	}
 	if (cpu_supports(CPUSSE3)) {
 		cur += sprintf(cur, "%ssse3", sep);
@@ -80,7 +79,6 @@ int main(void)
 	if (cpu_supports(CPUPOPCNT)) {
 		cur += sprintf(cur, "%spopcnt", sep);
 		sep = ", ";
-		popcnt_test(55);
 	}
 	if (cpu_supports(CPUSSE41)) {
 		cur += sprintf(cur, "%ssse4.1", sep);
