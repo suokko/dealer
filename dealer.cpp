@@ -29,12 +29,6 @@ void yyerror (char *);
 
 #define DEFAULT_MODE STAT_MODE
 
-#ifdef MSDOS
-  static const char * const crlf = "\r\n";
-#else
-  static const char * const crlf = "\n";
-#endif /* MSDOS */
-
 /* Global variables */
 
 static struct handstat hs[4];

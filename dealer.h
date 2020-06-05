@@ -119,6 +119,7 @@ void * mycalloc (unsigned nel, unsigned siz);
 
 extern const char ucrep[14];
 extern const char *ucsep[4];
+extern const char *const crlf;
 
 #include "card.h"
 
