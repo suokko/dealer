@@ -3,13 +3,14 @@
 # libraries with custom compiler flags. Then check_coverage depends on coverage
 # binary instead of main binary.
 
+include_guard(GLOBAL)
+include(try_compile_cached)
+
 set(COVERAGE_FAIL_MSG "***Error: There is no support for coverage build for your compiler. You can add support to cmake/coverage.cmake")
 
 # Make interface libraries to propagate coverage compiler arguments to all
 # targets
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    include(CheckCXXCompilerFlag)
-    include(CheckCCompilerFlag)
 
     set(COVERAGE_CPP_FLAGS -Og -g --coverage
         CACHE STRING "Coverage compiler flags appended to configuration flags")
@@ -20,8 +21,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
     set(saved_LIB ${CMAKE_REQUIRED_LIBRARIES})
     list(APPEND CMAKE_REQUIRED_LIBRARIES ${COVERAGE_LINK_FLAGS})
-    check_cxx_compiler_flag("${COVERAGE_CPP_FLAGS}" COVERAGE_CXX_SUPPORTED)
-    check_c_compiler_flag("${COVERAGE_CPP_FLAGS}" COVERAGE_C_SUPPORTED)
+    try_compiler_flag(CXX "${COVERAGE_CPP_FLAGS}" COVERAGE_CXX_SUPPORTED)
+    try_compiler_flag(C "${COVERAGE_CPP_FLAGS}" COVERAGE_C_SUPPORTED)
     set(CMAKE_REQUIRED_LIBRARIES ${saved_LIB})
 
     if (COVERAGE_CXX_SUPPORTED AND COVERAGE_C_SUPPORTED)

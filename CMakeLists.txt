@@ -70,36 +70,39 @@ find_package(Perl QUIET)
 
 #import cmake helpers
 include(GNUInstallDirs)
-include(CheckCXXCompilerFlag)
-include(CheckCCompilerFlag)
+include(try_compile_cached)
 include(coverage)
 include(pod2man)
 
 # Check that there is a working std::thread. The mingw might be missing std::thread support if using wrong threading model.
-check_cxx_source_compiles(
+try_compile_cached(CXX STD_THREAD_SUPPORTED
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    SOURCE_TEXT
 "#include <thread>
 int main(void) {
     int cores = std::thread::hardware_concurrency();
     return 0;
-}" STD_THREAD_SUPPORTED)
+}")
 
 if (NOT STD_THREAD_SUPPORTED)
     message(FATAL_ERROR "Compiler is missing std::thread support. If you use mingw then selecting alternative threading model potentially fixes the issue")
 endif (NOT STD_THREAD_SUPPORTED)
 
 # Check if getopt is supported
-check_c_source_compiles(
+try_compile_cached(C GETOPT_SUPPORTED
+    SOURCE_TEXT
 "#include <unistd.h>
 int main(int argc, char* const argv[]) {
     const char *opt = \"h\";
     return getopt(argc, argv, opt);
-}" GETOPT_SUPPORTED)
+}")
 
 # Enable testing system
 enable_testing()
 
 # Check for architecture optimization flag support
-# @TODO: This needs compiler speciific defaults
+# @TODO: This needs compiler specific defaults
 function(do_optimization_flags _NAME CPP_FLAGS FLAG_HELP)
     list(LENGTH ARGN _LEN)
     if (_LEN GREATER 0)
@@ -118,8 +121,8 @@ function(do_optimization_flags _NAME CPP_FLAGS FLAG_HELP)
         set(FLAGS_${_NAME} ${OPTIMIZE_${_NAME}_CPP_FLAGS} CACHE INTERNAL "" FORCE)
     endif (NOT FLAGS_${_NAME} STREQUAL OPTIMIZE_${_NAME}_CPP_FLAGS)
 
-    check_c_compiler_flag("${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_C)
-    check_cxx_compiler_flag("${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_CXX)
+    try_compiler_flag(C "${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_C)
+    try_compiler_flag(CXX "${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_CXX)
     if (OPTIMIZE_${_NAME}_C AND OPTIMIZE_${_NAME}_CXX)
 #@TODO: Make source compilation works correctly with some optimization passes missing
 #        if (OPTION_HELP)
@@ -142,7 +145,7 @@ endfunction(do_optimization_flags)
 set(COMPILER_CONFIGS default sse2 popcnt sse4 bmi2 avx2)
 foreach (FLAG -mfpmath=sse -ffast-math)
     string(REGEX REPLACE "[-=]" "_" _NAME ${FLAG})
-    check_c_compiler_flag(${FLAG} CHECK${_NAME})
+    try_compiler_flag(C ${FLAG} CHECK${_NAME})
     if (CHECK${_NAME})
         list(APPEND COMPILER_CONFIG_default ${FLAG})
     endif (CHECK${_NAME})
