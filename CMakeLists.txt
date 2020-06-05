@@ -101,6 +101,11 @@ int main(int argc, char* const argv[]) {
 # Enable testing system
 enable_testing()
 
+# Make sure compiler selects c++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Check for architecture optimization flag support
 # @TODO: This needs compiler specific defaults
 function(do_optimization_flags _NAME CPP_FLAGS FLAG_HELP)
