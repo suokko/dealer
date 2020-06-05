@@ -63,16 +63,7 @@ int main(void)
 	cur = buffer;
 	buffer[0] = '\0';
 	sep = "";
-	cpu_init();
 #if defined(__i386__) || defined(__x86_64__)
-	if (cpu_supports(CPUCMOV)) {
-		cur += sprintf(cur, "%scmov", sep);
-		sep = ", ";
-	}
-	if (cpu_supports(CPUMMX)) {
-		cur += sprintf(cur, "%smmx", sep);
-		sep = ", ";
-	}
 	if (cpu_supports(CPUSSE)) {
 		cur += sprintf(cur, "%ssse", sep);
 		sep = ", ";

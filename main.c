@@ -782,7 +782,6 @@ int main (int argc, char **argv) {
   if (gp->maxproduce == 0)
     gp->maxproduce = ((gp->actionlist == &defaultaction) || gp->will_print) ? 40 : gp->maxgenerate;
 
-  cpu_init();
   int r;
 #if defined(__x86_64__) || defined(__i386__)
   if (compilerfeatures < AVX2 && cpu_supports(CPUAVX2)) {

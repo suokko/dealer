@@ -19,16 +19,12 @@ int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c
 }
 #endif
 
-unsigned features = 0;
-
-static void check_env()
+static unsigned check_env(unsigned features)
 {
 	const char* env = getenv("CPUSUPPORTS");
 	if (!env)
-		return;
+		return features;
 
-	if (std::regex_search(env,std::regex{"nocmov(,|$)"}))
-		features &= ~CPUCMOV;
 	if (std::regex_search(env,std::regex{"nosse(,|$)"}))
 		features &= ~CPUSSE;
 	if (std::regex_search(env,std::regex{"nosse2(,|$)"}))
@@ -47,10 +43,12 @@ static void check_env()
 		features &= ~CPUBMI2;
 	if (std::regex_search(env,std::regex{"noavx2(,|$)"}))
 		features &= ~CPUAVX2;
+	return features;
 }
 
-static void x86_cpu_init()
+static unsigned x86_cpu_init()
 {
+	unsigned features = CPUDEFAULT;
 #if defined(__i386__) || defined(__x86_64__)
 	/* Fetch cpu features */
 	unsigned eax = 0,
@@ -60,10 +58,10 @@ static void x86_cpu_init()
 			 op = 0,
 			 subop = 0;
 	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
-		return;
+		return features;
 	op = 1;
 	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
-		return;
+		return features;
 	/**
 	 * basic info
 	 */
@@ -168,8 +166,6 @@ static void x86_cpu_init()
 	info.reg[2] = ecx;
 	info.reg[3] = ebx;
 
-	if (info.data.cmov)
-		features |= CPUCMOV;
 	if (info.data.sse)
 		features |= CPUSSE;
 	if (info.data.sse2)
@@ -189,7 +185,7 @@ static void x86_cpu_init()
 	op = 7;
 	subop = 0;
 	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
-		return;
+		return features;
 
 	union extraflags {
 		uint32_t reg[4];
@@ -221,16 +217,32 @@ static void x86_cpu_init()
 	if (flags.data.avx2)
 		features |= CPUAVX2;
 #endif
-}
-
-void cpu_init()
-{
-	x86_cpu_init();
-	check_env();
+	return features;
 }
 
 bool cpu_supports(enum cpufeatures feature)
 {
-	return feature & features;
+	return cpu::detect::instance().supports(feature);
 }
+
+namespace cpu {
+
+detect::detect() :
+	features_{x86_cpu_init()}
+{
+	features_ = check_env(features_);
+}
+
+const detect& detect::instance()
+{
+	static detect inst{};
+	return inst;
+}
+
+bool detect::supports(cpufeatures feature) const
+{
+	return feature & features_;
+}
+
+} // namespace cpu
 
