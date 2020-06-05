@@ -21,8 +21,8 @@ sub replaceprogname {
   my ($exe, $file) = @_;
   $cov  = $exe;
   $orig = $exe;
-  $cov  =~ s/^.*\/([^\/]*[^vf])(\.cov|\.prof|)$/\1.cov/;
-  $orig =~ s/^(.*\/)([^\/]*[^v](\.cov|))$/(\1|)\2/;
+  $cov  =~ s/^.*\/([^\/]*[^vf])(\.cov|\.prof|)(\.exe|)$/\1.cov/;
+  $orig =~ s/^(.*\/)([^\/]*[^v](\.cov|)(\.exe|))$/(\1|)\2/;
 
   open (IN, "<$file");
   @lines = <IN>;
@@ -30,7 +30,7 @@ sub replaceprogname {
 
   open (OUT,">$file");
   foreach $line (@lines) {
-    $line =~ s/$orig([^.\/][^cp])/$cov\2/g;
+    $line =~ s/($orig|dealer)([^.\/][^cp])/$cov\3/g;
     print OUT "$line";
   }
   close OUT;
