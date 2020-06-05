@@ -96,53 +96,85 @@ if (PERL_FOUND)
         USES_TERMINAL) 
     add_dependencies(check_coverage_run dealer.cov)
 
-    # Built html pages from coverage data
-    find_program(LCOV_COMMAND lcov)
-    mark_as_advanced(LCOV_COMMAND)
-    find_program(GENHTML_COMMAND genhtml)
-    mark_as_advanced(GENHTML_COMMAND)
-    find_program(OPEN_COMMAND NAMES open xdg-open)
-    mark_as_advanced(OPEN_COMMAND)
 
-    set(COVERAGE_DIR "coverage")
+    set(COVERAGE_DIR "${PROJECT_BINARY_DIR}/coverage")
     set(DEV_NULL > /dev/null 2> /dev/null)
     if (WIN32)
         set(DEV_NULL > NUL 2> NUL)
     endif (WIN32)
 
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        if (LCOV_COMMAND AND GENHTML_COMMAND)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        set(GCOV_TOOL_CMD)
+        set(LLVM_WORKS ON)
+        if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            find_program(LLVM_COV_COMMAND llvm-cov)
+            mark_as_advanced(LLVM_COV_COMMAND)
+            if (LLVM_COV_COMMAND)
+                set(GCOV_TOOL ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/gcov.sh)
+
+                file(WRITE ${GCOV_TOOL}
+                    "#!/bin/sh\n${LLVM_COV_COMMAND} gcov $@\nexit $?\n")
+
+                file(COPY ${GCOV_TOOL} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+                    FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE)
+                set(GCOV_TOOL_CMD --gcov-tool "${CMAKE_CURRENT_BINARY_DIR}/gcov.sh")
+            else ()
+                set(LLVM_WORKS OFF)
+            endif ()
+        endif ()
+        # Built html pages from coverage data
+        find_program(LCOV_COMMAND lcov)
+        mark_as_advanced(LCOV_COMMAND)
+        find_program(GENHTML_COMMAND genhtml)
+        mark_as_advanced(GENHTML_COMMAND)
+        find_program(OPEN_COMMAND NAMES open xdg-open)
+        mark_as_advanced(OPEN_COMMAND)
+        if (LCOV_COMMAND AND GENHTML_COMMAND AND LLVM_WORKS)
             # @TODO: Make sure clean can remove all generate files
-            add_custom_target(check_coverage
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_DIR}
-                COMMAND ${LCOV_COMMAND} --base-directory . --directory . --rc lcov_branch_coverage=1     -q -c -o ${COVERAGE_DIR}/dealer.info
-                COMMAND ${LCOV_COMMAND} --rc lcov_branch_coverage=1 -q -o ${COVERAGE_DIR}/dealer.stripped.info --remove ${COVERAGE_DIR}/dealer.info '/usr*'
-                COMMAND ${GENHTML_COMMAND} --num-spaces 4 -o ${COVERAGE_DIR} --branch-coverage -t "Dealer test coverage" ${COVERAGE_DIR}/dealer.stripped.info
-                COMMAND ${OPEN_COMMAND} ${COVERAGE_DIR}/index.html ${DEV_NULL}
+            add_custom_command(OUTPUT ${COVERAGE_DIR}
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_DIR})
+            add_custom_command(OUTPUT ${COVERAGE_DIR}/dealer.info
+                COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --base-directory . --directory . --rc lcov_branch_coverage=1 -q -c -o ${COVERAGE_DIR}/dealer.info
+                DEPENDS ${COVERAGE_DIR}
+                DEPENDS check_coverage_run
                 WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-        else (${LCOV_COMMAND} AND ${GENHTML_COMMAND})
-            set(ERRMSG "Coverage report requires")
+            add_custom_command(OUTPUT ${COVERAGE_DIR}/dealer.stripped.info
+                COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --rc lcov_branch_coverage=1 -q -o ${COVERAGE_DIR}/dealer.stripped.info --remove ${COVERAGE_DIR}/dealer.info '/usr*'
+                DEPENDS ${COVERAGE_DIR}/dealer.info
+                WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+            add_custom_command(OUTPUT ${COVERAGE_DIR}/index.html
+                COMMAND ${GENHTML_COMMAND} --num-spaces 4 -o ${COVERAGE_DIR} --branch-coverage -t "Dealer test coverage" ${COVERAGE_DIR}/dealer.stripped.info
+                DEPENDS ${COVERAGE_DIR}/dealer.stripped.info)
+            add_custom_target(check_coverage
+                COMMAND ${OPEN_COMMAND} ${COVERAGE_DIR}/index.html ${DEV_NULL}
+                DEPENDS ${COVERAGE_DIR}/index.html)
+        else ()
+            set(MISSING)
+
             if (NOT LCOV_COMMAND)
-                set(ERRMSG "${ERRMSG} lcov")
-                if (NOT GENHTML_COMMAND)
-                    set(ERRMSG "${ERRMSG} and")
-                endif (NOT GENHTML_COMMAND)
+                list(APPEND MISSING "lcov")
             endif (NOT LCOV_COMMAND)
             if (NOT GENHTML_COMMAND)
-                set(ERRMSG "${ERRMSG} genhtml")
+                list(APPEND MISSING "genhtml")
             endif (NOT GENHTML_COMMAND)
-            set(ERRMSG "${ERRMSG} which are required for coverage report generation")
+            if (NOT LLVM_WORKS)
+                list(APPEND MISSING "llvm-cov")
+            endif (NOT LLVM_WORKS)
+
+            list(JOIN MISSING " and " MISSING)
+
+            set(ERRMSG "Coverage report requires ${MISSING} \
+which are required for coverage report generation")
 
             add_custom_target(check_coverage
                 COMMAND ${CMAKE_COMMAND} -E echo ${ERRMSG})
-        endif (LCOV_COMMAND AND GENHTML_COMMAND)
-    else (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+            add_dependencies(check_coverage check_coverage_run)
+        endif ()
+    else ()
         add_custom_target(check_coverage
-            COMMAND ${CMAKE_COMMAND} -E echo "Examples/CMakeLists.txt doesn't have support to generate coverage report for your compiler")
-    endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-
-    # Make sure test are run before report generation
-    add_dependencies(check_coverage check_coverage_run)
+            COMMAND ${CMAKE_COMMAND} -E echo "Examples/CMakeLists.txt doesn't have support to generate coverage report for your compiler"
+            VERBATIM)
+    endif ()
 
     find_program(DIFF_COMMAND diff)
 

@@ -61,14 +61,14 @@ clear_target_counts(${target} ${objtarget}) must be called with OBJECT_LIBRARY i
 version before 3.15. ${objtarget} type is ${LIBTYPE}")
     endif (CMAKE_VERSION VERSION_LESS 3.15 AND NOT LIBTYPE STREQUAL "OBJECT_LIBRARY")
 
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         add_custom_command(TARGET ${target}
             PRE_LINK
             COMMAND ${CMAKE_COMMAND} -D OBJS=$<TARGET_OBJECTS:${objtarget}>
                 -D SUFFIX=gcda
                 -P ${COVERAGE_DIR}/coverage_clear_counts.cmake
             VERBATIM)
-    endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    endif ()
 endfunction(clear_target_counts)
 
 # Helper to setup workaround object library to get object file paths to clear
