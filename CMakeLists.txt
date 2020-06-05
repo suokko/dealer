@@ -233,9 +233,9 @@ endif (NOT GETOPT_SUPPORTED)
 # Build sources for different compiler optimization parameters
 set(MV_SRC
     card.h
-    c4.c
+    c4.cpp
     c4.h
-    dealer.c
+    dealer.cpp
     dealer.h
     shuffle.cpp
     shuffle.h

@@ -48,7 +48,7 @@ static struct handstat hs[4];
 /* Function definitions */
 static int true_dd (const union board *d, int l, int c); /* prototype */
 
-struct globals *gp;
+static struct globals *gp;
 
 static void initevalcontract () {
   int i, j, k;
@@ -81,7 +81,7 @@ static int dd (const union board *d, int l, int c) {
 static struct value lead_dd (const union board *d, int l, int c) {
   char res[13];
   struct value r;
-  struct value_array *arr = mycalloc(1, sizeof(*arr));
+  struct value_array *arr = (value_array *)mycalloc(1, sizeof(*arr));
   unsigned idx, fill = 0;
   memset(res, -1, sizeof(res));
   card hand = gptr->predealt.hands[(l+1) % 4];
@@ -496,11 +496,11 @@ static struct value evaltree (struct treebase *b) {
         r = evaltree(t->tr_leaf1);
         t->tr_int1 = gp->ngen;
         t->tr_int2 = r.type;
-        t->tr_leaf2 = (void*)r.array;
+        t->tr_leaf2 = (treebase*)r.array;
         return r;
       }
-      r.type = t->tr_int2;
-      r.array = (void*)t->tr_leaf2;
+      r.type = (value_type)t->tr_int2;
+      r.array = (value_array*)t->tr_leaf2;
       return r;
     case TRT_AND2:
       {
@@ -797,8 +797,10 @@ static struct value evaltree (struct treebase *b) {
       return lead_dd (&gp->curboard, t->tr_int1, t->tr_int2);
     case TRT_SCORE:      /* vul/non_vul, contract, tricks in leaf1 */
       assert (t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
-      int cntr = t->tr_int2 & (64 - 1);
-      return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1));
+      {
+        int cntr = t->tr_int2 & (64 - 1);
+        return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1));
+      }
     case TRT_IMPS:
       r = evaltree (t->tr_leaf1);
       if (r.type != VAL_INT)
@@ -914,12 +916,12 @@ static void frequency_to_lead(struct action *acp, struct value val) {
         acp->ac_u.acu_f2d.acuf_freqs = (long *)mycalloc(
                         (high1 - low1 + 3) * (high2 - low2 + 3),
                         sizeof(long));
-        h = mycalloc(high2 - low2 + 1, sizeof(card));
+        h = (card*)mycalloc(high2 - low2 + 1, sizeof(card));
         for (;low2 <= high2; low2++) {
                card c = 1LL << arr->key[low2];
                h[low2] = c;
         }
-        acp->ac_expr2 = (void*)h;
+        acp->ac_expr2 = (treebase*)h;
 };
 
 static void action () {
@@ -997,7 +999,7 @@ static void action () {
 frequencylead:
         {
                 unsigned idx;
-                struct value_array *arr = (void*)expr.array;;
+                struct value_array *arr = (value_array*)expr.array;
                 assert(expr.type == VAL_INT_ARR);
                 for (idx = 0; idx < 13; idx++) {
                         if (arr->value[idx] < 0)
