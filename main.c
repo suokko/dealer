@@ -674,25 +674,6 @@ int main (int argc, char **argv) {
   extern char *optarg;
   int c;
   int errflg = 0;
-  const enum {
-    NONE,
-    SSE2,
-    POPCNT,
-    SSE4,
-    BMI2,
-    AVX2,
-  } compilerfeatures =
-#ifdef __AVX2__
-  AVX2;
-#elif defined(__BMI2__)
-  BMI2;
-#elif defined(__SSE4_2__)
-  SSE4;
-#elif defined(__POPCNT__)
-  POPCNT;
-#elif defined(__SSE2__)
-  SSE2;
-#endif
 
   struct timeval tvstart, tvstop;
 
