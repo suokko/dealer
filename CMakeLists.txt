@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.12)
 # Make sure cmake finds custom modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+# Make sure compiler selects c++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Use new policy for version number variables
 cmake_policy(SET CMP0048 NEW)
 
@@ -12,6 +17,11 @@ project(dealer
     DESCRIPTION "Generates bridge hands for statistical analyze"
     HOMEPAGE_URL "https://github.com/suokko/dealer"
     LANGUAGES CXX C)
+
+# Set symbols hidden by default to eliminate unnecessary exported symbols
+cmake_policy(SET CMP0063 NEW)
+set(CMAKE_CXX_VISIBILITY_PRESET internal)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # Find out version number where source code is coming from
 find_package(Git QUIET)
@@ -50,11 +60,6 @@ endif (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION} - ${PROJECT_DESCRIPTION}")
 message(STATUS "Source code is from version ${SRC_VERSION}")
-
-# Set symbols hidden by default to eliminate unnecessary exported symbols
-cmake_policy(SET CMP0063 NEW)
-set(CMAKE_CXX_VISIBILITY_PRESET internal)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # Find required dependencies
 find_package(BISON REQUIRED)
@@ -116,11 +121,6 @@ endif (WIN32)
 
 # Enable testing system
 enable_testing()
-
-# Make sure compiler selects c++11 standard
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 flags_add_optimization(default_flags)
 
