@@ -152,22 +152,22 @@ if (PERL_FOUND)
             set(MISSING)
 
             if (NOT LCOV_COMMAND)
-                list(APPEND MISSING "lcov")
+                list(APPEND MISSING "'lcov'")
             endif (NOT LCOV_COMMAND)
             if (NOT GENHTML_COMMAND)
-                list(APPEND MISSING "genhtml")
+                list(APPEND MISSING "'genhtml'")
             endif (NOT GENHTML_COMMAND)
             if (NOT LLVM_WORKS)
-                list(APPEND MISSING "llvm-cov")
+                list(APPEND MISSING "'llvm-cov'")
             endif (NOT LLVM_WORKS)
 
             list(JOIN MISSING " and " MISSING)
 
-            set(ERRMSG "Coverage report requires ${MISSING} \
-which are required for coverage report generation")
+            set(ERRMSG "Coverage report requires tools ${MISSING} which are missing.")
 
             add_custom_target(check_coverage
-                COMMAND ${CMAKE_COMMAND} -E echo ${ERRMSG})
+                COMMAND ${CMAKE_COMMAND} -E echo ${ERRMSG}
+                VERBATIM)
             add_dependencies(check_coverage check_coverage_run)
         endif ()
     else ()
