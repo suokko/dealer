@@ -177,6 +177,7 @@ if (PERL_FOUND)
     endif ()
 
     find_program(DIFF_COMMAND diff)
+    mark_as_advanced(DIFF_COMMAND)
 
     add_test(NAME test_distribution
         COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
