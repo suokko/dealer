@@ -115,7 +115,11 @@ static void loadLib()
 #endif
 	void *handle = dlopen(LIBNAME, RTLD_LAZY);
 #else
+#if UNICODE
+#define LIBNAME L"dds.dll"
+#else
 #define LIBNAME "dds.dll"
+#endif
 #define dlsym GetProcAddress
 	HMODULE handle = LoadLibrary(LIBNAME);
 #endif

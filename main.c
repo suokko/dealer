@@ -66,11 +66,9 @@ void yyerror (char *);
 
 
 const char ucrep[14] = "23456789TJQKA";
-#ifdef UTF8_SUPPORTED
-const char *ucsep[4]  = {u8"♣",u8"♦",u8"♥",u8"♠"};
-#else
-const char *ucsep[4]  = {"C","D","H","S"};
-#endif
+const char *utf8_ucsep[]  = {u8"♣",u8"♦",u8"♥",u8"♠"};
+const char *noutf8_ucsep[] = {"C","D","H","S"};
+const char **ucsep = utf8_ucsep;
 
 
 static const int imparr[24] = { 10,   40,   80,  120,  160,  210,  260,  310,  360,
@@ -777,3 +775,36 @@ int main (int argc, char **argv) {
   }
   return r;
 }
+
+// Windows wrapper main to convert input
+#if UNICODE
+int wmain(int argc, wchar_t** wargv)
+{
+  unsigned i, size = 0;
+
+  // Count output bytes
+  for (i = 0; i < argc; ++i)
+    size += WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, false);
+
+  // Convert arguments
+  char buffer[size];
+  char* iter = buffer;
+  char* argv[argc+1];
+
+  for (i = 0; i < argc; ++i) {
+    int res = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, iter, size, NULL, false);
+    argv[i] = iter;
+    iter += res;
+    size -= res;
+  }
+  argv[argc] = NULL;
+
+  // Check if output supports utf-8
+  unsigned cp = GetConsoleOutputCP();
+  if (cp != CP_UTF8) {
+    // Disable utf-8 output
+    ucsep = noutf8_ucsep;
+  }
+  return main(argc, argv);
+}
+#endif

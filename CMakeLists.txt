@@ -99,6 +99,28 @@ int main(int argc, char* const argv[]) {
     return getopt(argc, argv, opt);
 }")
 
+add_library(wmain_flags INTERFACE)
+if (WIN32)
+    # Check if calling from wmain to main works
+    try_run_cached(C CHECK_WMAIN_SUPPORTED
+        SOURCE_TEXT "int rv = 1;
+int main(void) {return rv;}
+int wmain(void) {rv = 0; return main();}"
+        CMAKE_FLAGS -municode
+        LINK_LIBRARIES -municode)
+
+    if (NOT CHECK_WMAIN_SUPPORTED)
+        message(FATAL_ERROR "Failed to use wmain entry for windows.")
+    endif ()
+
+    target_compile_options(wmain_flags INTERFACE -municode)
+    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+        target_link_options(wmain_flags INTERFACE -municode)
+    else (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+        target_link_libraries(wmain_flags INTERFACE -municode)
+    endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+endif (WIN32)
+
 # Enable testing system
 enable_testing()
 
@@ -164,7 +186,7 @@ set(MV_SRC
 
 dealer_add_executable(dealer ${SRC})
 # Required libraries
-dealer_target_link_libraries(dealer cpudetect ${CMAKE_DL_LIBS} default_flags)
+dealer_target_link_libraries(dealer cpudetect ${CMAKE_DL_LIBS} default_flags wmain_flags)
 
 # Add multi versioned objects to the source list
 foreach (CFG ${COMPILER_CONFIGS})
