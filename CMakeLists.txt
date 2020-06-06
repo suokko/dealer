@@ -51,13 +51,6 @@ endif (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION} - ${PROJECT_DESCRIPTION}")
 message(STATUS "Source code is from version ${SRC_VERSION}")
 
-set(UTF8_DEFAULT ON)
-if (WIN32)
-    set(UTF8_DEFAULT OFF)
-endif (WIN32)
-
-option(UTF8_OUTPUT "Enable utf-8 output" ${UTF8_DEFAULT})
-
 # Set symbols hidden by default to eliminate unnecessary exported symbols
 cmake_policy(SET CMP0063 NEW)
 set(CMAKE_CXX_VISIBILITY_PRESET internal)
@@ -206,11 +199,6 @@ target_link_libraries(dealergenlib default_flags)
 
 # Make sure generated sources can find headers
 dealer_target_include_directories(dealer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
-#Enable utf-8 output
-if (UTF8_OUTPUT)
-    dealer_target_compile_definitions(dealer PRIVATE UTF8_SUPPORTED)
-endif (UTF8_OUTPUT)
 
 # Make sure submodules are available correctly
 if (SUBMODULES)
