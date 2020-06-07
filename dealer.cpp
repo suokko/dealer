@@ -345,6 +345,19 @@ static inline void exh_print_vector (struct handstat *hs,
   exh_print_stats (hs + exh_player[1], hs_length);
 }
 
+static struct value score (int vuln, int suit, int level, int dbl, struct value tricks) {
+  if (tricks.type == VAL_INT) {
+    tricks.intvalue = scoreone(vuln, suit, level, dbl, tricks.intvalue);
+  } else {
+    unsigned idx;
+    for (idx = 0; idx < sizeof(*tricks.array->key)/sizeof(tricks.array->key[0])
+        && tricks.array->key[idx] != 0; idx++) {
+      tricks.array->value[idx] = scoreone(vuln, suit, level, dbl, tricks.array->value[idx]);
+    }
+  }
+  return tricks;
+}
+
 
 /* End of Specific routines for EXHAUST_MODE */
 

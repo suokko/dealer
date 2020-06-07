@@ -104,7 +104,7 @@ int imps (int scorediff) {
   return scorediff < 0 ? -i : i;
 }
 
-static int scoreone (int vuln, int suit, int level, int dbl, int tricks) {
+int scoreone (int vuln, int suit, int level, int dbl, int tricks) {
   int total = 0;
 
   /* going down */
@@ -153,19 +153,6 @@ static int scoreone (int vuln, int suit, int level, int dbl, int tricks) {
     total += trickpts * (tricks - 6 - level);
 
   return total;
-}
-
-struct value score (int vuln, int suit, int level, int dbl, struct value tricks) {
-  if (tricks.type == VAL_INT) {
-    tricks.intvalue = scoreone(vuln, suit, level, dbl, tricks.intvalue);
-  } else {
-    unsigned idx;
-    for (idx = 0; idx < sizeof(*tricks.array->key)/sizeof(tricks.array->key[0])
-        && tricks.array->key[idx] != 0; idx++) {
-      tricks.array->value[idx] = scoreone(vuln, suit, level, dbl, tricks.array->value[idx]);
-    }
-  }
-  return tricks;
 }
 
 void error (const char* s) {

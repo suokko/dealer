@@ -68,7 +68,7 @@ enum { STAT_MODE, EXHAUST_MODE };
 extern const struct globals *gptr;
 
 int imps (int scorediff) __attribute__ ((pure));
-struct value score (int vuln, int suit, int level, int dbl, struct value tricks) __attribute__ ((pure));
+int scoreone (int vuln, int suit, int level, int dbl, int tricks);
 void error (const char* s) __attribute__ ((noreturn));
 void clearpointcount ();
 void clearpointcount_alt (int cin);
