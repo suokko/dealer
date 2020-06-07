@@ -5,6 +5,11 @@ dealer_add_library(cpudetect OBJECT EXCLUDE_FROM_ALL
     detect.h
     entry.h
     )
+
+if (LTO_SUPPORTED)
+    dealer_set_target_properties(cpudetect PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
+
 dealer_target_link_libraries(cpudetect default_flags)
 
 set(CPU_SRC
@@ -13,6 +18,9 @@ set(CPU_SRC
 
 add_executable(testcpu ${CPU_SRC})
 target_link_libraries(testcpu cpudetect default_flags)
+if (LTO_SUPPORTED)
+    set_target_properties(testcpu PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
 
 set(CPUDETECT_CONFIGS ${COMPILER_CONFIGS})
 list(APPEND CPUDETECT_CONFIGS slowmul)
@@ -21,5 +29,8 @@ foreach (CFG ${CPUDETECT_CONFIGS})
     add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL target.cpp target.h)
     target_compile_definitions(target_${CFG} PRIVATE MVDEFAULT=${CFG})
     target_compile_options(target_${CFG} PRIVATE ${COMPILER_CONFIG_${CFG}})
+    if (LTO_SUPPORTED)
+        set_target_properties(target_${CFG} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif ()
     target_link_libraries(testcpu target_${CFG})
 endforeach (CFG ${CPUDETECT_CONFIGS})

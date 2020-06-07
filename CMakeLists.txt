@@ -68,6 +68,8 @@ find_package(Perl QUIET)
 
 #import cmake helpers
 include(GNUInstallDirs)
+cmake_policy(SET CMP0069 NEW)
+include(CheckIPOSupported)
 include(try_compile_cached)
 include(optimization_flags)
 include(coverage)
@@ -118,6 +120,15 @@ int wmain(void) {rv = 0; return main();}"
         target_link_libraries(wmain_flags INTERFACE -municode)
     endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
 endif (WIN32)
+
+check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES C CXX)
+
+if (LTO_SUPPORTED)
+    message(STATUS "Link time optimization supported.")
+else (LTO_SUPPORTED)
+    message(STATUS "CMAKE doesn't support link time optimization for your compiler.")
+endif (LTO_SUPPORTED)
+
 
 # Enable testing system
 enable_testing()
@@ -180,6 +191,9 @@ set(MV_SRC
 dealer_add_executable(dealer ${SRC})
 # Required libraries
 dealer_target_link_libraries(dealer cpudetect ${CMAKE_DL_LIBS} default_flags wmain_flags)
+if (LTO_SUPPORTED)
+    dealer_set_target_properties(dealer PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
 
 # Add multi versioned objects to the source list
 foreach (CFG ${COMPILER_CONFIGS})
@@ -187,6 +201,9 @@ foreach (CFG ${COMPILER_CONFIGS})
     dealer_target_compile_definitions(dealer_${CFG} PRIVATE MVDEFAULT=${CFG})
     dealer_target_link_libraries(dealer dealer_${CFG})
     dealer_target_compile_options(dealer_${CFG} PRIVATE ${OPTIMIZE_${CFG}_CPP_FLAGS})
+    if (LTO_SUPPORTED)
+        dealer_set_target_properties(dealer_${CFG} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif ()
 endforeach (CFG ${COMPILER_CONFIGS})
 
 add_executable(dealergenlib genddslib.cpp)

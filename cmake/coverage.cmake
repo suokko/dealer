@@ -214,3 +214,12 @@ function(dealer_target_include_directories target)
         target_include_directories(${tgt} ${ARGN})
     endif (COVERAGE_COMPILER_SUPPORTED)
 endfunction(dealer_target_include_directories)
+
+# helper to modify target properties
+function(dealer_set_target_properties target)
+    set_target_properties(${target} ${ARGN})
+    if (COVERAGE_COMPILER_SUPPORTED)
+        get_target_name(tgt ${target}.cov)
+        set_target_properties(${tgt} ${ARGN})
+    endif (COVERAGE_COMPILER_SUPPORTED)
+endfunction(dealer_set_target_properties)
