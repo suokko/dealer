@@ -31,7 +31,6 @@ struct handstat {
 struct globals {
     long seed;
     const char *initialpack;
-    struct shuffle* shuffle;
     int maxgenerate;
     int maxproduce;
     int nprod;
@@ -81,6 +80,7 @@ void fprintcompact (FILE * f, const union board *d, int ononeline, int disableco
 void printdeal (const union board *d);
 void printhands (int boardno, const union board *dealp, int player, int nhands);
 void printew (const union board *d);
+void showevalcontract (int nh);
 
 struct value_array {
   int key[13];
@@ -99,11 +99,6 @@ struct value {
     int intvalue;
   };
 };
-
-typedef struct value (*evaltreeptr)(struct treebase *b);
-extern evaltreeptr evaltreefunc;
-typedef card (*hascardptr) (const union board *d, int player, card onecard);
-extern hascardptr hascard;
 
 static inline int getshapenumber (unsigned cl, unsigned di, unsigned ht)
 {
@@ -127,7 +122,8 @@ extern const char *const crlf;
 
 void printcard(card c);
 
- #define HAS_CARD(d,p,c) hascard(d,p,c)
+#define HAS_CARD(d,p,c) hand_has_card((d)->hands[p], c)
+
 
 extern int (*deal_main)(struct globals *g);
 

@@ -3,9 +3,8 @@
 #include "dealer.h"
 #include "genlib.h"
 #include "pregen.h"
+#include "shuffle.h"
 #include "tree.h"
-
-#include "pcg-cpp/include/pcg_random.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -32,23 +31,21 @@
     #include <netinet/in.h>
 #endif /* _MSC_VER */
 
-struct shuffle {
-    shuffle(globals* gp) :
-        rng_{static_cast<unsigned long>(gp->seed)}
-    {}
-    virtual ~shuffle() {};
-    virtual int do_shuffle(board* d, globals* gp) = 0;
 
-    unsigned random32(unsigned max)
-    {
-        std::uniform_int_distribution<unsigned> dist(0, max);
-        return dist(rng_);
-    }
-protected:
-    pcg32_fast rng_;
-};
 
 namespace DEFUN() {
+
+shuffle::shuffle(globals* gp) :
+    rng_{static_cast<unsigned long>(gp->seed)}
+{}
+shuffle::~shuffle()
+{}
+
+unsigned shuffle::random32(unsigned max)
+{
+    std::uniform_int_distribution<unsigned> dist(0, max);
+    return dist(rng_);
+}
 
 template<typename T>
 struct promote;
@@ -742,69 +739,54 @@ int shuffle_swap<parent>::do_shuffle(board* d, globals* gp)
         swapindex_ = 0;
     return 0;
 }
-
-static struct shuffle* factory(globals* gp)
+#if __cplusplus >= 201402L
+using std::make_unique;
+#else
+template<typename T, class... Args >
+std::unique_ptr<T> make_unique(Args&&... args)
 {
-    // Are we using exhaust mode?
-    if (gp->computing_mode == EXHAUST_MODE)
-        return new exhaust_mode(gp);
+    return std::unique_ptr<T>{new T{std::forward<Args>(args)...}};
+}
+#endif
 
-    // Are we loading from library.dat?
-    if (gp->loading) {
+struct std::unique_ptr<shuffle> shuffle::factory(globals* gp)
+{
+    try {
+       // Are we using exhaust mode?
+       if (gp->computing_mode == EXHAUST_MODE)
+          return make_unique<exhaust_mode>(gp);
+
+        // Are we loading from library.dat?
+        if (gp->loading) {
+            if (gp->swapping)
+                return make_unique<limit<shuffle_swap<load_library>>>(gp);
+            else
+                return make_unique<limit<load_library>>(gp);
+        }
+
+        // Is there suit length biases?
+        if (!std::all_of(std::begin(gp->biasdeal[0]), std::end(gp->biasdeal[3]),
+                    [](const char& v) { return v == -1; })) {
+            return make_unique<limit<predeal_bias>>(gp);
+        }
+
+        // Is there cards attached to a hand?
+        if (std::any_of(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
+                    [](const hand& h) { return h != 0; })) {
+            if (gp->swapping)
+                return make_unique<limit<shuffle_swap<predeal_cards>>>(gp);
+            else
+                return make_unique<limit<predeal_cards>>(gp);
+        }
+
+        // Completely random hands
         if (gp->swapping)
-            return new limit<shuffle_swap<load_library>>(gp);
+            return make_unique<limit<shuffle_swap<random_hand>>>(gp);
         else
-            return new limit<load_library>(gp);
+            return make_unique<limit<random_hand>>(gp);
+    } catch(...) {
+        return {};
     }
-
-    // Is there suit length biases?
-    if (!std::all_of(std::begin(gp->biasdeal[0]), std::end(gp->biasdeal[3]),
-                [](const char& v) { return v == -1; })) {
-        return new limit<predeal_bias>(gp);
-    }
-
-    // Is there cards attached to a hand?
-    if (std::any_of(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
-                [](const hand& h) { return h != 0; })) {
-        if (gp->swapping)
-            return new limit<shuffle_swap<predeal_cards>>(gp);
-        else
-            return new limit<predeal_cards>(gp);
-    }
-
-    // Completely random hands
-    if (gp->swapping)
-        return new limit<shuffle_swap<random_hand>>(gp);
-    else
-        return new limit<random_hand>(gp);
 }
 
 } /* namespace DEFUN() */
-
-extern "C" {
-
-struct shuffle* DEFUN(shuffle_factory)(globals* gp)
-{
-    try {
-        return DEFUN()::factory(gp);
-    } catch(...) {
-        return nullptr;
-    }
-}
-
-int DEFUN(shuffle_next_hand)(struct shuffle* sh,  union board* d, struct globals* gp)
-{
-    return sh->do_shuffle(d, gp);
-}
-
-void DEFUN(shuffle_close)(struct shuffle* sh)
-{
-    delete sh;
-}
-
-unsigned DEFUN(random32)(struct shuffle* sh, unsigned max)
-{
-    return sh->random32(max);
-}
-
-}

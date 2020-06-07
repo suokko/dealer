@@ -89,8 +89,6 @@ const char * const player_name[] = { "North", "East", "South", "West" };
 
 static struct tree defaulttree = {{TRT_NUMBER}, NIL, NIL, 1, 0, 0};
 static struct action defaultaction = {(struct action *) 0, ACT_PRINTALL, NULL, NULL, 0, 0, {{0}}};
-evaltreeptr evaltreefunc;
-hascardptr hascard;
 
 struct globals *gp;
 const struct globals *gptr;
@@ -498,7 +496,7 @@ void printew (const union board*d) {
   printf ("\n");
 }
 
-static void showevalcontract (int nh) {
+void showevalcontract (int nh) {
   int s, l, i, v;
   for (v = 0; v < 2; v++) {
     printf ("%sVulnerable%s", v ? "" : "Not ", crlf);
@@ -518,136 +516,6 @@ static void showevalcontract (int nh) {
       printf ("%s", crlf);
     }
     printf ("%s", crlf);
-  }
-}
-
-static void cleanup_action () {
-  struct action *acp;
-  int player, i;
-
-  for (acp = gptr->actionlist; acp != 0; acp = acp->ac_next) {
-    switch (acp->ac_type) {
-      default:
-        assert (0); /*NOTREACHED */
-      case ACT_PRINTALL:
-      case ACT_PRINTCOMPACT:
-      case ACT_PRINTPBN:
-      case ACT_PRINTEW:
-      case ACT_PRINTONELINE:
-      case ACT_PRINTES:
-        break;
-      case ACT_EVALCONTRACT:
-        showevalcontract (gptr->nprod);
-        break;
-      case ACT_PRINT:
-        for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
-          if (!(acp->ac_int1 & (1 << player)))
-            continue;
-          printf ("\n\n%s hands:\n\n\n\n", player_name[player]);
-          for (i = 0; i < gptr->nprod; i += 4) {
-            union board b[4];
-            int j;
-            for (j = 0; j < 4 && j < gptr->nprod - i; j++)
-              board_from_stored(&b[j], &gptr->deallist[i + j]);
-            printhands (i, b, player, gptr->nprod - i > 4 ? 4 : gptr->nprod - i);
-          }
-          printf ("\f");
-        }
-        break;
-      case ACT_AVERAGE:
-        gp->average = (double)acp->ac_int1 / gptr->nprod;
-        if (acp->ac_expr2) {
-          struct value r = evaltreefunc(acp->ac_expr2);
-          if (r.type == VAL_INT && !r.intvalue)
-            break;
-        }
-        if (acp->ac_str1)
-          printf ("%s: ", acp->ac_str1);
-        printf ("%g\n", gp->average);
-        break;
-      case ACT_FREQUENCY:
-        printf ("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
-        if (acp->ac_u.acu_f.acuf_uflow)
-          printf ("Low\t%8ld\n", acp->ac_u.acu_f.acuf_uflow);
-        for (i = acp->ac_u.acu_f.acuf_lowbnd; i <= acp->ac_u.acu_f.acuf_highbnd; i++) {
-          if (acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd] > 0)
-            printf ("%5d\t%8ld\n", i, acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd]);
-        }
-        if (acp->ac_u.acu_f.acuf_oflow)
-          printf ("High\t%8ld\n", acp->ac_u.acu_f.acuf_oflow);
-        free(acp->ac_u.acu_f.acuf_freqs);
-        break;
-      case ACT_FREQUENCYLEAD:
-      case ACT_FREQUENCY2D: {
-        int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow,
-          sumtot, sumcol, *toprintcol, *toprintrow;
-        printf ("Frequency %s:%s", acp->ac_str1 ? acp->ac_str1 : "", crlf);
-        high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
-        high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
-        low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
-        low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
-        toprintcol = (int*)mycalloc((high2 - low2 + 3), sizeof(int));
-        toprintrow = (int*)mycalloc((high1 - low1 + 3), sizeof(int));
-        for (i = 0; i < (high1 - low1) + 3; i++) {
-          for (j = 0; j < (high2 - low2) + 3; j++) {
-            toprintcol[j] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-            toprintrow[i] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-          }
-        }
-        if (toprintcol[0] != 0)
-          printf ("        Low");
-        else
-          printf ("    ");
-        for (j = 1; j < (high2 - low2) + 2; j++) {
-          if (toprintcol[j] != 0) {
-            if (acp->ac_type == ACT_FREQUENCY2D)
-              printf (" %6d", j + low2 - 1);
-            else {
-              card * header = (card*)acp->ac_expr2;
-              printf ("     ");
-              printcard(header[j - 1]);
-            }
-          }
-        }
-        if (toprintcol[j] != 0)
-          printf ("   High");
-        printf ("    Sum%s", crlf);
-        sumtot = 0;
-        for (i = 0; i < (high1 - low1) + 3; i++) {
-          sumrow = 0;
-          if (toprintrow[i] == 0)
-            continue;
-          if (i == 0)
-            printf ("Low ");
-          else if (i == (high1 - low1 + 2))
-            printf ("High");
-          else
-            printf ("%4d", i + low1 - 1);
-          for (j = 0; j < (high2 - low2) + 3; j++) {
-            n = acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-            sumrow += n;
-            if (toprintcol[j] != 0)
-              printf (" %6d", n);
-          }
-          printf (" %6d%s", sumrow, crlf);
-          sumtot += sumrow;
-        }
-        printf ("Sum ");
-        for (j = 0; j < (high2 - low2) + 3; j++) {
-          sumcol = 0;
-          for (i = 0; i < (high1 - low1) + 3; i++)
-            sumcol += acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
-          if (toprintcol[j] != 0)
-            printf (" %6d", sumcol);
-        }
-        printf (" %6d%s%s", sumtot, crlf, crlf);
-        if (acp->ac_type == ACT_FREQUENCYLEAD)
-          free(acp->ac_expr2);
-        free(acp->ac_u.acu_f2d.acuf_freqs);
-        free(toprintcol);
-        free(toprintrow);
-      }
-    }
   }
 }
 
@@ -764,7 +632,6 @@ int main (int argc, char **argv) {
   int r = deal_main(gp);
 
   gettimeofday (&tvstop, (void *) 0);
-  cleanup_action ();
   if (gp->verbose) {
     printf ("Generated %d hands\n", gp->ngen);
     printf ("Produced %d hands\n", gp->nprod);

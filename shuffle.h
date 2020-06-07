@@ -1,33 +1,31 @@
+#pragma once
 
-#if __cplusplus
-extern "C" {
-#endif
+#include "pcg-cpp/include/pcg_random.hpp"
+#include <memory>
 
-struct shuffle;
-struct globals;
+namespace DEFUN() {
 
-/**
- * Create shuffle state object based on global state
- */
-struct shuffle* DEFUN(shuffle_factory)(struct globals* gp);
+/// Interface to shuffling code with varying implementations
+struct shuffle {
+    /// Virtual class must have virtual destructor
+    virtual ~shuffle();
+    /// Generate a hand based on user input
+    virtual int do_shuffle(board* d, globals* gp) = 0;
 
-/**
- * Generate next hand
- *
- * @return 0 when hand was generated successfully
- */
-int DEFUN(shuffle_next_hand)(struct shuffle* sh, union board* d, struct globals* gp);
+    /// Generate a 32bit random number
+    // Used for rnd() function in scripts
+    unsigned random32(unsigned max);
 
-/**
- * Free shuffle state
- */
-void DEFUN(shuffle_close)(struct shuffle* sh);
+    // Factory function to construct shuffle object based on state
+    static std::unique_ptr<shuffle> factory(globals* gp);
 
-/**
- * Provide random number from shuffle context
- */
-unsigned DEFUN(random32)(struct shuffle* sh, unsigned max);
+protected:
+    /// Construct shuffle from global state
+    // @TODO: should be const if globals wouldn't be modified in runtime
+    shuffle(globals* gp);
 
-#if __cplusplus
-} /* extern "C" */
-#endif
+    pcg32_fast rng_;
+};
+
+}
+

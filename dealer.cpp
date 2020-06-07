@@ -348,7 +348,7 @@ static inline void exh_print_vector (struct handstat *hs,
 
 /* End of Specific routines for EXHAUST_MODE */
 
-static struct value evaltree (struct treebase *b) {
+static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuffle) {
   struct tree *t = (struct tree*)b;
   struct value r;
   switch (b->tr_type) {
@@ -360,7 +360,7 @@ static struct value evaltree (struct treebase *b) {
       return r;
     case TRT_VAR:
       if (gp->ngen != t->tr_int1) {
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         t->tr_int1 = gp->ngen;
         t->tr_int2 = r.type;
         t->tr_leaf2 = (treebase*)r.array;
@@ -371,12 +371,12 @@ static struct value evaltree (struct treebase *b) {
       return r;
     case TRT_AND2:
       {
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         if (!r.intvalue)
           return r;
-        r = evaltree(t->tr_leaf2);
+        r = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = !!r.intvalue;
@@ -384,14 +384,14 @@ static struct value evaltree (struct treebase *b) {
       }
     case TRT_OR2:
       {
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         if (r.intvalue) {
           r.intvalue = 1;
           return r;
         }
-        r = evaltree(t->tr_leaf2);
+        r = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = !!r.intvalue;
@@ -400,10 +400,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_ARPLUS:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r2.type != VAL_INT)
           error("Only int supported for arithmetic\n");
         r.intvalue += r2.intvalue;
@@ -412,10 +412,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_ARMINUS:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r2.type != VAL_INT)
           error("Only int supported for arithmetic\n");
         r.intvalue -= r2.intvalue;
@@ -424,10 +424,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_ARTIMES:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r2.type != VAL_INT)
           error("Only int supported for arithmetic\n");
         r.intvalue *= r2.intvalue;
@@ -436,10 +436,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_ARDIVIDE:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r2.type != VAL_INT)
           error("Only int supported for arithmetic\n");
         r.intvalue /= r2.intvalue;
@@ -448,10 +448,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_ARMOD:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r2.type != VAL_INT)
           error("Only int supported for arithmetic\n");
         r.intvalue %= r2.intvalue;
@@ -460,10 +460,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPEQ:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue == r2.intvalue;
@@ -472,10 +472,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPNE:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue != r2.intvalue;
@@ -484,10 +484,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPLT:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue < r2.intvalue;
@@ -496,10 +496,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPLE:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue <= r2.intvalue;
@@ -508,10 +508,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPGT:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue > r2.intvalue;
@@ -520,10 +520,10 @@ static struct value evaltree (struct treebase *b) {
     case TRT_CMPGE:
       {
         struct value r2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2);
+        r2 = evaltree(t->tr_leaf2, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = r.intvalue >= r2.intvalue;
@@ -531,7 +531,7 @@ static struct value evaltree (struct treebase *b) {
       }
     case TRT_NOT:
       {
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for comparison\n");
         r.intvalue = !r.intvalue;
@@ -646,11 +646,11 @@ static struct value evaltree (struct treebase *b) {
       assert (t->tr_leaf2->tr_type == TRT_THENELSE);
       {
         struct tree *leaf2 = (struct tree *)t->tr_leaf2;
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for branching");
-        return (r.intvalue ? evaltree (leaf2->tr_leaf1) :
-              evaltree (leaf2->tr_leaf2));
+        return (r.intvalue ? evaltree (leaf2->tr_leaf1, shuffle) :
+              evaltree (leaf2->tr_leaf2, shuffle));
       }
     case TRT_TRICKS:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
@@ -666,10 +666,10 @@ static struct value evaltree (struct treebase *b) {
       assert (t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
       {
         int cntr = t->tr_int2 & (64 - 1);
-        return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1));
+        return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1, shuffle));
       }
     case TRT_IMPS:
-      r = evaltree (t->tr_leaf1);
+      r = evaltree (t->tr_leaf1, shuffle);
       if (r.type != VAL_INT)
         error("Only int support for imps");
       r.intvalue = imps (r.intvalue);
@@ -679,17 +679,17 @@ static struct value evaltree (struct treebase *b) {
       r.type = VAL_INT;
       return r;
     case TRT_ABS:
-      r = evaltree (t->tr_leaf1);
+      r = evaltree (t->tr_leaf1, shuffle);
       if (r.type != VAL_INT)
         error("Only int support for abs");
       r.intvalue = abs(r.intvalue);
       return r;
     case TRT_RND:
       {
-        r = evaltree(t->tr_leaf1);
+        r = evaltree(t->tr_leaf1, shuffle);
         if (r.type != VAL_INT)
           error("Only int supported for RND");
-        unsigned random = DEFUN(random32)(gptr->shuffle, r.intvalue - 1);
+        unsigned random = shuffle->random32(r.intvalue - 1);
         int rv = (int)random;
         r.intvalue = rv;
         return r;
@@ -697,12 +697,9 @@ static struct value evaltree (struct treebase *b) {
   }
 }
 
-/* This is a macro to replace the original code :
-static int interesting () {
-  return evaltree (decisiontree);
+static inline int interesting (std::unique_ptr<shuffle> &shuffle) {
+  return evaltree(gp->decisiontree, shuffle).intvalue;
 }
-*/
-#define interesting() ((int)evaltree(gp->decisiontree).intvalue)
 
 static void setup_action () {
   struct action *acp;
@@ -791,7 +788,7 @@ static void frequency_to_lead(struct action *acp, struct value val) {
         acp->ac_expr2 = (treebase*)h;
 };
 
-static void action () {
+static void action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
   struct value expr, expr2;
 
@@ -805,14 +802,14 @@ static void action () {
       case ACT_PRINTCOMPACT:
         printcompact (&gp->curboard);
         if (acp->ac_expr1) {
-          expr = evaltree (acp->ac_expr1);
+          expr = evaltree (acp->ac_expr1, shuffle);
           printf ("%d\n", expr.intvalue);
         }
         break;
       case ACT_PRINTONELINE:
         printoneline (&gp->curboard);
         if (acp->ac_expr1) {
-          expr = evaltree (acp->ac_expr1);
+          expr = evaltree (acp->ac_expr1, shuffle);
           printf ("%d\n", expr.intvalue);
         }
         break;
@@ -821,7 +818,7 @@ static void action () {
         { struct expr *pex = (struct expr *) acp->ac_expr1;
           while (pex) {
             if (pex->ex_tr) {
-              expr = evaltree (pex->ex_tr);
+              expr = evaltree (pex->ex_tr, shuffle);
               printf ("%d", expr.intvalue);
             }
             if (pex->ex_ch) {
@@ -845,11 +842,11 @@ static void action () {
         board_to_stored(&gp->deallist[gp->nprod], &gp->curboard);
         break;
       case ACT_AVERAGE:
-        expr = evaltree(acp->ac_expr1);
+        expr = evaltree(acp->ac_expr1, shuffle);
         acp->ac_int1 += expr.intvalue;
         break;
       case ACT_FREQUENCY:
-        expr = evaltree (acp->ac_expr1);
+        expr = evaltree (acp->ac_expr1, shuffle);
         if (expr.type == VAL_INT_ARR) {
           frequency_to_lead(acp, expr);
           goto frequencylead;
@@ -862,7 +859,7 @@ static void action () {
           acp->ac_u.acu_f.acuf_freqs[expr.intvalue - acp->ac_u.acu_f.acuf_lowbnd]++;
         break;
       case ACT_FREQUENCYLEAD:
-        expr = evaltree (acp->ac_expr1);
+        expr = evaltree (acp->ac_expr1, shuffle);
 frequencylead:
         {
                 unsigned idx;
@@ -877,12 +874,142 @@ frequencylead:
         free(expr.array);
         break;
       case ACT_FREQUENCY2D:
-        expr = evaltree (acp->ac_expr1);
-        expr2 = evaltree (acp->ac_expr2);
+        expr = evaltree (acp->ac_expr1, shuffle);
+        expr2 = evaltree (acp->ac_expr2, shuffle);
         frequency2dout(acp, expr.intvalue, expr2.intvalue);
         break;
       }
     }
+}
+
+static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
+  struct action *acp;
+  int player, i;
+
+  for (acp = gptr->actionlist; acp != 0; acp = acp->ac_next) {
+    switch (acp->ac_type) {
+      default:
+        assert (0); /*NOTREACHED */
+      case ACT_PRINTALL:
+      case ACT_PRINTCOMPACT:
+      case ACT_PRINTPBN:
+      case ACT_PRINTEW:
+      case ACT_PRINTONELINE:
+      case ACT_PRINTES:
+        break;
+      case ACT_EVALCONTRACT:
+        showevalcontract (gptr->nprod);
+        break;
+      case ACT_PRINT:
+        for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
+          if (!(acp->ac_int1 & (1 << player)))
+            continue;
+          printf ("\n\n%s hands:\n\n\n\n", player_name[player]);
+          for (i = 0; i < gptr->nprod; i += 4) {
+            union board b[4];
+            int j;
+            for (j = 0; j < 4 && j < gptr->nprod - i; j++)
+              board_from_stored(&b[j], &gptr->deallist[i + j]);
+            printhands (i, b, player, gptr->nprod - i > 4 ? 4 : gptr->nprod - i);
+          }
+          printf ("\f");
+        }
+        break;
+      case ACT_AVERAGE:
+        gp->average = (double)acp->ac_int1 / gptr->nprod;
+        if (acp->ac_expr2) {
+          struct value r = evaltree(acp->ac_expr2, shuffle);
+          if (r.type == VAL_INT && !r.intvalue)
+            break;
+        }
+        if (acp->ac_str1)
+          printf ("%s: ", acp->ac_str1);
+        printf ("%g\n", gp->average);
+        break;
+      case ACT_FREQUENCY:
+        printf ("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
+        if (acp->ac_u.acu_f.acuf_uflow)
+          printf ("Low\t%8ld\n", acp->ac_u.acu_f.acuf_uflow);
+        for (i = acp->ac_u.acu_f.acuf_lowbnd; i <= acp->ac_u.acu_f.acuf_highbnd; i++) {
+          if (acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd] > 0)
+            printf ("%5d\t%8ld\n", i, acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd]);
+        }
+        if (acp->ac_u.acu_f.acuf_oflow)
+          printf ("High\t%8ld\n", acp->ac_u.acu_f.acuf_oflow);
+        free(acp->ac_u.acu_f.acuf_freqs);
+        break;
+      case ACT_FREQUENCYLEAD:
+      case ACT_FREQUENCY2D: {
+        int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow,
+          sumtot, sumcol, *toprintcol, *toprintrow;
+        printf ("Frequency %s:%s", acp->ac_str1 ? acp->ac_str1 : "", crlf);
+        high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
+        high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
+        low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
+        low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
+        toprintcol = (int*)mycalloc((high2 - low2 + 3), sizeof(int));
+        toprintrow = (int*)mycalloc((high1 - low1 + 3), sizeof(int));
+        for (i = 0; i < (high1 - low1) + 3; i++) {
+          for (j = 0; j < (high2 - low2) + 3; j++) {
+            toprintcol[j] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+            toprintrow[i] |= acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+          }
+        }
+        if (toprintcol[0] != 0)
+          printf ("        Low");
+        else
+          printf ("    ");
+        for (j = 1; j < (high2 - low2) + 2; j++) {
+          if (toprintcol[j] != 0) {
+            if (acp->ac_type == ACT_FREQUENCY2D)
+              printf (" %6d", j + low2 - 1);
+            else {
+              card * header = (card*)acp->ac_expr2;
+              printf ("     ");
+              printcard(header[j - 1]);
+            }
+          }
+        }
+        if (toprintcol[j] != 0)
+          printf ("   High");
+        printf ("    Sum%s", crlf);
+        sumtot = 0;
+        for (i = 0; i < (high1 - low1) + 3; i++) {
+          sumrow = 0;
+          if (toprintrow[i] == 0)
+            continue;
+          if (i == 0)
+            printf ("Low ");
+          else if (i == (high1 - low1 + 2))
+            printf ("High");
+          else
+            printf ("%4d", i + low1 - 1);
+          for (j = 0; j < (high2 - low2) + 3; j++) {
+            n = acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+            sumrow += n;
+            if (toprintcol[j] != 0)
+              printf (" %6d", n);
+          }
+          printf (" %6d%s", sumrow, crlf);
+          sumtot += sumrow;
+        }
+        printf ("Sum ");
+        for (j = 0; j < (high2 - low2) + 3; j++) {
+          sumcol = 0;
+          for (i = 0; i < (high1 - low1) + 3; i++)
+            sumcol += acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
+          if (toprintcol[j] != 0)
+            printf (" %6d", sumcol);
+        }
+        printf (" %6d%s%s", sumtot, crlf, crlf);
+        if (acp->ac_type == ACT_FREQUENCYLEAD)
+          free(acp->ac_expr2);
+        free(acp->ac_u.acu_f2d.acuf_freqs);
+        free(toprintcol);
+        free(toprintrow);
+      }
+    }
+  }
 }
 
 static int deal_main(struct globals *g) {
@@ -901,22 +1028,20 @@ static int deal_main(struct globals *g) {
   assert(16 == popcountll(0xffff));
 
   gp = g;
-  evaltreefunc = evaltree;
-  hascard = statichascard;
 
   initprogram ();
 
   setup_action ();
 
-  g->shuffle = DEFUN(shuffle_factory)(g);
-  if (!g->shuffle) return EXIT_FAILURE;
+  auto shuffle = shuffle::factory(g);
+  if (!shuffle) return EXIT_FAILURE;
 
   if (g->progressmeter)
     fprintf (stderr, "Calculating...  0%% complete\r");
 
-  while (!DEFUN(shuffle_next_hand) (g->shuffle, &g->curboard, g)) {
-    if (interesting ()) {
-      action ();
+  while (!shuffle->do_shuffle(&g->curboard, g)) {
+    if (interesting (shuffle)) {
+      action (shuffle);
       gp->nprod++;
       if (g->progressmeter) {
         if ((100 * gp->nprod / g->maxproduce) > 100 * (gp->nprod - 1) / g->maxproduce)
@@ -925,10 +1050,11 @@ static int deal_main(struct globals *g) {
       }
     }
   }
-  DEFUN(shuffle_close)(g->shuffle);
 
   if (g->progressmeter)
     fprintf (stderr, "                                      \r");
+
+  cleanup_action(shuffle);
 
   return 0;
 }
