@@ -8,15 +8,16 @@ extern "C" {
 
 enum cpufeatures {
 	CPUDEFAULT	= 0x000,
-	CPUSSE		= 0x004,
-	CPUSSE2		= 0x008,
-	CPUSSE3		= 0x010,
-	CPUPOPCNT	= 0x020,
-	CPUSSE41	= 0x040,
-	CPUSSE42	= 0x080,
-	CPUAVX		= 0x100,
-	CPUBMI2		= 0x200,
-	CPUAVX2		= 0x400,
+	CPUSSE		= 0x001,
+	CPUSSE2		= 0x002,
+	CPUSSE3		= 0x004,
+	CPUPOPCNT	= 0x008,
+	CPUSSE41	= 0x010,
+	CPUSSE42	= 0x020,
+	CPUAVX		= 0x040,
+	CPUBMI		= 0x080,
+	CPUBMI2		= 0x100,
+	CPUAVX2		= 0x200,
 };
 
 void cpu_init();
@@ -60,6 +61,9 @@ struct detect {
 #endif
 #if __AVX__
 			| CPUAVX
+#endif
+#if __BMI__
+			| CPUBMI
 #endif
 #if __AVX2__
 			| CPUAVX2

@@ -39,6 +39,8 @@ static unsigned check_env(unsigned features)
 		features &= ~CPUSSE42;
 	if (std::regex_search(env,std::regex{"noavx(,|$)"}))
 		features &= ~CPUAVX;
+	if (std::regex_search(env,std::regex{"nobmi(,|$)"}))
+		features &= ~CPUBMI;
 	if (std::regex_search(env,std::regex{"nobmi2(,|$)"}))
 		features &= ~CPUBMI2;
 	if (std::regex_search(env,std::regex{"noavx2(,|$)"}))
@@ -212,6 +214,8 @@ static unsigned x86_cpu_init()
 	flags.reg[2] = ecx;
 	flags.reg[3] = edx;
 
+	if (flags.data.bmi1)
+		features |= CPUBMI;
 	if (flags.data.bmi2)
 		features |= CPUBMI2;
 	if (flags.data.avx2)

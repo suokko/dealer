@@ -8,15 +8,19 @@ function(flags_check_config _NAME CPP_FLAGS FLAG_HELP)
     if (_LEN GREATER 1)
     list(GET ARGN 1 OPTION_DEFAULT)
     endif (_LEN GREATER 1)
+
+    if (NOT FLAGS_${_NAME} STREQUAL CPP_FLAGS)
+        # Clear variables if defaults changed
+        unset(OPTIMIZE_${_NAME}_C CACHE)
+        unset(OPTIMIZE_${_NAME}_CXX CACHE)
+        unset(OPTIMIZE_${_NAME}_CPP_FLAGS CACHE)
+        set(FLAGS_${_NAME} ${CPP_FLAGS} CACHE INTERNAL "" FORCE)
+    endif (NOT FLAGS_${_NAME} STREQUAL CPP_FLAGS)
+
     set(OPTIMIZE_${_NAME}_CPP_FLAGS ${CPP_FLAGS}
         CACHE STRING ${FLAG_HELP})
     mark_as_advanced(OPTIMIZE_${_NAME}_CPP_FLAGS)
 
-    if (NOT FLAGS_${_NAME} STREQUAL OPTIMIZE_${_NAME}_CPP_FLAGS)
-        unset(OPTIMIZE_${_NAME}_C CACHE)
-        unset(OPTIMIZE_${_NAME}_CXX CACHE)
-        set(FLAGS_${_NAME} ${OPTIMIZE_${_NAME}_CPP_FLAGS} CACHE INTERNAL "" FORCE)
-    endif (NOT FLAGS_${_NAME} STREQUAL OPTIMIZE_${_NAME}_CPP_FLAGS)
 
     try_compiler_flag(C "${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_C)
     try_compiler_flag(CXX "${OPTIMIZE_${_NAME}_CPP_FLAGS}" OPTIMIZE_${_NAME}_CXX)
@@ -50,7 +54,7 @@ endmacro(flags_validate_default)
 macro(flags_add_optimization interface_target)
     # User configuration for optimization flags
     flags_check_config(NATIVE_ONLY
-        ${COMPILER_CONFIG_native_only}
+        "${COMPILER_CONFIG_native_only}"
         "Compiler flags used to compile native only binary"
         "Make dealer to include only native optimiation to the processor"
         OFF)
@@ -72,7 +76,8 @@ macro(flags_add_optimization interface_target)
     # Make sure we only use selected configs
     if (OPTIMIZE_NATIVE_ONLY)
         set(COMPILER_CONFIGS default)
-        list(APPEND COMPILER_CONFIG_default ${COMPILER_CONFIG_native_only})
+        list(APPEND OPTIMIZE_default_CPP_FLAGS ${COMPILER_CONFIG_native_only})
+        list(REMOVE_DUPLICATES OPTIMIZE_default_CPP_FLAGS)
     else (OPTIMIZE_NATIVE_ONLY)
 
         foreach (CFG IN LISTS COMPILER_CONFIGS)
@@ -86,11 +91,11 @@ macro(flags_add_optimization interface_target)
     endif (OPTIMIZE_NATIVE_ONLY)
 
     add_library(${interface_target} INTERFACE)
-    target_compile_options(${interface_target} INTERFACE ${COMPILER_CONFIG_default})
+    target_compile_options(${interface_target} INTERFACE ${OPTIMIZE_default_CPP_FLAGS})
 endmacro(flags_add_optimization)
 
 # @TODO: These needs compiler and architecture specific defaults
-set(COMPILER_CONFIGS default sse2 popcnt sse4 bmi2 avx2)
+set(COMPILER_CONFIGS default sse2 popcnt sse4 bmi avx2)
 
 set(COMPILER_CONFIG_default -mfpmath=sse -ffast-math)
 flags_validate_default(COMPILER_CONFIG_default)
@@ -99,6 +104,6 @@ set(COMPILER_CONFIG_native_only -march=native -mtune=native)
 set(COMPILER_CONFIG_sse2 ${COMPILER_CONFIG_default} -msse -msse2)
 set(COMPILER_CONFIG_popcnt ${COMPILER_CONFIG_sse2} -msse3 -mpopcnt)
 set(COMPILER_CONFIG_sse4 ${COMPILER_CONFIG_popcnt} -msse4.1 -msse4.2)
-set(COMPILER_CONFIG_bmi2 ${COMPILER_CONFIG_sse4} -mavx -mbmi2)
-set(COMPILER_CONFIG_avx2 ${COMPILER_CONFIG_bmi2} -mavx2)
+set(COMPILER_CONFIG_bmi ${COMPILER_CONFIG_sse4} -mbmi)
+set(COMPILER_CONFIG_avx2 ${COMPILER_CONFIG_bmi} -mmovbe -mbmi2 -mavx -mavx2 -mfma)
 
