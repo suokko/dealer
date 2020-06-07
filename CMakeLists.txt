@@ -198,7 +198,7 @@ endif ()
 # Add multi versioned objects to the source list
 foreach (CFG ${COMPILER_CONFIGS})
     dealer_add_library(dealer_${CFG} OBJECT EXCLUDE_FROM_ALL ${MV_SRC})
-    dealer_target_compile_definitions(dealer_${CFG} PRIVATE MVDEFAULT=${CFG})
+    dealer_target_compile_definitions(dealer_${CFG} PRIVATE MVDEFAULT=${CFG} MV${CFG}=1)
     dealer_target_link_libraries(dealer dealer_${CFG})
     dealer_target_compile_options(dealer_${CFG} PRIVATE ${OPTIMIZE_${CFG}_CPP_FLAGS})
     if (LTO_SUPPORTED)

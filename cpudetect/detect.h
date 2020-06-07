@@ -72,7 +72,7 @@ struct detect {
 
 	static constexpr unsigned feature_id()
 	{
-#ifdef MVDEFAULT
+#if MVdefault
 		return CPUDEFAULT;
 #else
 		return compiler_supports();
