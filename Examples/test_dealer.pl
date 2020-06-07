@@ -40,7 +40,8 @@ sub replaceprogname {
 foreach $input (`ls $file`) {
   # Loop over all files that start with Descr.
   chop $input;
-  print "  TEST   $input\n";
+  $cmdline = join " ", $0, @ARGV;
+  print "  TEST   $input: $cmdline\n";
 
   $output = $input;
   $output =~ s/Descr/Output/;
