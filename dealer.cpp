@@ -25,11 +25,350 @@
 #include <x86intrin.h>
 #endif
 
+#include <algorithm>
+
+#if 1
+#define debugf noop
+#else
+#define debugf printf
+#endif
+
+template<typename... Args>
+void noop(Args... args) {}
+
 void yyerror (char *);
 
 #define DEFAULT_MODE STAT_MODE
 
 namespace DEFUN() {
+
+struct value {
+    // Construction from different types
+    value(int v = 0);
+    value(value_array *varr);
+    value(treebase *tb);
+
+    // Copy and assignment
+    value& operator=(value&& other);
+    value(value&& other);
+
+    // Destructor
+    ~value();
+
+    // Helper to check type of value
+    inline bool is_array() const;
+
+    // Helper to fetch key information from value array
+    inline int key(unsigned index) const;
+
+    // Apply some function to the value
+    template<typename fn_t>
+    inline const value& visit(fn_t fn) const;
+    template<typename fn_t>
+    inline value& transform(fn_t fn);
+    template<typename fn_t>
+    inline value& transform(value& o, fn_t fn);
+
+    // Implicit conversions
+    explicit inline operator treebase*();
+    explicit inline operator bool() const;
+    explicit inline operator int() const;
+
+    // Arithmetic
+    inline value operator+(value& o);
+    inline value operator-(value& o);
+    inline value operator*(value& o);
+    inline value operator/(value& o);
+    inline value operator%(value& o);
+
+    // Comparison
+    inline value operator==(value& o);
+    inline value operator!=(value& o);
+    inline value operator<(value& o);
+    inline value operator<=(value& o);
+    inline value operator>(value& o);
+    inline value operator>=(value& o);
+    inline value operator!();
+
+private:
+    /**
+     * Integer values are shifted one up and lowest bit is set. This allows code
+     * later to check the lowest bit for type of value.
+     */
+    union {
+        intptr_t value_;
+        value_array *varray_;
+    };
+};
+
+value::value(int v) :
+    value_{v << 1 | 1}
+{
+    debugf("%s %d\n", __func__, v);
+}
+
+value::value(value_array *varr) :
+    varray_{varr}
+{
+    debugf("%s %p\n", __func__, varr);
+    assert((value_ & 1) == 0);
+}
+
+value::~value()
+{
+    debugf("%s %p\n", __func__, varray_);
+    if (is_array())
+        free(varray_);
+}
+
+bool value::is_array() const
+{
+    return (value_ & 1) == 0;
+}
+
+template<typename fn_t>
+const value& value::visit(fn_t fn) const
+{
+    if (is_array()) {
+        size_t end = std::find(std::begin(varray_->key), std::end(varray_->key), 0)
+            - std::begin(varray_->key);
+        std::for_each(std::begin(varray_->value), std::begin(varray_->value) + end, fn);
+    } else
+        fn(value_ >> 1);
+
+    return *this;
+}
+
+template<typename fn_t>
+value& value::transform(fn_t fn)
+{
+    debugf("%s %p\n", __func__, varray_);
+    if (is_array()) {
+        size_t end = std::find(std::begin(varray_->key), std::end(varray_->key), 0)
+            - std::begin(varray_->key);
+        std::transform(std::begin(varray_->value), std::begin(varray_->value) + end,
+                std::begin(varray_->value), fn);
+    } else {
+        value_ = fn(value_ >> 1) << 1 | 1;
+    }
+
+    return *this;
+}
+
+template<typename fn_t>
+value& value::transform(value &o, fn_t fn)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+
+    if (o.is_array()) {
+        if (!is_array()) {
+            int temp = value_ >> 1;
+            varray_ = (value_array*)malloc(sizeof(*varray_));
+            std::uninitialized_fill(std::begin(varray_->value), std::end(varray_->value), temp);
+            std::uninitialized_copy(std::begin(o.varray_->key), std::end(o.varray_->key), std::begin(varray_->key));
+        }
+        size_t end1 = std::find(std::begin(varray_->key), std::end(varray_->key), 0)
+            - std::begin(varray_->key);
+        size_t end2 = std::find(std::begin(o.varray_->key), std::end(o.varray_->key), 0)
+            - std::begin(o.varray_->key);
+        std::transform(std::begin(varray_->value), std::begin(varray_->value) + std::min(end1, end2),
+                std::begin(o.varray_->value),
+                std::begin(varray_->value), fn);
+    } else if (is_array()) {
+        size_t end = std::find(std::begin(varray_->key), std::end(varray_->key), 0)
+            - std::begin(varray_->key);
+        std::transform(std::begin(varray_->value), std::begin(varray_->value) + end,
+                std::begin(varray_->value),
+                [&fn, &o](int value) {return fn(value, o.value_ >> 1);} );
+    } else {
+        value_ = fn(value_ >> 1, o.value_ >> 1) << 1 | 1;
+    }
+
+    return *this;
+}
+
+value::value(treebase *tb) :
+    value_{reinterpret_cast<intptr_t>(tb)}
+{
+    if (is_array()) {
+      varray_ = (value_array*)malloc(sizeof(*varray_));
+      memcpy(varray_, tb, sizeof(*varray_));
+    }
+    debugf("%s %p -> %p\n", __func__, tb, varray_);
+}
+
+value& value::operator=(value&& other)
+{
+    std::swap(value_, other.value_);
+    debugf("%s %p\n", __func__, varray_);
+    return *this;
+}
+
+value::value(value &&other) :
+    value_{0}
+{
+    std::swap(value_, other.value_);
+    debugf("%s %p\n", __func__, varray_);
+}
+
+int value::key(unsigned index) const
+{
+    assert(is_array());
+    debugf("%s %p\n", __func__, varray_);
+
+    return varray_->key[index];
+}
+
+
+value::operator treebase*()
+{
+    debugf("%s %p\n", __func__, varray_);
+    treebase* rv = reinterpret_cast<treebase*>(value_);
+    // Make sure we don't free pointer in destructor;
+    value_ &= 1;
+    return rv;
+}
+
+value::operator bool() const
+{
+    debugf("%s %p\n", __func__, varray_);
+    bool rv = true;
+    visit([&rv](int value) { rv = rv && value; });
+    return rv;
+}
+
+value::operator int() const
+{
+    debugf("%s %p\n", __func__, varray_);
+    int rv = 0;
+    unsigned cnt = 0;
+    visit([&rv,&cnt](int value) { rv += value; ++cnt;});
+    return rv/cnt;
+}
+
+value value::operator+(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o + *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a + b;});
+    return {std::move(rv)};
+}
+
+value value::operator-(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a - b;});
+    return rv;
+}
+
+value value::operator*(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o * *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a * b;});
+    return rv;
+}
+
+value value::operator/(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a / b;});
+    return rv;
+}
+
+value value::operator%(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a % b;});
+    return rv;
+}
+
+value value::operator==(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o == *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a == b;});
+    return rv;
+}
+
+value value::operator!=(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o != *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a != b;});
+    return rv;
+}
+
+value value::operator<(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o >= *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a < b;});
+    return rv;
+}
+
+value value::operator<=(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o > *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a <= b;});
+    return rv;
+}
+
+value value::operator>(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o <= *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a > b;});
+    return rv;
+}
+
+value value::operator>=(value &o)
+{
+    debugf("%s %p %p\n", __func__, varray_, o.varray_);
+    if (!is_array() && o.is_array())
+        return o < *this;
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform(o, [](int a, int b) {return a >= b;});
+    return {std::move(rv)};
+}
+
+value value::operator!()
+{
+    debugf("%s %p\n", __func__, varray_);
+    // Pass ownership to returned object
+    value rv{std::move(*this)};
+    rv.transform([](int a) {return !a;});
+    return rv;
+}
 
 /* Global variables */
 
@@ -76,7 +415,6 @@ static int dd (const union board *d, int l, int c) {
 
 static struct value lead_dd (const union board *d, int l, int c) {
   char res[13];
-  struct value r;
   struct value_array *arr = (value_array *)mycalloc(1, sizeof(*arr));
   unsigned idx, fill = 0;
   memset(res, -1, sizeof(res));
@@ -101,9 +439,7 @@ static struct value lead_dd (const union board *d, int l, int c) {
   }
   for (; fill < sizeof(res); fill++)
     arr->value[fill] = -1;
-  r.type = VAL_INT_ARR;
-  r.array = arr;
-  return r;
+  return {arr};
 }
 
 static int get_tricks (int pn, int dn) {
@@ -346,225 +682,106 @@ static inline void exh_print_vector (struct handstat *hs,
 }
 
 static struct value score (int vuln, int suit, int level, int dbl, struct value tricks) {
-  if (tricks.type == VAL_INT) {
-    tricks.intvalue = scoreone(vuln, suit, level, dbl, tricks.intvalue);
-  } else {
-    unsigned idx;
-    for (idx = 0; idx < sizeof(*tricks.array->key)/sizeof(tricks.array->key[0])
-        && tricks.array->key[idx] != 0; idx++) {
-      tricks.array->value[idx] = scoreone(vuln, suit, level, dbl, tricks.array->value[idx]);
-    }
-  }
-  return tricks;
+  tricks.transform([&](int value) {
+        return scoreone(vuln, suit, level, dbl, value);
+      });
+  return {std::move(tricks)};
 }
 
 
-/* End of Specific routines for EXHAUST_MODE */
-
 static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuffle) {
   struct tree *t = (struct tree*)b;
-  struct value r;
+  debugf("%s %d\n", __func__, b->tr_type);
   switch (b->tr_type) {
     default:
       assert (0);
     case TRT_NUMBER:
-      r.type = VAL_INT;
-      r.intvalue = t->tr_int1;
-      return r;
+      return {t->tr_int1};
     case TRT_VAR:
       if (gp->ngen != t->tr_int1) {
-        r = evaltree(t->tr_leaf1, shuffle);
+        value r = evaltree(t->tr_leaf1, shuffle);
         t->tr_int1 = gp->ngen;
-        t->tr_int2 = r.type;
-        t->tr_leaf2 = (treebase*)r.array;
-        return r;
+        t->tr_leaf2 = static_cast<treebase*>(r);
       }
-      r.type = (value_type)t->tr_int2;
-      r.array = (value_array*)t->tr_leaf2;
-      return r;
+      return {t->tr_leaf2};
     case TRT_AND2:
       {
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        if (!r.intvalue)
-          return r;
-        r = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = !!r.intvalue;
-        return r;
+        value r = evaltree(t->tr_leaf1, shuffle);
+        if (!static_cast<bool>(r))
+          return static_cast<bool>(r);
+        return static_cast<bool>(evaltree(t->tr_leaf2, shuffle));
       }
     case TRT_OR2:
       {
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        if (r.intvalue) {
-          r.intvalue = 1;
-          return r;
-        }
-        r = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = !!r.intvalue;
-        return r;
+        value r = evaltree(t->tr_leaf1, shuffle);
+        if (r)
+          return static_cast<bool>(r);
+        return static_cast<bool>(evaltree(t->tr_leaf2, shuffle));
       }
     case TRT_ARPLUS:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r2.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r.intvalue += r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) + rho;
       }
     case TRT_ARMINUS:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r2.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r.intvalue -= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) - rho;
       }
     case TRT_ARTIMES:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r2.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r.intvalue *= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) * rho;
       }
     case TRT_ARDIVIDE:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r2.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r.intvalue /= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) / rho;
       }
     case TRT_ARMOD:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r2.type != VAL_INT)
-          error("Only int supported for arithmetic\n");
-        r.intvalue %= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) % rho;
       }
     case TRT_CMPEQ:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue == r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) == rho;
       }
     case TRT_CMPNE:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue != r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) != rho;
       }
     case TRT_CMPLT:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue < r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) < rho;
       }
     case TRT_CMPLE:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue <= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) <= rho;
       }
     case TRT_CMPGT:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue > r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) > rho;
       }
     case TRT_CMPGE:
       {
-        struct value r2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r2 = evaltree(t->tr_leaf2, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = r.intvalue >= r2.intvalue;
-        return r;
+        value rho = evaltree(t->tr_leaf2, shuffle);
+        return evaltree(t->tr_leaf1, shuffle) >= rho;
       }
     case TRT_NOT:
-      {
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for comparison\n");
-        r.intvalue = !r.intvalue;
-        return r;
-      }
+      return !evaltree(t->tr_leaf1, shuffle);
     case TRT_LENGTH:      /* suit, compass */
       assert (t->tr_int1 >= SUIT_CLUB && t->tr_int1 <= SUIT_SPADE);
       assert (t->tr_int2 >= COMPASS_NORTH && t->tr_int2 <= COMPASS_WEST);
-      {
-        r.intvalue = staticsuitlength(&gp->curboard, t->tr_int2, t->tr_int1);
-        r.type = VAL_INT;
-        return r;
-      }
+      return {staticsuitlength(&gp->curboard, t->tr_int2, t->tr_int1)};
     case TRT_HCPTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      {
-        r.intvalue = hcp(&gp->curboard, hs, t->tr_int1, 4);
-        r.type = VAL_INT;
-        return r;
-      }
+      return {hcp(&gp->curboard, hs, t->tr_int1, 4)};
     case TRT_PT0TOTAL:      /* compass */
     case TRT_PT1TOTAL:      /* compass */
     case TRT_PT2TOTAL:      /* compass */
@@ -576,19 +793,11 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
     case TRT_PT8TOTAL:      /* compass */
     case TRT_PT9TOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      {
-        r.intvalue = getpc(idxTens + (b->tr_type - TRT_PT0TOTAL) / 2, gp->curboard.hands[t->tr_int1]);
-        r.type = VAL_INT;
-        return r;
-      }
+      return {getpc(idxTens + (b->tr_type - TRT_PT0TOTAL) / 2, gp->curboard.hands[t->tr_int1])};
     case TRT_HCP:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      {
-        r.intvalue = hcp(&gp->curboard, hs, t->tr_int1, t->tr_int2);
-        r.type = VAL_INT;
-        return r;
-      }
+      return {hcp(&gp->curboard, hs, t->tr_int1, t->tr_int2)};
     case TRT_PT0:      /* compass, suit */
     case TRT_PT1:      /* compass, suit */
     case TRT_PT2:      /* compass, suit */
@@ -601,76 +810,51 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
     case TRT_PT9:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      {
-        r.intvalue = getpc(idxTens + (b->tr_type - TRT_PT0) / 2, gp->curboard.hands[t->tr_int1] & suit_masks[t->tr_int2]);
-        r.type = VAL_INT;
-        return r;
-      }
+      return {getpc(idxTens + (b->tr_type - TRT_PT0) / 2, gp->curboard.hands[t->tr_int1] & suit_masks[t->tr_int2])};
     case TRT_SHAPE:      /* compass, shapemask */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       {
         struct treeshape *s = (struct treeshape *)b;
-        r.intvalue = (checkshape(distrbit(&gp->curboard, hs, s->compass), &s->shape));
-        r.type = VAL_INT;
-        return r;
+        return {checkshape(distrbit(&gp->curboard, hs, s->compass), &s->shape)};
       }
     case TRT_HASCARD:      /* compass, card */
       {
         struct treehascard *hc = (struct treehascard *)t;
         assert (hc->compass >= COMPASS_NORTH && hc->compass <= COMPASS_WEST);
-        r.intvalue = statichascard (&gp->curboard, hc->compass, hc->c) > 0;
-        r.type = VAL_INT;
-        return r;
+        return {statichascard (&gp->curboard, hc->compass, hc->c) > 0};
       }
     case TRT_LOSERTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      r.intvalue = loser(&gp->curboard, hs, t->tr_int1, 4);
-      r.type = VAL_INT;
-      return r;
+      return {loser(&gp->curboard, hs, t->tr_int1, 4)};
     case TRT_LOSER:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      r.intvalue = loser(&gp->curboard, hs, t->tr_int1, t->tr_int2);
-      r.type = VAL_INT;
-      return r;
+      return {loser(&gp->curboard, hs, t->tr_int1, t->tr_int2)};
     case TRT_CONTROLTOTAL:      /* compass */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      r.intvalue = control(&gp->curboard, hs, t->tr_int1, 4);
-      r.type = VAL_INT;
-      return r;
+      return {control(&gp->curboard, hs, t->tr_int1, 4)};
     case TRT_CONTROL:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      r.intvalue = control(&gp->curboard, hs, t->tr_int1, t->tr_int2);
-      r.type = VAL_INT;
-      return r;
+      return {control(&gp->curboard, hs, t->tr_int1, t->tr_int2)};
     case TRT_CCCC:
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-      r.intvalue = cccc (t->tr_int1);
-      r.type = VAL_INT;
-      return r;
+      return {cccc (t->tr_int1)};
     case TRT_QUALITY:
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-      r.intvalue = quality (t->tr_int1, t->tr_int2);
-      r.type = VAL_INT;
-      return r;
+      return {quality (t->tr_int1, t->tr_int2)};
     case TRT_IF:
       assert (t->tr_leaf2->tr_type == TRT_THENELSE);
       {
         struct tree *leaf2 = (struct tree *)t->tr_leaf2;
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for branching");
-        return (r.intvalue ? evaltree (leaf2->tr_leaf1, shuffle) :
+        return (evaltree(t->tr_leaf1, shuffle) ? evaltree (leaf2->tr_leaf1, shuffle) :
               evaltree (leaf2->tr_leaf2, shuffle));
       }
     case TRT_TRICKS:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);
-      r.intvalue = dd (&gp->curboard, t->tr_int1, t->tr_int2);
-      r.type = VAL_INT;
-      return r;
+      return {dd (&gp->curboard, t->tr_int1, t->tr_int2)};
     case TRT_LEADTRICKS:      /* compass, suit */
       assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);
@@ -682,36 +866,20 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
         return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1, shuffle));
       }
     case TRT_IMPS:
-      r = evaltree (t->tr_leaf1, shuffle);
-      if (r.type != VAL_INT)
-        error("Only int support for imps");
-      r.intvalue = imps (r.intvalue);
-      return r;
+      return std::move(evaltree (t->tr_leaf1, shuffle).transform([](int value) {return imps(value);}));
     case TRT_AVG:
-      r.intvalue = (int)(gptr->average*1000000);
-      r.type = VAL_INT;
-      return r;
+      return {(int)(gptr->average*1000000)};
     case TRT_ABS:
-      r = evaltree (t->tr_leaf1, shuffle);
-      if (r.type != VAL_INT)
-        error("Only int support for abs");
-      r.intvalue = abs(r.intvalue);
-      return r;
+      return std::move(evaltree (t->tr_leaf1, shuffle).transform([](int value) {return abs(value);}));
     case TRT_RND:
-      {
-        r = evaltree(t->tr_leaf1, shuffle);
-        if (r.type != VAL_INT)
-          error("Only int supported for RND");
-        unsigned random = shuffle->random32(r.intvalue - 1);
-        int rv = (int)random;
-        r.intvalue = rv;
-        return r;
-      }
+      return std::move(evaltree(t->tr_leaf1, shuffle).transform([&shuffle](int value)
+            {return shuffle->random32(value - 1);}));
   }
 }
 
-static inline int interesting (std::unique_ptr<shuffle> &shuffle) {
-  return evaltree(gp->decisiontree, shuffle).intvalue;
+static inline bool interesting (std::unique_ptr<shuffle> &shuffle) {
+  debugf("hand: %d\n", gptr->ngen);
+  return static_cast<bool>(evaltree(gp->decisiontree, shuffle));
 }
 
 static void setup_action () {
@@ -775,13 +943,11 @@ static void frequency2dout(struct action *acp, int expr,  int expr2) {
         acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * val1 + val2]++;
 }
 
-static void frequency_to_lead(struct action *acp, struct value val) {
+static void frequency_to_lead(struct action *acp, struct value& val) {
         int low1 = acp->ac_u.acu_f.acuf_lowbnd;
         int high1 = acp->ac_u.acu_f.acuf_highbnd;
         int low2 = 0;
         int high2 = 12;
-        card *h;
-        struct value_array *arr = val.array;
 
         free(acp->ac_u.acu_f.acuf_freqs);
 
@@ -793,9 +959,9 @@ static void frequency_to_lead(struct action *acp, struct value val) {
         acp->ac_u.acu_f2d.acuf_freqs = (long *)mycalloc(
                         (high1 - low1 + 3) * (high2 - low2 + 3),
                         sizeof(long));
-        h = (card*)mycalloc(high2 - low2 + 1, sizeof(card));
+        card *h = (card*)mycalloc(high2 - low2 + 1, sizeof(card));
         for (;low2 <= high2; low2++) {
-               card c = 1LL << arr->key[low2];
+               card c = 1LL << val.key(low2);
                h[low2] = c;
         }
         acp->ac_expr2 = (treebase*)h;
@@ -803,7 +969,8 @@ static void frequency_to_lead(struct action *acp, struct value val) {
 
 static void action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
-  struct value expr, expr2;
+  int expr, expr2;
+  value maybelead;
 
   for (acp = gp->actionlist; acp != 0; acp = acp->ac_next) {
     switch (acp->ac_type) {
@@ -815,15 +982,15 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
       case ACT_PRINTCOMPACT:
         printcompact (&gp->curboard);
         if (acp->ac_expr1) {
-          expr = evaltree (acp->ac_expr1, shuffle);
-          printf ("%d\n", expr.intvalue);
+          expr = static_cast<int>(evaltree (acp->ac_expr1, shuffle));
+          printf ("%d\n", expr);
         }
         break;
       case ACT_PRINTONELINE:
         printoneline (&gp->curboard);
         if (acp->ac_expr1) {
-          expr = evaltree (acp->ac_expr1, shuffle);
-          printf ("%d\n", expr.intvalue);
+          expr = static_cast<int>(evaltree (acp->ac_expr1, shuffle));
+          printf ("%d\n", expr);
         }
         break;
 
@@ -831,8 +998,8 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
         { struct expr *pex = (struct expr *) acp->ac_expr1;
           while (pex) {
             if (pex->ex_tr) {
-              expr = evaltree (pex->ex_tr, shuffle);
-              printf ("%d", expr.intvalue);
+              expr = static_cast<int>(evaltree (pex->ex_tr, shuffle));
+              printf ("%d", expr);
             }
             if (pex->ex_ch) {
               printf ("%s", pex->ex_ch);
@@ -855,45 +1022,42 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
         board_to_stored(&gp->deallist[gp->nprod], &gp->curboard);
         break;
       case ACT_AVERAGE:
-        expr = evaltree(acp->ac_expr1, shuffle);
-        acp->ac_int1 += expr.intvalue;
+        expr = static_cast<int>(evaltree(acp->ac_expr1, shuffle));
+        acp->ac_int1 += expr;
         break;
       case ACT_FREQUENCY:
-        expr = evaltree (acp->ac_expr1, shuffle);
-        if (expr.type == VAL_INT_ARR) {
-          frequency_to_lead(acp, expr);
+        maybelead = std::move(evaltree (acp->ac_expr1, shuffle));
+        if (maybelead.is_array()) {
+          frequency_to_lead(acp, maybelead);
           goto frequencylead;
         }
-        if (expr.intvalue < acp->ac_u.acu_f.acuf_lowbnd)
+        expr = static_cast<int>(maybelead);
+        if (expr < acp->ac_u.acu_f.acuf_lowbnd)
           acp->ac_u.acu_f.acuf_uflow++;
-        else if (expr.intvalue > acp->ac_u.acu_f.acuf_highbnd)
+        else if (expr > acp->ac_u.acu_f.acuf_highbnd)
           acp->ac_u.acu_f.acuf_oflow++;
         else
-          acp->ac_u.acu_f.acuf_freqs[expr.intvalue - acp->ac_u.acu_f.acuf_lowbnd]++;
+          acp->ac_u.acu_f.acuf_freqs[expr - acp->ac_u.acu_f.acuf_lowbnd]++;
         break;
       case ACT_FREQUENCYLEAD:
-        expr = evaltree (acp->ac_expr1, shuffle);
+        maybelead = std::move(evaltree (acp->ac_expr1, shuffle));
 frequencylead:
         {
-                unsigned idx;
-                struct value_array *arr = (value_array*)expr.array;
-                assert(expr.type == VAL_INT_ARR);
-                for (idx = 0; idx < 13; idx++) {
-                        if (arr->value[idx] < 0)
-                                continue;
-                        frequency2dout(acp, arr->value[idx], idx);
-                }
+                assert(maybelead.is_array());
+                unsigned idx = 0;
+                maybelead.visit([&acp,&idx](int value) {
+                    frequency2dout(acp, value, idx++);
+                });
         }
-        free(expr.array);
         break;
       case ACT_FREQUENCY2D:
-        expr = evaltree (acp->ac_expr1, shuffle);
-        expr2 = evaltree (acp->ac_expr2, shuffle);
-        frequency2dout(acp, expr.intvalue, expr2.intvalue);
+        expr = static_cast<int>(evaltree (acp->ac_expr1, shuffle));
+        expr2 = static_cast<int>(evaltree (acp->ac_expr2, shuffle));
+        frequency2dout(acp, expr, expr2);
         break;
       }
     }
-}
+    }
 
 static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
@@ -931,8 +1095,7 @@ static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
       case ACT_AVERAGE:
         gp->average = (double)acp->ac_int1 / gptr->nprod;
         if (acp->ac_expr2) {
-          struct value r = evaltree(acp->ac_expr2, shuffle);
-          if (r.type == VAL_INT && !r.intvalue)
+          if (!evaltree(acp->ac_expr2, shuffle))
             break;
         }
         if (acp->ac_str1)

@@ -1,0 +1,116 @@
+predeal south SAQ4, HJ, DKJ6543, C632
+
+lead = leadtricks(east, hearts)
+
+lowest = 6
+mid = 8
+
+# Arithmetic
+lead_add_lho = lead + 1
+lead_add_rho = 1 + lead
+lead_add_both = lead + lead
+lead_sub_lho = lead - 1
+lead_sub_rho = 13 - lead
+lead_sub_both = lead - lead
+lead_mul_lho = lead * 2
+lead_mul_rho = 2 * lead
+lead_mul_both = lead * lead
+lead_div_lho = lead / 2
+lead_div_rho = 100 / lead
+lead_div_both = lead / lead
+lead_mod_lho = lead % 2
+lead_mod_rho = 100 % lead
+lead_mod_both = lead  % lead
+
+#compare
+lead_eq_lho = lead == mid
+lead_eq_rho = mid == lead 
+lead_eq_both = lead == lead
+lead_neq_lho = lead != mid
+lead_neq_rho = mid != lead 
+lead_neq_both = lead != lead
+lead_lt_lho = lead < mid
+lead_lt_rho = mid < lead 
+lead_lt_both = lead < lead
+lead_le_lho = lead <= mid
+lead_le_rho = mid <= lead 
+lead_le_both = lead <= lead
+lead_gt_lho = lead > mid
+lead_gt_rho = mid > lead 
+lead_gt_both = lead > lead
+lead_ge_lho = lead >= mid
+lead_ge_rho = mid >= lead 
+lead_ge_both = lead >= lead
+lead_not = !(lead - lowest)
+
+#conditionals
+lead_if_true = lead ? 1 : 0
+lead_if_false = lead - lowest ? 1 : 0
+lead_and_true = lead && 1
+lead_and_false = lead - lowest && 1
+lead_or_true = lead || 0
+lead_or_false = lead - lowest || 0
+
+#functions
+lead_rnd = rnd(lead)
+lead_abs = abs(lead - mid)
+lead_score_3H = score(vul, x3H, lead)
+lead_score_4H = score(vul, x4H, lead)
+lead_imps_4H = imps(lead_score_4H - lead_score_3H)
+
+produce 5
+
+condition lead <= 11
+
+action
+	printoneline,
+	frequency "lead" (lead,0,13),
+# Arithmetic
+	frequency "lead_add_lho" (lead_add_lho,-1,100),
+	frequency "lead_add_rho" (lead_add_rho,-1,100),
+	frequency "lead_add_both" (lead_add_both,-1,100),
+	frequency "lead_sub_lho" (lead_sub_lho,-1,100),
+	frequency "lead_sub_rho" (lead_sub_rho,-1,100),
+	frequency "lead_sub_both" (lead_sub_both,-1,100),
+	frequency "lead_mul_lho" (lead_mul_lho,-1,100),
+	frequency "lead_mul_rho" (lead_mul_rho,-1,100),
+	frequency "lead_mul_both" (lead_mul_both,-1,200),
+	frequency "lead_div_lho" (lead_div_lho,-1,100),
+	frequency "lead_div_rho" (lead_div_rho,-1,100),
+	frequency "lead_div_both" (lead_div_both,-1,100),
+	frequency "lead_mod_lho" (lead_mod_lho,-1,100),
+	frequency "lead_mod_rho" (lead_mod_rho,-1,100),
+	frequency "lead_mod_both" (lead_mod_both,-1,100),
+#compare
+	frequency "lead_eq_lho" (lead_eq_lho,0,1),
+	frequency "lead_eq_rho" (lead_eq_rho,0,1),
+	frequency "lead_eq_both" (lead_eq_both,0,1),
+	frequency "lead_neq_lho" (lead_neq_lho,0,1),
+	frequency "lead_neq_rho" (lead_neq_rho,0,1),
+	frequency "lead_neq_both" (lead_neq_both,0,1),
+	frequency "lead_lt_lho" (lead_lt_lho,0,1),
+	frequency "lead_lt_rho" (lead_lt_rho,0,1),
+	frequency "lead_lt_both" (lead_lt_both,0,1),
+	frequency "lead_le_lho" (lead_le_lho,0,1),
+	frequency "lead_le_rho" (lead_le_rho,0,1),
+	frequency "lead_le_both" (lead_le_both,0,1),
+	frequency "lead_gt_lho" (lead_gt_lho,0,1),
+	frequency "lead_gt_rho" (lead_gt_rho,0,1),
+	frequency "lead_gt_both" (lead_gt_both,0,1),
+	frequency "lead_ge_lho" (lead_ge_lho,0,1),
+	frequency "lead_ge_rho" (lead_ge_rho,0,1),
+	frequency "lead_ge_both" (lead_ge_both,0,1),
+	frequency "lead_not" (lead_not,0,1),
+#conditionals
+	frequency "lead_if_true" (lead_if_true,0,1),
+	frequency "lead_if_false" (lead_if_false,0,1),
+	frequency "lead_and_true" (lead_and_true,0,1),
+	frequency "lead_and_false" (lead_and_false,0,1),
+	frequency "lead_or_true" (lead_or_true,0,1),
+	frequency "lead_or_false" (lead_or_false,0,1),
+#functions
+	frequency "lead_rnd" (lead_rnd,0,13),
+	frequency "lead_abs" (lead_abs,0,13),
+	frequency "lead_score_3H" (lead_score_3H,-1000,1000),
+	frequency "lead_score_4H" (lead_score_4H,-1000,1000),
+	frequency "lead_imps_4H" (lead_imps_4H,-1000,1000),

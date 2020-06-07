@@ -87,19 +87,6 @@ struct value_array {
   int value[13];
 };
 
-enum value_type {
-  VAL_INT,
-  VAL_INT_ARR,
-};
-
-struct value {
-  enum value_type type;
-  union {
-    struct value_array *array;
-    int intvalue;
-  };
-};
-
 static inline int getshapenumber (unsigned cl, unsigned di, unsigned ht)
 {
   unsigned max = 14-cl;

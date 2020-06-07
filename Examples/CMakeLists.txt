@@ -6,6 +6,7 @@ set(EXAMPLES
     Descr.dds.test_lead
     Descr.dds.test_lead_no_cards_defined
     Descr.dds.test_tricks
+    Descr.dds.test_lead_arithmetic
     Descr.evaluation
     Descr.hm1dr2d
     Descr.junkstayman
