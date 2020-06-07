@@ -1,7 +1,7 @@
 [submodule "dds"]
 	path = dds
-	url = https://github.com/dds-bridge/dds
+	url = ../../dds-bridge/dds
 	branch = master
 [submodule "pcg-cpp"]
 	path = pcg-cpp
-	url = https://github.com/imneme/pcg-cpp
+	url = ../../imneme/pcg-cpp
