@@ -286,90 +286,6 @@ static void initprogram (void)
 
 /* Specific routines for EXHAUST_MODE */
 
-static void exh_get2players (unsigned exh_player[2]) {
-  /* Just finds who are the 2 players for whom we make exhaustive dealing */
-  int player, player_bit;
-  for (player = COMPASS_NORTH, player_bit = 0; player<=COMPASS_WEST; player++) {
-    if (hand_count_cards(gp->predealt.hands[player]) != 13) {
-      if (player_bit == 2) {
-        /* Exhaust mode only if *exactly* 2 hands have unknown cards */
-        fprintf (stderr,
-         "Exhaust-mode error: more than 2 unknown hands...%s",crlf);
-        exit (-1); /*NOTREACHED */
-      }
-      exh_player[player_bit++] = player;
-    }
-  }
-  if (player_bit < 2) {
-    /* Exhaust mode only if *exactly* 2 hands have unknown cards */
-    fprintf (stderr, "Exhaust-mode error: less than 2 unknown hands...%s",crlf);
-    exit (-1); /*NOTREACHED */
-  }
-}
-
-static unsigned exh_map_cards (union board* b,
-    unsigned exh_player[2],
-    unsigned* exh_vect_length,
-    card *exh_card_at_bit) {
-  int i;
-  int bit_pos;
-  hand predeal = 0;
-  hand p1 = 0;
-  hand p0 = 0;
-  unsigned exh_vectordeal = 0;
-#if __BMI2__
-  hand allbits = 0;
-#endif
-
-  for (i = 0; i < 4; i++) {
-    predeal |= gp->predealt.hands[i];
-    b->hands[i] = gp->predealt.hands[i];
-  }
-
-  /* Fill in all cards not predealt */
-  hand shuffle = ~predeal & all_suits_mask;
-  for (bit_pos = 0; shuffle;) {
-    // remove lowest set bit
-    hand next_shuffle = (shuffle - 1) & shuffle;
-    // Isolate the changed card
-    card onecard = next_shuffle ^ shuffle;
-    shuffle = next_shuffle;
-#if __BMI2__
-    allbits |= onecard;
-#else
-    exh_card_at_bit[bit_pos] = onecard;
-#endif
-    bit_pos++;
-  }
-
-  int p1cnt = 13 - hand_count_cards(gp->predealt.hands[exh_player[1]]);
-
-  *exh_vect_length = bit_pos;
-  /* Set N lower bits that will be moved to high bits */
-  exh_vectordeal = (1u << p1cnt) - 1;
-
-  // Map cards to hands
-#if __BMI2__
-  exh_card_at_bit[0] = allbits;
-
-  p1 = _pdep_u64(exh_vectordeal, allbits);
-  unsigned mask = (1u << bit_pos) - 1;
-  p0 = _pdep_u64(~exh_vectordeal & mask, allbits);
-#else
-  for (i = 0; i < p1cnt; i++)
-    p1 |= exh_card_at_bit[i];
-  for (; i < bit_pos; i++)
-    p0 |= exh_card_at_bit[i];
-#endif
-
-  assert(hand_count_cards(p0 | b->hands[exh_player[0]]) == 13);
-  assert(hand_count_cards(p1 | b->hands[exh_player[1]]) == 13);
-  b->hands[exh_player[0]] |= p0;
-  b->hands[exh_player[1]] |= p1;
-
-  return exh_vectordeal;
-}
-
 static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   int s;
   for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
@@ -429,51 +345,6 @@ static inline void exh_print_vector (struct handstat *hs,
   exh_print_stats (hs + exh_player[1], hs_length);
 }
 
-static unsigned bitpermutate(unsigned vector)
-{
-  /* set all lowest zeros to one */
-  unsigned bottomones = vector | (vector - 1);
-  /* Set the lowest zero bit in original */
-  unsigned nextvector = bottomones + 1;
-  /* flip bits */
-  unsigned moveback = ~bottomones;
-  /* select the lowest zero bit in bottomones */
-  moveback &= 0 - moveback;
-  /* set to ones all low bits that are ones in bottomones */
-  moveback--;
-  /* move back set bits the number of trailing zeros plus one in original
-   * number. This removes the lowest set bit in original vector and moves
-   * all ones next to it to bottom.
-   */
-  moveback >>= __builtin_ctz(vector) + 1;
-  /* combine the result vector to get next permutation */
-  return nextvector | moveback;
-}
-
-static unsigned exh_shuffle (union board* b,
-    unsigned exh_player[2],
-    unsigned prevvect,
-    card *exh_card_at_bit) {
-  hand bitstoflip = 0;
-
-  unsigned exh_vectordeal = bitpermutate(prevvect);
-  unsigned changed = exh_vectordeal ^ prevvect;
-
-#if __BMI2__
-  bitstoflip = _pdep_u64(changed, exh_card_at_bit[0]);
-#else
-  do {
-    unsigned last = __builtin_ctz(changed);
-    bitstoflip |= exh_card_at_bit[last];
-    changed &= changed - 1;
-  } while (changed);
-#endif
-
-  b->hands[exh_player[0]] ^= bitstoflip;
-  b->hands[exh_player[1]] ^= bitstoflip;
-
-  return exh_vectordeal;
-}
 
 /* End of Specific routines for EXHAUST_MODE */
 
@@ -1016,11 +887,6 @@ frequencylead:
 
 static int deal_main(struct globals *g) {
 
-  assert(0x107f == bitpermutate(0x0ff0));
-  assert(0xfe02 == bitpermutate(0xfe01));
-  assert(0xf061 == bitpermutate(0xf058));
-  assert(0x017f == bitpermutate(0x00ff));
-
   assert(0 == popcount(0x0000));
   assert(1 == popcount(0x0100));
   assert(2 == popcount(0x1001));
@@ -1042,83 +908,28 @@ static int deal_main(struct globals *g) {
 
   setup_action ();
 
+  g->shuffle = DEFUN(shuffle_factory)(g);
+  if (!g->shuffle) return EXIT_FAILURE;
+
   if (g->progressmeter)
     fprintf (stderr, "Calculating...  0%% complete\r");
 
-  switch (gp->computing_mode) {
-    case STAT_MODE:
-    {
-      g->shuffle = DEFUN(shuffle_factory)(g);
-      if (!g->shuffle) break;
-      while (!DEFUN(shuffle_next_hand) (g->shuffle, &g->curboard, g)) {
-        if (interesting ()) {
-          action ();
-          gp->nprod++;
-          if (g->progressmeter) {
-            if ((100 * gp->nprod / g->maxproduce) > 100 * (gp->nprod - 1) / g->maxproduce)
-              fprintf (stderr, "Calculating... %2d%% complete\r",
-               100 * gp->nprod / g->maxproduce);
-          }
-        }
+  while (!DEFUN(shuffle_next_hand) (g->shuffle, &g->curboard, g)) {
+    if (interesting ()) {
+      action ();
+      gp->nprod++;
+      if (g->progressmeter) {
+        if ((100 * gp->nprod / g->maxproduce) > 100 * (gp->nprod - 1) / g->maxproduce)
+          fprintf (stderr, "Calculating... %2d%% complete\r",
+              100 * gp->nprod / g->maxproduce);
       }
-      DEFUN(shuffle_close)(g->shuffle);
-      break;
     }
-    case EXHAUST_MODE:
-      {
-        /* Special variables for exhaustive mode
-           Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
+  }
+  DEFUN(shuffle_close)(g->shuffle);
 
-        /* the two players that have unknown cards */
-        unsigned exh_player[2];
-        exh_get2players (exh_player);
-
-#if __BMI2__
-        /* bit mask for all shuffled cards */
-        hand exh_card_at_bit[1];
-#else
-        /* exh_card_at_bit[i] is the card pointed by the bit #i */
-        card exh_card_at_bit[26];
-#endif
-        unsigned exh_vect_length;
-        /* a exh_vectordeal is a binary *word* of at most 26 bits: there are at most
-           26 cards to deal between two players.  Each card to deal will be
-           affected to a given position in the vector.  Example : we need to deal
-           the 26 minor cards between north and south (what a double fit !!!)
-           Then those cards will be represented in a binary vector as shown below:
-                Card    : DA DK ... D2 CA CK ... C4 C3 C2
-                Bit-Pos : 25 24     13 12 11      2  1  0
-           The two players will be respectively represented by the bit values 0 and
-           1. Let's say north gets the 0, and south the 1. Then the vector
-           11001100000001111111110000 represents the following hands :
-                North: D QJ8765432 C 5432
-                South: D AKT9      C AKQJT9876
-           A suitable exh_vectordeal is a vector deal with hamming weight equal to 13.
-           For computing those vectors, we use a straightforward
-           meet in the middle approach.  */
-        unsigned exh_vectordeal = exh_map_cards (&g->curboard, exh_player, &exh_vect_length, exh_card_at_bit);
-        unsigned end = 1u << exh_vect_length;
-        for (; exh_vectordeal < end;
-            exh_vectordeal = exh_shuffle(&g->curboard, exh_player, exh_vectordeal, exh_card_at_bit)) {
-
-          assert(hand_count_cards(g->curboard.hands[exh_player[0]]) == 13);
-          assert(hand_count_cards(g->curboard.hands[exh_player[1]]) == 13);
-
-          gp->ngen++;
-          if (interesting ()) {
-            /*  exh_print_vector(hs, exh_player, exh_vectordeal, exh_vect_length); */
-            action ();
-            gp->nprod++;
-          }
-        }
-      }
-      break;
-    default:
-      fprintf (stderr, "Unrecognized computation mode...\n");
-      exit (-1); /*NOTREACHED */
-    }
   if (g->progressmeter)
     fprintf (stderr, "                                      \r");
+
   return 0;
 }
 

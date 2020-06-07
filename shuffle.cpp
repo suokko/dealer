@@ -114,6 +114,188 @@ private:
     std::ifstream lib_;
 };
 
+struct exhaust_mode : public shuffle {
+    exhaust_mode(globals *gp);
+
+    int do_shuffle(board *d, globals *gp) override;
+
+private:
+    /// Indexes to players we are shuffling
+    std::array<unsigned,2> players_;
+    /** Bit vector state which is used to generate hands
+     * a bitvector is a binary *word* of at most 26 bits: there are at most
+     * 26 cards to deal between two players.  Each card to deal will be
+     * affected to a given position in the vector.  Example : we need to deal
+     * the 26 minor cards between north and south (what a double fit !!!)
+     * Then those cards will be represented in a binary vector as shown below:
+     *      Card    : DA DK ... D2 CA CK ... C4 C3 C2
+     *      Bit-Pos : 25 24     13 12 11      2  1  0
+     * The two players will be respectively represented by the bit values 0 and
+     * 1. Let's say north gets the 0, and south the 1. Then the vector
+     * 11001100000001111111110000 represents the following hands :
+     *      North: D QJ8765432 C 5432
+     *      South: D AKT9      C AKQJT9876
+     * A suitable exh_vectordeal is a vector deal with hamming weight equal to 13.
+     * For computing those vectors, we use a straightforward
+     * meet in the middle approach.
+     */
+   unsigned bitvector_;
+#if __BMI2__
+    /// Bit mask mapping card positions in hand representation (pdep required)
+    hand exh_card_at_bit_[1];
+#else
+    /// Helper to map bit position to a card bit
+    card exh_card_at_bit_[26];
+#endif
+
+    static std::array<unsigned, 2> map_players(const globals *gp);
+
+    static unsigned bitpermutate(unsigned vector);
+};
+
+std::array<unsigned, 2> exhaust_mode::map_players(const globals *gp)
+{
+    std::array<unsigned, 2> exh_player;
+    /* Just finds who are the 2 players for whom we make exhaustive dealing */
+    int player, player_bit;
+    for (player = COMPASS_NORTH, player_bit = 0; player<=COMPASS_WEST; player++) {
+        if (hand_count_cards(gp->predealt.hands[player]) != 13) {
+            if (player_bit == 2) {
+                /* Exhaust mode only if *exactly* 2 hands have unknown cards */
+                fprintf (stderr,
+                        "Exhaust-mode error: more than 2 unknown hands...%s",crlf);
+                exit (-1); /*NOTREACHED */
+            }
+            exh_player[player_bit++] = player;
+        }
+    }
+    if (player_bit < 2) {
+        /* Exhaust mode only if *exactly* 2 hands have unknown cards */
+        fprintf (stderr, "Exhaust-mode error: less than 2 unknown hands...%s",crlf);
+        exit (-1); /*NOTREACHED */
+    }
+    return exh_player;
+}
+
+exhaust_mode::exhaust_mode(globals* gp) :
+    shuffle{gp},
+    players_{map_players(gp)}
+{
+    int i;
+    int bit_pos;
+    hand predeal = 0;
+    hand p0 = 0;
+    hand p1 = 0;
+    unsigned exh_vectordeal = 0;
+    board *b = &gp->curboard;
+#if __BMI2__
+    hand allbits = 0;
+#endif
+
+    for (i = 0; i < 4; i++) {
+        predeal |= gp->predealt.hands[i];
+        b->hands[i] = gp->predealt.hands[i];
+    }
+
+    /* Fill in all cards not predealt */
+    hand shuffle = ~predeal & all_suits_mask;
+    for (bit_pos = 0; shuffle; ++bit_pos) {
+        // remove lowest set bit
+        hand next_shuffle = (shuffle - 1) & shuffle;
+        // Isolate the changed card
+        card onecard = next_shuffle ^ shuffle;
+        shuffle = next_shuffle;
+#if __BMI2__
+        allbits |= onecard;
+#else
+        exh_card_at_bit_[bit_pos] = onecard;
+#endif
+    }
+
+    int p1cnt = 13 - hand_count_cards(gp->predealt.hands[players_[1]]);
+
+    /* Set N lower bits that will be moved to high bits */
+    exh_vectordeal = (1u << p1cnt) - 1;
+
+    // Map cards to hands
+#if __BMI2__
+    exh_card_at_bit_[0] = allbits;
+
+    p1 = _pdep_u64(exh_vectordeal, allbits);
+    unsigned mask = (1u << bit_pos) - 1;
+    p0 = _pdep_u64(~exh_vectordeal & mask, allbits);
+#else
+    for (i = 0; i < p1cnt; i++)
+        p1 |= exh_card_at_bit_[i];
+    for (; i < bit_pos; i++)
+        p0 |= exh_card_at_bit_[i];
+#endif
+
+    // Check that we have 13 cards in each hand
+    assert(hand_count_cards(p0 | b->hands[players_[0]]) == 13);
+    assert(hand_count_cards(p1 | b->hands[players_[1]]) == 13);
+    // Add cards to hands
+    b->hands[players_[0]] |= p0;
+    b->hands[players_[1]] |= p1;
+
+    bitvector_ = exh_vectordeal;
+    // Setup limits to number of deals
+    gp->maxgenerate = ncrlarge(bit_pos, p1cnt);
+    gp->maxproduce = ncrlarge(bit_pos, p1cnt);
+    gp->ngen = gp->nprod = 0;
+}
+
+unsigned exhaust_mode::bitpermutate(unsigned vector)
+{
+    /* set all lowest zeros to one */
+    unsigned bottomones = vector | (vector - 1);
+    /* Set the lowest zero bit in original */
+    unsigned nextvector = bottomones + 1;
+    /* flip bits */
+    unsigned moveback = ~bottomones;
+    /* select the lowest zero bit in bottomones */
+    moveback &= 0 - moveback;
+    /* set to ones all low bits that are ones in bottomones */
+    moveback--;
+    /* move back set bits the number of trailing zeros plus one in original
+     * number. This removes the lowest set bit in original vector and moves
+     * all ones next to it to bottom.
+     */
+    moveback >>= __builtin_ctz(vector) + 1;
+    /* combine the result vector to get next permutation */
+    return nextvector | moveback;
+}
+
+int exhaust_mode::do_shuffle(board *b, globals *gp)
+{
+    if (gp->ngen >= gp->maxgenerate)
+        return 1;
+
+    gp->ngen++;
+
+    hand bitstoflip = 0;
+
+    unsigned exh_vectordeal = bitpermutate(bitvector_);
+    unsigned changed = exh_vectordeal ^ bitvector_;
+
+#if __BMI2__
+    bitstoflip = _pdep_u64(changed, exh_card_at_bit_[0]);
+#else
+    do {
+        unsigned last = __builtin_ctz(changed);
+        bitstoflip |= exh_card_at_bit_[last];
+        changed &= changed - 1;
+    } while (changed);
+#endif
+
+    bitvector_ = exh_vectordeal;
+
+    b->hands[players_[0]] ^= bitstoflip;
+    b->hands[players_[1]] ^= bitstoflip;
+
+    return 0;
+}
+
 template<typename parent>
 struct shuffle_swap : public parent {
     shuffle_swap(globals* gp);
@@ -563,6 +745,10 @@ int shuffle_swap<parent>::do_shuffle(board* d, globals* gp)
 
 static struct shuffle* factory(globals* gp)
 {
+    // Are we using exhaust mode?
+    if (gp->computing_mode == EXHAUST_MODE)
+        return new exhaust_mode(gp);
+
     // Are we loading from library.dat?
     if (gp->loading) {
         if (gp->swapping)
