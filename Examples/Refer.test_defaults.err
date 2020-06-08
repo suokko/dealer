@@ -11,6 +11,46 @@ dealer.cov: invalid option -- '?'
 Usage: dealer.cov [-emv] [-s seed] [-i rng|52 cards] [-p num] [-v num] [inputfile]
 -s 1 SecondParam.file Descr.test_defaults
 SecondParam.file: No such file or directory
--s 1 -i ♣J♣3♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
+-s 1 -i cJC3s7S5♧Qh9d9♠2H5Dt♢2♠j♣a♣4♣8♦J♦5♤3♣T♡2♥J♥A♥k♣5♦8♥q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
+-s 1 -i ♣J♣3♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8 Descr.test_defaults
+Need 52 cards for the initial pack order
+-s 1 -i ♣J3♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
+Unknown suit symbol for the initial pack order
+-s 1 -i ♣J♣♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♣J♣J♠7♠5♣Q♥9♦9♠2♥5♦T♦2♠J♣A♣4♣8♦J♦5♠3♣T♥2♥J♥A♥K♣5♦8♥Q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
+Same card provide twice for the initial pack order
+-s 1 -i cC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i CC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♣C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♧C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i dC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i DC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♦C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♢C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i hC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i HC Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♥C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♡C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♣C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♣C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♠C Descr.test_defaults
+Unknown rank symbol for the initial pack order
+-s 1 -i ♤C Descr.test_defaults
+Unknown rank symbol for the initial pack order
 -e Descr.test_defaults
 Exhaust-mode error: more than 2 unknown hands...

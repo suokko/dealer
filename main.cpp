@@ -8,6 +8,7 @@
 #include "bittwiddle.h"
 
 #include <random>
+#include <regex>
 
 char* input_file = 0;
 
@@ -246,36 +247,85 @@ void newpack (union pack *d, const char *initialpack) {
         std::swap(d->c[pos], d->c[place]);
       }
     } else {
-      const char *initer = initialpack;
-      const char *suitsymbols[4][4] = {
-        {"C","c",u8"♣",u8"♧"},
-        {"D","d",u8"♦",u8"♤"},
-        {"H","h",u8"♥",u8"♡"},
-        {"S","s",u8"♠",u8"♤"},
-      };
-      for (place = 0; place < 52; place++) {
-        char suit, rank;
-        int s, i;
-        if (initer[0] == '\0')
-          error("Need 52 card for initial pack order");
-        for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
-          suit = suitsymbols[s][0][0];
-          for (i = 0; i < 4; i++) {
-            if (strncmp(initer, suitsymbols[s][i], strlen(suitsymbols[s][i])) == 0) {
-              initer += strlen(suitsymbols[s][i]);
-              goto breakout;
-            }
-          }
-        }
-        error("Unknown suit symbol");
-breakout:
-        if (initer[0] == '\0')
-          error("Need 52 card for initial pack order");
-        rank = initer[0];
-        initer++;
 
-        d->c[place] = make_card(rank, suit);
+      // It is important to remember that multibyte characters are actual
+      // strings when compiling regular expression.
+      std::regex parser(
+        u8"^(?:([Cc]|♣|♧)|([Dd]|♦|♢)|([Hh]|♥|♡)|([Ss]|♠|♤))([2-9tTjJqQkKaA])",
+        std::regex::ECMAScript | std::regex::optimize);
+
+      const char *begin = initialpack;
+      const char *end = initialpack + strlen(initialpack);
+      std::cmatch match;
+      hand allcards{0};
+
+      for (place = 0; place < 52 && std::regex_search(begin, end, match, parser); ++place) {
+        if (match[1].matched)
+          suit = SUIT_CLUB;
+        else if (match[2].matched)
+          suit = SUIT_DIAMOND;
+        else if (match[3].matched)
+          suit = SUIT_HEART;
+        else if (match[4].matched)
+          suit = SUIT_SPADE;
+        else
+          assert("Regular expression matched but none of required suit subexpressions match");
+        assert(match[5].matched && "Rank subexpression doesn't hold match like expected");
+        char rc = match[5].first[0];
+        switch (rc) {
+        default:
+          assert("Unknown character for card rank");
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          rank = rc - '2';
+          break;
+        case 't':
+        case 'T':
+          rank = 10 - 2;
+          break;
+        case 'j':
+        case 'J':
+          rank = 11 - 2;
+          break;
+        case 'q':
+        case 'Q':
+          rank = 12 - 2;
+          break;
+        case 'k':
+        case 'K':
+          rank = 13 - 2;
+          break;
+        case 'a':
+        case 'A':
+          rank = 14 - 2;
+          break;
+        }
+
+        d->c[place] = MAKECARD(suit, rank);
+        if (hand_has_card(allcards, d->c[place]))
+          error("Same card provide twice for the initial pack order");
+
+        allcards = hand_add_card(allcards, d->c[place]);
+
+        begin = match.suffix().first;
       }
+      if (begin != end && place < 52) {
+        std::regex suit_regex(u8"^(?:[CcDdHhSs]|♣|♧|♦|♢|♥|♡|♠|♤)");
+        if (!std::regex_search(begin, end, suit_regex))
+          error("Unknown suit symbol for the initial pack order");
+        else
+          error("Unknown rank symbol for the initial pack order");
+      }
+      if (place < 52)
+        error("Need 52 cards for the initial pack order");
+      if (begin != end)
+        error("More than 52 cards provided for the initial pack order");
     }
 
     if (!gptr->quiet) {
