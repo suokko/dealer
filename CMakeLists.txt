@@ -160,8 +160,6 @@ set (SRC
     dds.cpp
     dds.h
     dealer_once.cpp
-    initrandom.cpp
-    initrandom.h
     main.cpp
     pbn.c
     pbn.h

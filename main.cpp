@@ -6,7 +6,8 @@
 #include <limits.h>
 
 #include "bittwiddle.h"
-#include "initrandom.h"
+
+#include <random>
 
 char* input_file = 0;
 
@@ -235,24 +236,15 @@ void newpack (union pack *d, const char *initialpack) {
    * user values or system random number generator.
    */
   if (initialpack) {
-    char statetext[52*13+1];
-    char *iter = statetext;
 
     if (strcmp(initialpack, "rng") == 0) {
-      struct initrng *state = irng_open();
+      std::random_device rd;
 
-      for (place = 0; place < 51; place++) {
-        int pos = irng_next(state, place, 51);
-        assert (pos < 52);
-        assert (pos >= place);
-        card t = d->c[pos];
-        d->c[pos] = d->c[place];
-        d->c[place] = t;
-        iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
+      for (place = 51; place > 0; place--) {
+        std::uniform_int_distribution<> dist(0, place);
+        int pos = dist(rd);
+        std::swap(d->c[pos], d->c[place]);
       }
-      card t = d->c[place];
-      iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
-      irng_close(state);
     } else {
       const char *initer = initialpack;
       const char *suitsymbols[4][4] = {
@@ -283,13 +275,18 @@ breakout:
         initer++;
 
         d->c[place] = make_card(rank, suit);
-        card t = d->c[place];
-        iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
       }
     }
 
-    if (!gptr->quiet)
+    if (!gptr->quiet) {
+      char statetext[52*5+1];
+      char *iter = statetext;
+      for (place = 0; place < 52; ++place) {
+        card t = d->c[place];
+        iter += sprintf(iter, "%s%c", ucsep[C_SUIT(t)], ucrep[C_RANK(t)]);
+      }
       printf("Initial pack order: %s\n", statetext);
+    }
 
     free((char *)initialpack);
   }
