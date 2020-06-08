@@ -540,7 +540,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	      fprintf (stderr, gettext ("%s: illegal option -- %c\n"),
 		       argv[0], c);
 	    else
-	      fprintf (stderr, gettext ("%s: invalid option -- %c\n"),
+	      fprintf (stderr, gettext ("%s: invalid option -- '%c'\n"),
 		       argv[0], c);
 	  }
 	optopt = c;

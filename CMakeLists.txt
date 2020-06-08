@@ -141,6 +141,9 @@ add_subdirectory(Manual)
 add_subdirectory(Pre_Processors)
 add_subdirectory(Post_Processors)
 add_subdirectory(Examples)
+if (NOT GETOPT_SUPPORTED)
+    add_subdirectory(getopt)
+endif (NOT GETOPT_SUPPORTED)
 
 # A helper binary to generate lookup tables
 add_executable(table_generator EXCLUDE_FROM_ALL pregen.cpp)
@@ -170,10 +173,6 @@ set (SRC
     tables.c
     tree.h
     )
-
-if (NOT GETOPT_SUPPORTED)
-    list(APPEND SRC getopt.c)
-endif (NOT GETOPT_SUPPORTED)
 
 # Build sources for different compiler optimization parameters
 set(MV_SRC
@@ -211,6 +210,11 @@ if (WIN32)
     target_link_libraries(dealergenlib ws2_32)
 endif (WIN32)
 target_link_libraries(dealergenlib default_flags)
+
+if (NOT GETOPT_SUPPORTED)
+    dealer_target_link_libraries(dealer getopt)
+    target_link_libraries(dealergenlib getopt)
+endif (NOT GETOPT_SUPPORTED)
 
 # Make sure generated sources can find headers
 dealer_target_include_directories(dealer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

@@ -29,7 +29,7 @@ struct handstat {
 } ;
 
 struct globals {
-    long seed;
+    time_t seed;
     const char *initialpack;
     int maxgenerate;
     int maxproduce;

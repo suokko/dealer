@@ -1,3 +1,9 @@
+#if __WIN32
+#if __GNUC__
+#define WINVER 0x0600
+#endif
+#include <winnls.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -562,6 +568,8 @@ static void initglobals(struct globals *g)
   g->maxdealer = -1;
 }
 
+static const char *default_locale = "";
+
 int main (int argc, char **argv) {
   int seed_provided = 0;
   extern int optind;
@@ -649,7 +657,11 @@ int main (int argc, char **argv) {
 
   // User user preferred locale
   if (set_locale) {
-    std::locale::global(std::locale(""));
+    try {
+      std::locale::global(std::locale(default_locale));
+    } catch(...) {
+      ucsep = noutf8_ucsep;
+    }
   } else {
     ucsep = noutf8_ucsep;
   }
@@ -660,7 +672,9 @@ int main (int argc, char **argv) {
 
   /* The most suspect part of this program */
   if (!seed_provided) {
-    (void) time (&gp->seed);
+    time_t seed;
+    (void) time (&seed);
+    gp->seed = seed;
   }
 
   if (gp->maxgenerate == 0)
@@ -674,7 +688,7 @@ int main (int argc, char **argv) {
   if (gp->verbose) {
     printf ("Generated %d hands\n", gp->ngen);
     printf ("Produced %d hands\n", gp->nprod);
-    printf ("Initial random seed %lu\n", gp->seed);
+    printf ("Initial random seed %zu\n", gp->seed);
     printf ("Time needed %8.3f sec%s",
              (tvstop.tv_sec + tvstop.tv_usec / 1000000.0 -
              (tvstart.tv_sec + tvstart.tv_usec / 1000000.0)), crlf);
@@ -686,11 +700,12 @@ int main (int argc, char **argv) {
 #if UNICODE
 int wmain(int argc, wchar_t** wargv)
 {
-  unsigned i, size = 0;
+  int i;
+  unsigned size = 0;
 
   // Count output bytes
   for (i = 0; i < argc; ++i)
-    size += WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, false);
+    size += WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, NULL);
 
   // Convert arguments
   char buffer[size];
@@ -698,7 +713,7 @@ int wmain(int argc, wchar_t** wargv)
   char* argv[argc+1];
 
   for (i = 0; i < argc; ++i) {
-    int res = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, iter, size, NULL, false);
+    int res = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, iter, size, NULL, NULL);
     argv[i] = iter;
     iter += res;
     size -= res;
@@ -711,6 +726,12 @@ int wmain(int argc, wchar_t** wargv)
     // Disable utf-8 output
     ucsep = noutf8_ucsep;
   }
+
+  // Get user default locale
+  size = GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SNAME, nullptr, 0);
+  char locale[size];
+  GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SNAME, locale, size);
+  default_locale = locale;
   return main(argc, argv);
 }
 #endif
