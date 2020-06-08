@@ -4,7 +4,7 @@ n J8652.965.AQ.A87 e K7.AK83.9.QJT954 s AQ4.J.KJ6543.632 w T93.QT742.T872.K
 n 32.AKT5.82.QJ975 e KJ87.9762.AQT7.A s AQ4.J.KJ6543.632 w T965.Q843.9.KT84
 n KJT87.K652.QT.AT e 2.AT9874.82.KQ75 s AQ4.J.KJ6543.632 w 9653.Q3.A97.J984
 Frequency lead:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    6      0      0      0      1      0      0      0      1      1      3
    7      1      0      1      0      1      1      1      1      1      7
    8      1      1      1      1      2      2      3      1      1     13
@@ -13,7 +13,7 @@ Frequency lead:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    7      0      0      0      1      0      0      0      1      1      3
    8      1      0      1      0      1      1      1      1      1      7
    9      1      1      1      1      2      2      3      1      1     13
@@ -22,7 +22,7 @@ Frequency lead_add_lho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    7      0      0      0      1      0      0      0      1      1      3
    8      1      0      1      0      1      1      1      1      1      7
    9      1      1      1      1      2      2      3      1      1     13
@@ -31,7 +31,7 @@ Frequency lead_add_rho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   12      0      0      0      1      0      0      0      1      1      3
   14      1      0      1      0      1      1      1      1      1      7
   16      1      1      1      1      2      2      3      1      1     13
@@ -40,7 +40,7 @@ Frequency lead_add_both:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    5      0      0      0      1      0      0      0      1      1      3
    6      1      0      1      0      1      1      1      1      1      7
    7      1      1      1      1      2      2      3      1      1     13
@@ -49,7 +49,7 @@ Frequency lead_sub_lho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    3      1      2      1      0      0      0      0      0      0      4
    4      2      2      2      3      2      2      1      2      2     18
    5      1      1      1      1      2      2      3      1      1     13
@@ -58,12 +58,12 @@ Frequency lead_sub_rho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   12      0      0      0      1      0      0      0      1      1      3
   14      1      0      1      0      1      1      1      1      1      7
   16      1      1      1      1      2      2      3      1      1     13
@@ -72,7 +72,7 @@ Frequency lead_mul_lho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   12      0      0      0      1      0      0      0      1      1      3
   14      1      0      1      0      1      1      1      1      1      7
   16      1      1      1      1      2      2      3      1      1     13
@@ -81,7 +81,7 @@ Frequency lead_mul_rho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   36      0      0      0      1      0      0      0      1      1      3
   49      1      0      1      0      1      1      1      1      1      7
   64      1      1      1      1      2      2      3      1      1     13
@@ -90,14 +90,14 @@ Frequency lead_mul_both:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    3      1      0      1      1      1      1      1      2      2     10
    4      3      3      3      4      4      4      4      3      3     31
    5      1      2      1      0      0      0      0      0      0      4
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   10      1      2      1      0      0      0      0      0      0      4
   11      2      2      2      3      2      2      1      2      2     18
   12      1      1      1      1      2      2      3      1      1     13
@@ -106,17 +106,17 @@ Frequency lead_div_rho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    1      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div0_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
 High      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div0_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
 -100      1      0      1      0      1      1      1      1      1      7
  -50      0      0      0      1      0      0      0      1      1      3
   50      1      2      1      0      0      0      0      0      0      4
@@ -125,20 +125,20 @@ High      1      1      1      1      2      2      3      1      1     13
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div0_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
 Low       1      0      1      1      1      1      1      2      2     10
    0      1      1      1      1      2      2      3      1      1     13
 High      3      4      3      3      2      2      1      2      2     22
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      2      3      2      2      2      2      3      2      2     20
    1      3      2      3      3      3      3      2      3      3     25
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      2      1      0      0      0      0      0      0      4
    1      2      2      2      3      2      2      1      2      2     18
    2      1      0      1      0      1      1      1      1      1      7
@@ -146,129 +146,129 @@ Frequency lead_mod_rho:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod0_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod0_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod0_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      4      4      4      4      3      3      2      4      4     32
    1      1      1      1      1      2      2      3      1      1     13
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      4      4      4      4      3      3      2      4      4     32
    1      1      1      1      1      2      2      3      1      1     13
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    1      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      1      1      1      2      2      3      1      1     13
    1      4      4      4      4      3      3      2      4      4     32
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      1      1      1      2      2      3      1      1     13
    1      4      4      4      4      3      3      2      4      4     32
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      4      5      4      4      4      4      4      3      3     35
    1      1      0      1      1      1      1      1      2      2     10
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      0      1      1      1      1      1      2      2     10
    1      4      5      4      4      4      4      4      3      3     35
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      3      4      3      3      2      2      1      2      2     22
    1      2      1      2      2      3      3      4      3      3     23
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      2      1      2      2      3      3      4      3      3     23
    1      3      4      3      3      2      2      1      2      2     22
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    1      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      2      1      2      2      3      3      4      3      3     23
    1      3      4      3      3      2      2      1      2      2     22
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      3      4      3      3      2      2      1      2      2     22
    1      2      1      2      2      3      3      4      3      3     23
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_lho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      0      1      1      1      1      1      2      2     10
    1      4      5      4      4      4      4      4      3      3     35
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_rho:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      4      5      4      4      4      4      4      3      3     35
    1      1      0      1      1      1      1      1      2      2     10
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_both:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    1      5      5      5      5      5      5      5      5      5     45
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_not:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      5      5      5      4      5      5      5      4      4     42
    1      0      0      0      1      0      0      0      1      1      3
 Sum       5      5      5      5      5      5      5      5      5     45
@@ -299,7 +299,7 @@ Frequency lead_or_tho_false:
     0	       1
     1	       4
 Frequency lead_rnd:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      0      0      1      0      0      0      0      1      3
    1      0      0      1      1      1      1      1      0      1      6
    2      0      1      0      2      0      0      2      1      0      6
@@ -312,14 +312,14 @@ Frequency lead_rnd:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_abs:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
    0      1      1      1      1      2      2      3      1      1     13
    1      3      2      3      3      3      3      2      3      3     25
    2      1      2      1      1      0      0      0      1      1      7
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_score_3H:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
 -300      0      0      0      1      0      0      0      1      1      3
 -200      1      0      1      0      1      1      1      1      1      7
 -100      1      1      1      1      2      2      3      1      1     13
@@ -328,7 +328,7 @@ Frequency lead_score_3H:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_score_4H:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
 -400      0      0      0      1      0      0      0      1      1      3
 -300      1      0      1      0      1      1      1      1      1      7
 -200      1      1      1      1      2      2      3      1      1     13
@@ -337,7 +337,7 @@ Frequency lead_score_4H:
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_imps_4H:
-         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+         SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
   -6      2      2      2      3      2      2      1      2      2     18
   -3      2      1      2      2      3      3      4      3      3     23
   10      1      2      1      0      0      0      0      0      0      4
@@ -347,4 +347,4 @@ lead_imps_4H: -3.04444
 Generated 6 hands
 Produced 5 hands
 Initial random seed 1
-Time needed    0.665 sec
+Time needed    0.673 sec

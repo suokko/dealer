@@ -1,1 +1,1 @@
--s 1 -i rng -q Descr.test_packorder_random
+-s 1 -i rng -q -C Descr.test_packorder_random

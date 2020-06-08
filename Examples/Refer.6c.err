@@ -1,2 +1,2 @@
--s 1 Descr.6c
--e -s 1 Descr.6c
+-s 1 -C Descr.6c
+-e -s 1 -C Descr.6c

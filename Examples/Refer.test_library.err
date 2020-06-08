@@ -1,4 +1,4 @@
--s 1 -l0 Descr.test_library
--s 1 -l1 Descr.test_library
--s 1 -l100 Descr.test_library
--s 1 -l99 -g2 Descr.test_library
+-s 1 -l0 -C Descr.test_library
+-s 1 -l1 -C Descr.test_library
+-s 1 -l100 -C Descr.test_library
+-s 1 -l99 -g2 -C Descr.test_library

@@ -1,4 +1,4 @@
--s 1 -l0 Descr.test_library
+-s 1 -l0 -C Descr.test_library
 n T94.J3.76.AKQJ53
 e 762.K6.KQJT82.72
 s KQJ5.AQT72.A53.6
@@ -26,8 +26,8 @@ west notrumps: 1
 Generated 1 hands
 Produced 1 hands
 Initial random seed 1
-Time needed    0.000 sec
--s 1 -l1 Descr.test_library
+Time needed    0.001 sec
+-s 1 -l1 -C Descr.test_library
 n 96432.6.KQ74.J43
 e K.A8743.J852.KQ6
 s Q85.KQJT952.6.A7
@@ -56,7 +56,7 @@ Generated 1 hands
 Produced 1 hands
 Initial random seed 1
 Time needed    0.000 sec
--s 1 -l100 Descr.test_library
+-s 1 -l100 -C Descr.test_library
 north clubs: 0
 north diamonds: 0
 north hearts: 0
@@ -81,7 +81,7 @@ Generated 0 hands
 Produced 0 hands
 Initial random seed 1
 Time needed    0.000 sec
--s 1 -l99 -g2 Descr.test_library
+-s 1 -l99 -g2 -C Descr.test_library
 n J64.AK754.A3.AQ7
 e Q82.963.Q8742.43
 s AK753.QT8.J65.KJ

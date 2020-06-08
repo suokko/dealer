@@ -1,4 +1,4 @@
--s1 Descr.test_swapping
--0s1 Descr.test_swapping
--2s1 Descr.test_swapping
--3s1 Descr.test_swapping
+-s1 -C Descr.test_swapping
+-0s1 -C Descr.test_swapping
+-2s1 -C Descr.test_swapping
+-3s1 -C Descr.test_swapping

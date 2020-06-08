@@ -65,7 +65,7 @@ foreach $input (`ls $file`) {
       }
     }
   } else {
-    system ("$exe -s $seed $input 2> $output.err > $output");
+    system ("$exe -s $seed -C $input 2> $output.err > $output");
   }
 
   replaceprogname($exe, "$output.err");

@@ -568,6 +568,7 @@ int main (int argc, char **argv) {
   extern char *optarg;
   int c;
   int errflg = 0;
+  bool set_locale = true;
 
   struct timeval tvstart, tvstop;
 
@@ -578,7 +579,7 @@ int main (int argc, char **argv) {
 
   gettimeofday (&tvstart, nullptr);
 
-  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:")) != -1) {
+  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:C")) != -1) {
     switch (c) {
       case '0':
       case '2':
@@ -628,6 +629,9 @@ int main (int argc, char **argv) {
         printf ("$Date: 2003/08/05 19:53:04 $\n");
         printf ("$Author: henk $\n");
         return 1;
+      case 'C':
+        set_locale = false;
+        break;
       case '?':
       case 'h':
         errflg = 1;
@@ -641,6 +645,13 @@ int main (int argc, char **argv) {
   if (optind < argc && freopen (input_file = argv[optind], "r", stdin) == NULL) {
     perror (argv[optind]);
     exit (-1);
+  }
+
+  // User user preferred locale
+  if (set_locale) {
+    std::locale::global(std::locale(""));
+  } else {
+    ucsep = noutf8_ucsep;
   }
   initdistr (gp);
   gp->maxvuln = -1;

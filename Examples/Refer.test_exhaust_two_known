@@ -1,6 +1,6 @@
--e -s 1 Descr.test_exhaust_two_known
+-e -s 1 -C Descr.test_exhaust_two_known
 south spades: 3.5
 Generated 10400600 hands
 Produced 10400600 hands
 Initial random seed 1
-Time needed    0.347 sec
+Time needed    0.496 sec

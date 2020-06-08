@@ -1,4 +1,4 @@
--s1 Descr.test_swapping
+-s1 -C Descr.test_swapping
    1.
 Q 4 3               J 8 5 2             K 9                 A T 7 6 
 7 6 4 3             J 8 5               A T                 K Q 9 2 
@@ -51,7 +51,7 @@ Generated 8 hands
 Produced 8 hands
 Initial random seed 1
 Time needed    0.000 sec
--0s1 Descr.test_swapping
+-0s1 -C Descr.test_swapping
    1.
 Q 4 3               J 8 5 2             K 9                 A T 7 6 
 7 6 4 3             J 8 5               A T                 K Q 9 2 
@@ -104,7 +104,7 @@ Generated 8 hands
 Produced 8 hands
 Initial random seed 1
 Time needed    0.000 sec
--2s1 Descr.test_swapping
+-2s1 -C Descr.test_swapping
    1.
 Q 4 3               J 8 5 2             K 9                 A T 7 6 
 7 6 4 3             J 8 5               A T                 K Q 9 2 
@@ -157,7 +157,7 @@ Generated 8 hands
 Produced 8 hands
 Initial random seed 1
 Time needed    0.000 sec
--3s1 Descr.test_swapping
+-3s1 -C Descr.test_swapping
    1.
 Q 4 3               J 8 5 2             K 9                 A T 7 6 
 7 6 4 3             J 8 5               A T                 K Q 9 2 

@@ -1,1 +1,1 @@
--e Descr.test_exhaust_only_one_known
+-e -C Descr.test_exhaust_only_one_known

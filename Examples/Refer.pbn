@@ -1,7 +1,7 @@
--s 1 Descr.pbn
+-s 1 -C Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -16,7 +16,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -31,7 +31,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -46,7 +46,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -61,7 +61,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -76,7 +76,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -91,7 +91,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -106,7 +106,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -121,7 +121,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -136,7 +136,7 @@
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "10"]
 [West "-"]
 [North "-"]
@@ -153,10 +153,10 @@ Generated 1485 hands
 Produced 10 hands
 Initial random seed 1
 Time needed    0.001 sec
--s 1 -p 9 Descr.pbn
+-s 1 -p 9 -C Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -171,7 +171,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -186,7 +186,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -201,7 +201,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -216,7 +216,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -231,7 +231,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -246,7 +246,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -261,7 +261,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -276,7 +276,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -293,10 +293,10 @@ Generated 1467 hands
 Produced 9 hands
 Initial random seed 1
 Time needed    0.001 sec
--s 1 -p 9 -v Descr.pbn
+-s 1 -p 9 -v -C Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -311,7 +311,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -326,7 +326,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -341,7 +341,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -356,7 +356,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -371,7 +371,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -386,7 +386,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -401,7 +401,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -416,7 +416,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "9"]
 [West "-"]
 [North "-"]
@@ -429,16 +429,16 @@ Time needed    0.001 sec
 [Contract "?"]
 [Result "?"]
 
--s 1 -p 9 -q Descr.pbn
+-s 1 -p 9 -q -C Descr.pbn
 Generated 1467 hands
 Produced 9 hands
 Initial random seed 1
 Time needed    0.001 sec
--s 1 -p 9 -q -v Descr.pbn
--s 1 -p 8 Descr.pbn
+-s 1 -p 9 -q -v -C Descr.pbn
+-s 1 -p 8 -C Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -453,7 +453,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -468,7 +468,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -483,7 +483,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -498,7 +498,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -513,7 +513,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -528,7 +528,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -543,7 +543,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -560,10 +560,10 @@ Generated 1422 hands
 Produced 8 hands
 Initial random seed 1
 Time needed    0.001 sec
--s 1 -p 8 -v Descr.pbn
+-s 1 -p 8 -v -C Descr.pbn
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "1"]
 [West "-"]
 [North "-"]
@@ -578,7 +578,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "2"]
 [West "-"]
 [North "-"]
@@ -593,7 +593,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "3"]
 [West "-"]
 [North "-"]
@@ -608,7 +608,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "4"]
 [West "-"]
 [North "-"]
@@ -623,7 +623,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "5"]
 [West "-"]
 [North "-"]
@@ -638,7 +638,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "6"]
 [West "-"]
 [North "-"]
@@ -653,7 +653,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "7"]
 [West "-"]
 [North "-"]
@@ -668,7 +668,7 @@ Time needed    0.001 sec
 
 [Event "Hand simulated by dealer.cov with file Descr.pbn, seed 1"]
 [Site "-"]
-[Date "2020.06.03"]
+[Date "2020.06.08"]
 [Board "8"]
 [West "-"]
 [North "-"]
@@ -681,9 +681,9 @@ Time needed    0.001 sec
 [Contract "?"]
 [Result "?"]
 
--s 1 -p 8 -q Descr.pbn
+-s 1 -p 8 -q -C Descr.pbn
 Generated 1422 hands
 Produced 8 hands
 Initial random seed 1
 Time needed    0.001 sec
--s 1 -p 8 -q -v Descr.pbn
+-s 1 -p 8 -q -v -C Descr.pbn
