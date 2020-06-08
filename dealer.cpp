@@ -26,6 +26,7 @@
 #endif
 
 #include <algorithm>
+#include <limits>
 
 #if 1
 #define debugf noop
@@ -282,7 +283,11 @@ value value::operator/(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     // Pass ownership to returned object
     value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a / b;});
+    rv.transform(o, [](int a, int b) {
+            if (b==0)
+                return a > 0 ? std::numeric_limits<decltype(a)>::max() :
+                        a < 0 ? std::numeric_limits<decltype(a)>::min() : 0;
+            return a / b;});
     return rv;
 }
 
@@ -291,7 +296,7 @@ value value::operator%(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     // Pass ownership to returned object
     value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a % b;});
+    rv.transform(o, [](int a, int b) {if (b == 0) return 0; return a % b;});
     return rv;
 }
 

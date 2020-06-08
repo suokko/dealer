@@ -18,9 +18,15 @@ lead_mul_both = lead * lead
 lead_div_lho = lead / 2
 lead_div_rho = 100 / lead
 lead_div_both = lead / lead
+lead_div0_lho = lead / 0
+lead_div0_rho = 100 / (lead - mid)
+lead_div0_both = (lead - mid) / (lead > 13)
 lead_mod_lho = lead % 2
 lead_mod_rho = 100 % lead
 lead_mod_both = lead  % lead
+lead_mod0_lho = lead % 0
+lead_mod0_rho = 100 % (lead - mid)
+lead_mod0_both = (lead - mid) % (lead > 13)
 
 #compare
 lead_eq_lho = lead == mid
@@ -48,6 +54,10 @@ lead_if_true = lead ? 1 : 0
 lead_if_false = lead - lowest ? 1 : 0
 lead_and_true = lead && 1
 lead_and_false = lead - lowest && 1
+lead_and_rho_true = 1 && lead
+lead_and_rho_false = 1 && lead - lowest
+lead_or_rho_true = 0 || lead
+lead_or_rho_false = 0 || lead - lowest
 lead_or_true = lead || 0
 lead_or_false = lead - lowest || 0
 
@@ -78,9 +88,15 @@ action
 	frequency "lead_div_lho" (lead_div_lho,-1,100),
 	frequency "lead_div_rho" (lead_div_rho,-1,100),
 	frequency "lead_div_both" (lead_div_both,-1,100),
+	frequency "lead_div0_lho" (lead_div0_lho,-100,100),
+	frequency "lead_div0_rho" (lead_div0_rho,-100,100),
+	frequency "lead_div0_both" (lead_div0_both,-100,100),
 	frequency "lead_mod_lho" (lead_mod_lho,-1,100),
 	frequency "lead_mod_rho" (lead_mod_rho,-1,100),
 	frequency "lead_mod_both" (lead_mod_both,-1,100),
+	frequency "lead_mod0_lho" (lead_mod0_lho,-100,100),
+	frequency "lead_mod0_rho" (lead_mod0_rho,-100,100),
+	frequency "lead_mod0_both" (lead_mod0_both,-100,100),
 #compare
 	frequency "lead_eq_lho" (lead_eq_lho,0,1),
 	frequency "lead_eq_rho" (lead_eq_rho,0,1),
@@ -106,8 +122,12 @@ action
 	frequency "lead_if_false" (lead_if_false,0,1),
 	frequency "lead_and_true" (lead_and_true,0,1),
 	frequency "lead_and_false" (lead_and_false,0,1),
+	frequency "lead_and_rho_true" (lead_and_true,0,1),
+	frequency "lead_and_rho_false" (lead_and_false,0,1),
 	frequency "lead_or_true" (lead_or_true,0,1),
 	frequency "lead_or_false" (lead_or_false,0,1),
+	frequency "lead_or_rho_true" (lead_or_true,0,1),
+	frequency "lead_or_tho_false" (lead_or_false,0,1),
 #functions
 	frequency "lead_rnd" (lead_rnd,0,13),
 	frequency "lead_abs" (lead_abs,0,13),
