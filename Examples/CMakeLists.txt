@@ -89,7 +89,11 @@ if (PERL_FOUND)
     add_custom_target(check
         COMMAND ${CMAKE_CTEST_COMMAND} -L "regular" ${ctest_args}
         USES_TERMINAL)
+    add_custom_target(check_failed
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular" --rerun-failed ${ctest_args}
+        USES_TERMINAL)
     add_dependencies(check dealer)
+    add_dependencies(check_failed dealer)
     # check_coverage runs test using coverage built and generates html pages for
     # coverage report.
     add_custom_target(check_coverage_run
