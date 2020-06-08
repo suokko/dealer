@@ -32,6 +32,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     if (COVERAGE_COMPILER_SUPPORTED)
         add_library(coverage_options INTERFACE)
         target_compile_options(coverage_options INTERFACE ${COVERAGE_CPP_FLAGS})
+        target_compile_definitions(coverage_options INTERFACE NDEBUG)
 
         if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
             target_link_options(coverage_options INTERFACE ${COVERAGE_LINK_FLAGS})
