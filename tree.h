@@ -151,6 +151,7 @@ struct action {
                 struct acuft acu_f;
         struct acuft2d acu_f2d;
         } ac_u;
+        double          ac_double1;
 };
 
 

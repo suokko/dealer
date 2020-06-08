@@ -343,7 +343,8 @@ Frequency lead_imps_4H:
   10      1      2      1      0      0      0      0      0      0      4
 Sum       5      5      5      5      5      5      5      5      5     45
 
+lead_imps_4H: -3.04444
 Generated 6 hands
 Produced 5 hands
 Initial random seed 1
-Time needed    0.731 sec
+Time needed    0.665 sec

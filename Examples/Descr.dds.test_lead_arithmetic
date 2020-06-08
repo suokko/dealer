@@ -134,3 +134,4 @@ action
 	frequency "lead_score_3H" (lead_score_3H,-1000,1000),
 	frequency "lead_score_4H" (lead_score_4H,-1000,1000),
 	frequency "lead_imps_4H" (lead_imps_4H,-1000,1000),
+	average "lead_imps_4H" (lead_imps_4H),

@@ -1,4 +1,7 @@
-Frequency lead:
+n 953.873.82.QJT94 e K72.AK654.AQ7.A7 s AQ4.J.KJ6543.632 w JT86.QT92.T9.K85
+n 97.T752.8.QJT875 e KJ62.AK96.AQ2.K9 s AQ4.J.KJ6543.632 w T853.Q843.T97.A4
+n 85.964.T.QJT9754 e K62.AK832.A92.AK s AQ4.J.KJ6543.632 w JT973.QT75.Q87.8
+Frequency lead H:
          ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
    9      0      0      0      1      0      0      0      1      1      3
   10      1      0      1      1      1      1      1      1      1      8
@@ -6,7 +9,18 @@ Frequency lead:
   12      0      1      0      0      0      0      0      0      0      1
 Sum       3      3      3      3      3      3      3      3      3     27
 
+Frequency lead nt:
+         ♠A     ♠Q     ♠4     ♥J     ♦K     ♦J     ♦6     ♣6     ♣3    Sum
+   7      0      0      0      0      0      0      0      1      1      2
+   9      1      0      1      1      0      0      0      2      2      7
+  10      1      0      1      1      1      1      2      0      0      7
+  11      1      2      1      1      2      2      1      0      0     10
+  12      0      1      0      0      0      0      0      0      0      1
+Sum       3      3      3      3      3      3      3      3      3     27
+
+average H: 10.5185
+average NT: 9.96296
 Generated 659692 hands
 Produced 3 hands
 Initial random seed 1
-Time needed    0.624 sec
+Time needed    0.968 sec

@@ -57,26 +57,26 @@ Produced 1 hands
 Initial random seed 1
 Time needed    0.000 sec
 -s 1 -l100 Descr.test_library
-north clubs: -nan
-north diamonds: -nan
-north hearts: -nan
-north spades: -nan
-north notrumps: -nan
-south clubs: -nan
-south diamonds: -nan
-south hearts: -nan
-south spades: -nan
-south notrumps: -nan
-east clubs: -nan
-east diamonds: -nan
-east hearts: -nan
-east spades: -nan
-east notrumps: -nan
-west clubs: -nan
-west diamonds: -nan
-west hearts: -nan
-west spades: -nan
-west notrumps: -nan
+north clubs: 0
+north diamonds: 0
+north hearts: 0
+north spades: 0
+north notrumps: 0
+south clubs: 0
+south diamonds: 0
+south hearts: 0
+south spades: 0
+south notrumps: 0
+east clubs: 0
+east diamonds: 0
+east hearts: 0
+east spades: 0
+east notrumps: 0
+west clubs: 0
+west diamonds: 0
+west hearts: 0
+west spades: 0
+west notrumps: 0
 Generated 0 hands
 Produced 0 hands
 Initial random seed 1

@@ -74,6 +74,7 @@ struct value {
     explicit inline operator treebase*();
     explicit inline operator bool() const;
     explicit inline operator int() const;
+    explicit inline operator double() const;
 
     // Arithmetic
     inline value operator+(value& o);
@@ -242,6 +243,15 @@ value::operator int() const
 {
     debugf("%s %p\n", __func__, varray_);
     int rv = 0;
+    unsigned cnt = 0;
+    visit([&rv,&cnt](int value) { rv += value; ++cnt;});
+    return rv/cnt;
+}
+
+value::operator double() const
+{
+    debugf("%s %p\n", __func__, varray_);
+    double rv = 0;
     unsigned cnt = 0;
     visit([&rv,&cnt](int value) { rv += value; ++cnt;});
     return rv/cnt;
@@ -909,6 +919,7 @@ static void setup_action () {
         gp->deallist = (struct stored_board *) mycalloc (gp->maxproduce, sizeof (gp->deallist[0]));
         break;
       case ACT_AVERAGE:
+        acp->ac_double1 = 0;
         break;
       case ACT_FREQUENCY:
         acp->ac_u.acu_f.acuf_freqs = (long *) mycalloc (
@@ -1027,8 +1038,10 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
         board_to_stored(&gp->deallist[gp->nprod], &gp->curboard);
         break;
       case ACT_AVERAGE:
-        expr = static_cast<int>(evaltree(acp->ac_expr1, shuffle));
-        acp->ac_int1 += expr;
+        {
+            double v = static_cast<double>(evaltree(acp->ac_expr1, shuffle));
+            acp->ac_double1 += (v - acp->ac_double1) / (gptr->nprod+1);
+        }
         break;
       case ACT_FREQUENCY:
         maybelead = std::move(evaltree (acp->ac_expr1, shuffle));
@@ -1098,7 +1111,7 @@ static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
         }
         break;
       case ACT_AVERAGE:
-        gp->average = (double)acp->ac_int1 / gptr->nprod;
+        gp->average = acp->ac_double1;
         if (acp->ac_expr2) {
           if (!evaltree(acp->ac_expr2, shuffle))
             break;

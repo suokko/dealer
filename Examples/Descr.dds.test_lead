@@ -11,6 +11,7 @@ westcards = hearts(west) == 4 && spades(west) < 7 &&
 northlead = clubs(north) > 4 && top5(north, clubs) > 2
 
 lead = leadtricks(east, hearts)
+lead_nt = leadtricks(east, notrump)
 
 condition
 	eastbal && easthcp && westcards && northlead
@@ -19,4 +20,8 @@ condition
 produce 3
 
 action
-	frequency "lead" (lead,0,13),
+	printoneline,
+	frequency "lead H" (lead,0,13),
+	frequency "lead nt" (lead_nt,0,13),
+	average "average H" (lead),
+	average "average NT" (lead_nt),
