@@ -162,7 +162,7 @@ set (SRC
     dealer_once.cpp
     initrandom.cpp
     initrandom.h
-    main.c
+    main.cpp
     pbn.c
     pbn.h
     pregen.h

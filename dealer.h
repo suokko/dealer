@@ -67,9 +67,15 @@ enum { STAT_MODE, EXHAUST_MODE };
 
 extern const struct globals *gptr;
 
+void  yyerror (const char*) __attribute__((noreturn));
+int yywrap ();
+int yyparse (void);
+
 int imps (int scorediff) __attribute__ ((pure));
 int scoreone (int vuln, int suit, int level, int dbl, int tricks);
 void error (const char* s) __attribute__ ((noreturn));
+void  setshapebit (struct shape *, int, int, int, int);
+void  predeal (int, card);
 void clearpointcount ();
 void clearpointcount_alt (int cin);
 void pointcount (int index, int value);

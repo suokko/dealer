@@ -52,8 +52,6 @@ char* input_file = 0;
 #include "tree.h"
 #include "cpudetect/detect.h"
 
-void yyerror (char *);
-
 #define DEFAULT_MODE STAT_MODE
 
 #ifdef MSDOS
@@ -94,8 +92,6 @@ struct globals *gp;
 const struct globals *gptr;
 
 /* Function definitions */
-void yyparse ();
-
 int imps (int scorediff) {
   int i, j;
   j = abs (scorediff);
@@ -190,9 +186,7 @@ void pointcount (int index, int value) {
 }
 
 void * mycalloc (unsigned nel, unsigned siz) {
-  char *p;
-
-  p = calloc (nel, siz);
+  void *p = calloc (nel, siz);
   if (p) return p;
   fprintf (stderr, "Out of memory\n");
   exit (-1); /*NOTREACHED */
@@ -535,7 +529,7 @@ int main (int argc, char **argv) {
   initglobals(&global);
 
 
-  gettimeofday (&tvstart, (void *) 0);
+  gettimeofday (&tvstart, nullptr);
 
   while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:")) != -1) {
     switch (c) {
@@ -618,7 +612,7 @@ int main (int argc, char **argv) {
 
   int r = deal_main(gp);
 
-  gettimeofday (&tvstop, (void *) 0);
+  gettimeofday (&tvstop, nullptr);
   if (gp->verbose) {
     printf ("Generated %d hands\n", gp->ngen);
     printf ("Produced %d hands\n", gp->nprod);

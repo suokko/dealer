@@ -37,8 +37,6 @@
 template<typename... Args>
 void noop(Args... args) {}
 
-void yyerror (char *);
-
 #define DEFAULT_MODE STAT_MODE
 
 namespace DEFUN() {

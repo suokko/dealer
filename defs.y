@@ -13,14 +13,6 @@
 #include "tree.h"
 #include "dealer.h"
 
-void  yyerror (char*);
-void  setshapebit (struct shape *, int, int, int, int);
-void  predeal (int, card);
-card  make_card(char,char);
-void  clearpointcount(void);
-void  clearpointcount_alt(int);
-void  pointcount(int,int);
-int   make_contract (char, char, char);
 extern int yylex (void);
 static int d2n(char s[4]);
 
@@ -451,7 +443,7 @@ void new_var(char *s, struct treebase *t)
 
 int lino=1;
 
-void yyerror( char *s) {
+void yyerror(const char *s) {
         fprintf(stderr, "line %d: %s\n", lino, s);
         exit(-1);
 }
