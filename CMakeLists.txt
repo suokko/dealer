@@ -106,7 +106,7 @@ if (WIN32)
         SOURCE_TEXT "int rv = 1;
 int main(void) {return rv;}
 int wmain(void) {rv = 0; return main();}"
-        CMAKE_FLAGS -municode
+        COMPILE_DEFINITIONS -municode
         LINK_LIBRARIES -municode)
 
     if (NOT CHECK_WMAIN_SUPPORTED)

@@ -35,6 +35,18 @@ macro(try_compile_parse_args WRAPPER FORWARD)
     endforeach ()
 
     set(DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+    get_property(IDIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        PROPERTY INCLUDE_DIRECTORIES)
+    get_property(LDIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        PROPERTY LINK_DIRECTORIES)
+    list(APPEND IDIRS ${CMAKE_REQUIRED_INCLUDES})
+    if (LDIRS)
+        list(APPEND ARG_VAR LINK_LIBRARIES "-L${LDIRS}")
+    endif ()
+    if (IDIRS)
+        set(IDIRS "-DINCLUDE_DIRECTORIES:STRING=${IDIRS}")
+        list(APPEND ARG_VAR CMAKE_FLAGS "${IDIRS}")
+    endif ()
 
     # Copy string sources to a file
     if (SOURCE_TEXT)
@@ -153,17 +165,17 @@ function(try_compile_cached _LANG _VAR)
     if (NOT DEFINED ${_VAR})
 
         try_compile_parse_args("FAIL_REGEX;SOURCE_TEXT"
-            "CMAKE_FLAGS;COMPILE_DEFINATION;LINK_LIBRARIES;COPY_FILE;COPY_FILE_ERROR;\
+            "CMAKE_FLAGS;COMPILE_DEFINITIONS;LINK_LIBRARIES;COPY_FILE;COPY_FILE_ERROR;\
 ${_LANG}_STANDARD;${_LANG}_STANDARD_REQUIRED;${_LANG}_EXTENSIONS" ${ARGN})
 
         list(APPEND ARG_VAR OUTPUT_VARIABLE OUTPUT)
 
         if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
-            message(DEBUG "try_compile(${_VAR} ${DIR} ${ARG_VAR})")
-        endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
+            message(DEBUG "try_compile(${_VAR} ${CMAKE_BINARY_DIR} ${ARG_VAR})")
+        endif ()
 
         try_compile(${_VAR}
-            ${DIR}
+            ${CMAKE_BINARY_DIR}
             ${ARG_VAR})
 
         try_compile_report(${_VAR})
@@ -184,17 +196,17 @@ function(try_run_cached _LANG _VAR)
     if (NOT DEFINED ${_VAR})
 
         try_compile_parse_args("FAIL_REGEX;SOURCE_TEXT"
-            "CMAKE_FLAGS;COMPILE_DEFINATION;LINK_LIBRARIES;ARGS" ${ARGN})
+            "CMAKE_FLAGS;COMPILE_DEFINITIONS;LINK_LIBRARIES;ARGS" ${ARGN})
 
         list(APPEND ARG_VAR COMPILE_OUTPUT_VARIABLE OUTPUT)
         list(APPEND ARG_VAR RUN_OUTPUT_VARIABLE RUN_OUTPUT)
 
         if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
-            message(DEBUG "try_run(${_VAR}_RUN ${_VAR}_COMPILE ${DIR} ${ARG_VAR})")
+            message(DEBUG "try_run(${_VAR}_RUN ${_VAR}_COMPILE ${CMAKE_BINARY_DIR} ${ARG_VAR})")
         endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
 
         try_run(${_VAR}_RUN ${_VAR}_COMPILE
-            ${DIR}
+            ${CMAKE_BINARY_DIR}
             ${ARG_VAR})
 
         try_compile_report(${_VAR} ${_VAR}_RUN ${_VAR}_COMPILE)
@@ -225,7 +237,7 @@ function(try_compiler_flag _LANG _FLAG _RESULT)
     endif (CMAKE_REQUIRED_LIBRARIES)
 
     try_compile_cached(${_LANG} ${_RESULT}
-        CMAKE_FLAGS ${_FLAG}
+        COMPILE_DEFINITIONS ${_FLAG}
         ${_try_flags_LIBS}
         SOURCE_TEXT "int main(void) {return 0;}"
         ${_try_flags_common_patterns})
