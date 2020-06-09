@@ -23,7 +23,7 @@ struct shape {
         /* Shape function requires 560 bits. That is one per distinct shape.
          * 560/32=17.5 */
         uint32_t bits[18];
-} __attribute__ ((aligned (32)));
+};
 
 struct treeshape {
         struct treebase base;

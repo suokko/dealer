@@ -825,9 +825,9 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
       assert (t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
       return {getpc(idxTens + (b->tr_type - TRT_PT0) / 2, gp->curboard.hands[t->tr_int1] & suit_masks[t->tr_int2])};
     case TRT_SHAPE:      /* compass, shapemask */
-      assert (t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
       {
         struct treeshape *s = (struct treeshape *)b;
+        assert (s->compass >= COMPASS_NORTH && s->compass <= COMPASS_WEST);
         return {checkshape(distrbit(&gp->curboard, hs, s->compass), &s->shape)};
       }
     case TRT_HASCARD:      /* compass, card */
