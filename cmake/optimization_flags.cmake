@@ -94,16 +94,22 @@ macro(flags_add_optimization interface_target)
     target_compile_options(${interface_target} INTERFACE ${OPTIMIZE_default_CPP_FLAGS})
 endmacro(flags_add_optimization)
 
-# @TODO: These needs compiler and architecture specific defaults
-set(COMPILER_CONFIGS default sse2 popcnt sse4 bmi avx2)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(COMPILER_CONFIGS default sse2 popcnt sse4 bmi avx2)
 
-set(COMPILER_CONFIG_default -mfpmath=sse -ffast-math)
-flags_validate_default(COMPILER_CONFIG_default)
+    set(COMPILER_CONFIG_default -mfpmath=sse -ffast-math)
+    flags_validate_default(COMPILER_CONFIG_default)
 
-set(COMPILER_CONFIG_native_only -march=native -mtune=native)
-set(COMPILER_CONFIG_sse2 ${COMPILER_CONFIG_default} -msse -msse2)
-set(COMPILER_CONFIG_popcnt ${COMPILER_CONFIG_sse2} -msse3 -mpopcnt)
-set(COMPILER_CONFIG_sse4 ${COMPILER_CONFIG_popcnt} -msse4.1 -msse4.2)
-set(COMPILER_CONFIG_bmi ${COMPILER_CONFIG_sse4} -mbmi)
-set(COMPILER_CONFIG_avx2 ${COMPILER_CONFIG_bmi} -mmovbe -mbmi2 -mavx -mavx2 -mfma)
+    set(COMPILER_CONFIG_native_only -march=native -mtune=native)
+    set(COMPILER_CONFIG_sse2 ${COMPILER_CONFIG_default} -msse -msse2)
+    set(COMPILER_CONFIG_popcnt ${COMPILER_CONFIG_sse2} -msse3 -mpopcnt)
+    set(COMPILER_CONFIG_sse4 ${COMPILER_CONFIG_popcnt} -msse4.1 -msse4.2)
+    set(COMPILER_CONFIG_bmi ${COMPILER_CONFIG_sse4} -mbmi)
+    set(COMPILER_CONFIG_avx2 ${COMPILER_CONFIG_bmi} -mmovbe -mbmi2 -mavx -mavx2 -mfma)
+else ()
+    message(STATUS "No optimization flag support for ${CMAKE_CXX_COMPILER_ID}.
+See: ${CMAKE_CURRENT_LIST_FILE}")
+    set(COMPILER_CONFIGS default)
+    set(COMPILER_CONFIG_default)
+endif ()
 
