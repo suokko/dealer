@@ -8,16 +8,18 @@ extern "C" {
 
 enum cpufeatures {
 	CPUDEFAULT	= 0x000,
-	CPUSSE		= 0x001,
-	CPUSSE2		= 0x002,
-	CPUSSE3		= 0x004,
-	CPUPOPCNT	= 0x008,
-	CPUSSE41	= 0x010,
-	CPUSSE42	= 0x020,
-	CPUAVX		= 0x040,
-	CPUBMI		= 0x080,
-	CPUBMI2		= 0x100,
-	CPUAVX2		= 0x200,
+	CPUSSE		= 1,
+	CPUSSE2		= CPUSSE << 1,
+	CPUSSE3		= CPUSSE2 << 1,
+	CPUSSSE3	= CPUSSE3 << 1,
+	CPUPOPCNT	= CPUSSSE3 << 1,
+	CPUSSE41	= CPUPOPCNT << 1,
+	CPUSSE42	= CPUSSE41 << 1,
+	CPULZCNT	= CPUSSE42 << 1,
+	CPUBMI		= CPULZCNT << 1,
+	CPUAVX		= CPUBMI << 1,
+	CPUBMI2		= CPUAVX << 1,
+	CPUAVX2		= CPUBMI2 << 1,
 };
 
 bool cpu_supports(enum cpufeatures feature);
@@ -47,8 +49,11 @@ struct detect {
 #if __SSE2__
 			| CPUSSE2
 #endif
-#if __SSSE3__
+#if __SSE3__
 			| CPUSSE3
+#endif
+#if __SSSE3__
+			| CPUSSSE3
 #endif
 #if __POPCNT__
 			| CPUPOPCNT
@@ -59,11 +64,14 @@ struct detect {
 #if __SSE4_2__
 			| CPUSSE42
 #endif
-#if __AVX__
-			| CPUAVX
+#if __LZCNT__ || __ABM__
+			| CPULZCNT
 #endif
 #if __BMI__
 			| CPUBMI
+#endif
+#if __AVX__
+			| CPUAVX
 #endif
 #if __AVX2__
 			| CPUAVX2

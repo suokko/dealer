@@ -102,9 +102,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
     set(COMPILER_CONFIG_native_only -march=native -mtune=native)
     set(COMPILER_CONFIG_sse2 ${COMPILER_CONFIG_default} -msse -msse2)
-    set(COMPILER_CONFIG_popcnt ${COMPILER_CONFIG_sse2} -msse3 -mpopcnt)
+    set(COMPILER_CONFIG_popcnt ${COMPILER_CONFIG_sse2} -msse3 -mssse3 -mpopcnt)
     set(COMPILER_CONFIG_sse4 ${COMPILER_CONFIG_popcnt} -msse4.1 -msse4.2)
-    set(COMPILER_CONFIG_bmi ${COMPILER_CONFIG_sse4} -mbmi)
+    set(COMPILER_CONFIG_bmi ${COMPILER_CONFIG_sse4} -mbmi -mlzcnt)
     set(COMPILER_CONFIG_avx2 ${COMPILER_CONFIG_bmi} -mmovbe -mbmi2 -mavx -mavx2 -mfma)
 else ()
     message(STATUS "No optimization flag support for ${CMAKE_CXX_COMPILER_ID}.

@@ -35,7 +35,7 @@ sub replaceprogname {
     # Remove version numbers
     $line =~ s/(?<=[ (])[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?(-g[a-f0-9]+)?(-dirty)?(?=[ )]|$)//g;
     # Remove cpu features
-    $features = "(ssse3|sse2|sse4.1|sse4.2|sse|popcnt|bmi2|avx2|avx|bmi)";
+    $features = "(ssse3|sse3|sse2|sse4.1|sse4.2|sse|lzcnt|popcnt|bmi2|avx2|avx|bmi)";
     $line =~ s/(?<= )$features(,$features)*//g;
     print OUT "$line";
   }

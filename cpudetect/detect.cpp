@@ -6,15 +6,28 @@
 static int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
 {
 	static unsigned max = 0;
-	if (op > max)
-		return -1;
+	static unsigned extmax = 0;
+	constexpr unsigned ext = 0x80000000;
+	if ((op & ext) == 0) {
+		if (op > max)
+			return -1;
+	} else {
+		if ((op & ~ext) > extmax)
+			return -1;
+	}
+
 	asm ("\tcpuid\n"
 			: "=a" (a), "=b" (b), "=c"(c), "=d"(d)
 			: "0" (op), "2" (subop)
 			);
 
-	if (op == 0)
-		max = a;
+	if ((op & ext) == 0) {
+		if (op == 0)
+			max = a;
+	} else {
+		if ((op & ~ext) == 0)
+			extmax = a;
+	}
 
 	return 0;
 }
@@ -175,6 +188,8 @@ static unsigned x86_cpu_init()
 		features |= CPUSSE2;
 	if (info.data.sse3)
 		features |= CPUSSE3;
+	if (info.data.ssse3)
+		features |= CPUSSSE3;
 	if (info.data.popcnt)
 		features |= CPUPOPCNT;
 	if (info.data.sse41)
@@ -183,6 +198,41 @@ static unsigned x86_cpu_init()
 		features |= CPUSSE42;
 	if (info.data.avx)
 		features |= CPUAVX;
+
+	op = 0x80000000;
+	subop = 0;
+	if (get_cpuid(op, subop, eax, ebx, ecx, edx))
+		return features;
+
+	if (eax >= 1 && !get_cpuid(op+1, subop, eax, ebx, ecx, edx)) {
+		union ext_info {
+			uint32_t reg[4];
+			struct {
+				/* eax */
+				uint32_t unknown1;
+				/* ebx */
+				uint32_t unknown2;
+				/* ecx */
+				uint32_t lahf_lm : 1;
+				uint32_t cmp_legacy : 1;
+				uint32_t svm : 1;
+				uint32_t extapic : 1;
+				/* 4 */
+				uint32_t cr8_legacy : 1;
+				uint32_t abm : 1;
+				uint32_t sse4a : 1;
+				/* rest not interesting yet */
+			} data;
+		};
+		union ext_info flags;
+		flags.reg[0] = eax;
+		flags.reg[1] = ebx;
+		flags.reg[2] = ecx;
+		flags.reg[3] = edx;
+
+		if (flags.data.abm)
+			features |= CPULZCNT;
+	}
 
 	/* Read more flags from op 7 */
 	op = 7;
@@ -204,6 +254,7 @@ static unsigned x86_cpu_init()
 			uint32_t avx2 : 1;
 			uint32_t reserved2 : 1;
 			uint32_t smep : 1;
+			/* 8 */
 			uint32_t bmi2 : 1;
 			/* rest not interesting yet */
 		} data;
@@ -254,6 +305,9 @@ static std::string make_string(unsigned features)
 			rv = rv + sep + "sse2";
 			break;
 		case CPUSSE3:
+			rv = rv + sep + "sse3";
+			break;
+		case CPUSSSE3:
 			rv = rv + sep + "ssse3";
 			break;
 		case CPUPOPCNT:
@@ -267,6 +321,9 @@ static std::string make_string(unsigned features)
 			break;
 		case CPUAVX:
 			rv = rv + sep + "avx";
+			break;
+		case CPULZCNT:
+			rv = rv + sep + "lzcnt";
 			break;
 		case CPUBMI:
 			rv = rv + sep + "bmi";
