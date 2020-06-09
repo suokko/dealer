@@ -275,12 +275,12 @@ void newpack (union pack *d, const char *initialpack) {
         else if (match[4].matched)
           suit = SUIT_SPADE;
         else
-          assert("Regular expression matched but none of required suit subexpressions match");
+          assert(0 && "Regular expression matched but none of required suit subexpressions match");
         assert(match[5].matched && "Rank subexpression doesn't hold match like expected");
         char rc = match[5].first[0];
         switch (rc) {
         default:
-          assert("Unknown character for card rank");
+          assert(0 && "Unknown character for card rank");
         case '2':
         case '3':
         case '4':
