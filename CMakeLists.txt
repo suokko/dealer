@@ -74,6 +74,7 @@ include(try_compile_cached)
 include(optimization_flags)
 include(coverage)
 include(pod2man)
+include(dealer_version)
 
 # Check that there is a working std::thread. The mingw might be missing std::thread support if using wrong threading model.
 try_compile_cached(CXX STD_THREAD_SUPPORTED
@@ -134,6 +135,7 @@ endif (LTO_SUPPORTED)
 enable_testing()
 
 flags_add_optimization(default_flags)
+configure_version(version.cpp.in.in)
 
 #Subdirectories 
 add_subdirectory(cpudetect)
@@ -172,6 +174,8 @@ set (SRC
     ${BISON_defs_OUTPUTS}
     tables.c
     tree.h
+    version.cpp
+    version.h
     )
 
 # Build sources for different compiler optimization parameters

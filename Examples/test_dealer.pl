@@ -32,6 +32,11 @@ sub replaceprogname {
   open (OUT,">$file");
   foreach $line (@lines) {
     $line =~ s/($orig|dealer|$wine)([^.\/][^cp])/$cov\3/g;
+    # Remove version numbers
+    $line =~ s/(?<=[ (])[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?(-g[a-f0-9]+)?(-dirty)?(?=[ )]|$)//g;
+    # Remove cpu features
+    $features = "(ssse3|sse2|sse4.1|sse4.2|sse|popcnt|bmi2|avx2|avx|bmi)";
+    $line =~ s/(?<= )$features(,$features)*//g;
     print OUT "$line";
   }
   close OUT;

@@ -12,6 +12,7 @@
 #include <limits.h>
 
 #include "bittwiddle.h"
+#include "version.h"
 
 #include <random>
 #include <regex>
@@ -632,10 +633,11 @@ int main (int argc, char **argv) {
         gp->quiet ^= 1;
         break;
       case 'V':
-        printf ("Version info....\n");
-        printf ("$Revision: 1.24 $\n");
-        printf ("$Date: 2003/08/05 19:53:04 $\n");
-        printf ("$Author: henk $\n");
+        printf("%s\nCompiler optimization: %s\n"
+            "Runtime optimization: %s\n",
+            config::version_long,
+            cpu::detect::instance().compiler_string().c_str(),
+            cpu::detect::instance().cpu_string().c_str());
         return 1;
       case 'C':
         set_locale = false;

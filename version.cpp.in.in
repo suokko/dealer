@@ -1,0 +1,13 @@
+
+#include "version.h"
+
+namespace config {
+
+const char *version_long =
+    "dealer (${PROJECT_VERSION})\n"
+    "Configured: @SRC_VERSION@\n"
+    "Built: ${GIT_VERSION}";
+
+const char *install_prefix = "@CMAKE_INSTALL_PREFIX@";
+
+}
