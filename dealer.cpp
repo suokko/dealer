@@ -64,9 +64,9 @@ struct value {
     template<typename fn_t>
     inline const value& visit(fn_t fn) const;
     template<typename fn_t>
-    inline value& transform(fn_t fn);
+    inline value transform(fn_t fn);
     template<typename fn_t>
-    inline value& transform(value& o, fn_t fn);
+    inline value transform(value& o, fn_t fn);
 
     // Implicit conversions
     explicit inline operator treebase*();
@@ -140,7 +140,7 @@ const value& value::visit(fn_t fn) const
 }
 
 template<typename fn_t>
-value& value::transform(fn_t fn)
+value value::transform(fn_t fn)
 {
     debugf("%s %p\n", __func__, varray_);
     if (is_array()) {
@@ -152,11 +152,11 @@ value& value::transform(fn_t fn)
         value_ = fn(value_ >> 1) << 1 | 1;
     }
 
-    return *this;
+    return std::move(*this);
 }
 
 template<typename fn_t>
-value& value::transform(value &o, fn_t fn)
+value value::transform(value &o, fn_t fn)
 {
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
 
@@ -184,7 +184,7 @@ value& value::transform(value &o, fn_t fn)
         value_ = fn(value_ >> 1, o.value_ >> 1) << 1 | 1;
     }
 
-    return *this;
+    return std::move(*this);
 }
 
 value::value(treebase *tb) :
@@ -260,19 +260,13 @@ value value::operator+(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o + *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a + b;});
-    return {std::move(rv)};
+    return transform(o, [](int a, int b) {return a + b;});
 }
 
 value value::operator-(value &o)
 {
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a - b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a - b;});
 }
 
 value value::operator*(value &o)
@@ -280,32 +274,23 @@ value value::operator*(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o * *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a * b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a * b;});
 }
 
 value value::operator/(value &o)
 {
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {
+    return transform(o, [](int a, int b) {
             if (b==0)
                 return a > 0 ? std::numeric_limits<decltype(a)>::max() :
                         a < 0 ? std::numeric_limits<decltype(a)>::min() : 0;
             return a / b;});
-    return rv;
 }
 
 value value::operator%(value &o)
 {
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {if (b == 0) return 0; return a % b;});
-    return rv;
+    return transform(o, [](int a, int b) {if (b == 0) return 0; return a % b;});
 }
 
 value value::operator==(value &o)
@@ -313,10 +298,7 @@ value value::operator==(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o == *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a == b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a == b;});
 }
 
 value value::operator!=(value &o)
@@ -324,10 +306,7 @@ value value::operator!=(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o != *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a != b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a != b;});
 }
 
 value value::operator<(value &o)
@@ -335,10 +314,7 @@ value value::operator<(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o >= *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a < b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a < b;});
 }
 
 value value::operator<=(value &o)
@@ -346,10 +322,7 @@ value value::operator<=(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o > *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a <= b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a <= b;});
 }
 
 value value::operator>(value &o)
@@ -357,10 +330,7 @@ value value::operator>(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o <= *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a > b;});
-    return rv;
+    return transform(o, [](int a, int b) {return a > b;});
 }
 
 value value::operator>=(value &o)
@@ -368,19 +338,13 @@ value value::operator>=(value &o)
     debugf("%s %p %p\n", __func__, varray_, o.varray_);
     if (!is_array() && o.is_array())
         return o < *this;
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform(o, [](int a, int b) {return a >= b;});
-    return {std::move(rv)};
+    return transform(o, [](int a, int b) {return a >= b;});
 }
 
 value value::operator!()
 {
     debugf("%s %p\n", __func__, varray_);
-    // Pass ownership to returned object
-    value rv{std::move(*this)};
-    rv.transform([](int a) {return !a;});
-    return rv;
+    return transform([](int a) {return !a;});
 }
 
 /* Global variables */
@@ -694,11 +658,10 @@ static inline void exh_print_vector (struct handstat *hs,
   exh_print_stats (hs + exh_player[1], hs_length);
 }
 
-static struct value score (int vuln, int suit, int level, int dbl, struct value tricks) {
-  tricks.transform([&](int value) {
+static struct value score (int vuln, int suit, int level, int dbl, struct value& tricks) {
+  return tricks.transform([&](int value) {
         return scoreone(vuln, suit, level, dbl, value);
       });
-  return {std::move(tricks)};
 }
 
 
@@ -876,17 +839,18 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
       assert (t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
       {
         int cntr = t->tr_int2 & (64 - 1);
-        return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, evaltree (t->tr_leaf1, shuffle));
+        value tricks = evaltree (t->tr_leaf1, shuffle);
+        return score (t->tr_int1, cntr % 5, cntr / 5, t->tr_int2 & 64, tricks);
       }
     case TRT_IMPS:
-      return std::move(evaltree (t->tr_leaf1, shuffle).transform([](int value) {return imps(value);}));
+      return evaltree (t->tr_leaf1, shuffle).transform([](int value) {return imps(value);});
     case TRT_AVG:
       return {(int)(gptr->average*1000000)};
     case TRT_ABS:
-      return std::move(evaltree (t->tr_leaf1, shuffle).transform([](int value) {return abs(value);}));
+      return evaltree (t->tr_leaf1, shuffle).transform([](int value) {return abs(value);});
     case TRT_RND:
-      return std::move(evaltree(t->tr_leaf1, shuffle).transform([&shuffle](int value)
-            {return shuffle->random32(value - 1);}));
+      return evaltree(t->tr_leaf1, shuffle).transform([&shuffle](int value)
+            {return shuffle->random32(value - 1);});
   }
 }
 
@@ -1042,7 +1006,7 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
         }
         break;
       case ACT_FREQUENCY:
-        maybelead = std::move(evaltree (acp->ac_expr1, shuffle));
+        maybelead = evaltree (acp->ac_expr1, shuffle);
         if (maybelead.is_array()) {
           frequency_to_lead(acp, maybelead);
           goto frequencylead;
@@ -1056,7 +1020,7 @@ static void action (std::unique_ptr<shuffle> &shuffle) {
           acp->ac_u.acu_f.acuf_freqs[expr - acp->ac_u.acu_f.acuf_lowbnd]++;
         break;
       case ACT_FREQUENCYLEAD:
-        maybelead = std::move(evaltree (acp->ac_expr1, shuffle));
+        maybelead = evaltree (acp->ac_expr1, shuffle);
 frequencylead:
         {
                 assert(maybelead.is_array());
