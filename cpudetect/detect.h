@@ -20,11 +20,11 @@ enum cpufeatures {
 	CPUAVX2		= 0x200,
 };
 
-void cpu_init();
 bool cpu_supports(enum cpufeatures feature);
 
 #ifdef __cplusplus
 }
+#include <string>
 
 namespace cpu {
 
@@ -39,7 +39,7 @@ struct detect {
 	bool supports(unsigned feature) const;
 
 	/// Return features supported by current compiler options
-	static constexpr unsigned compiler_supports() {
+	static constexpr unsigned compiler_features() {
 		return CPUDEFAULT
 #if __SSE__
 			| CPUSSE
@@ -74,14 +74,22 @@ struct detect {
 			;
 	}
 
+	static constexpr bool compiler_supports(cpufeatures feature)
+	{
+		return compiler_features() & feature;
+	}
+
 	static constexpr unsigned feature_id()
 	{
 #if MVdefault
 		return CPUDEFAULT;
 #else
-		return compiler_supports();
+		return compiler_features();
 #endif
 	}
+
+	static const std::string& compiler_string();
+	const std::string& cpu_string() const;
 private:
 	unsigned features_;
 };

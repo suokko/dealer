@@ -1,8 +1,9 @@
 #include "detect.h"
+#include <cassert>
 #include <set>
 #include <regex>
 #if defined(__i386__) || defined(__x86_64__)
-int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
+static int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
 {
 	static unsigned max = 0;
 	if (op > max)
@@ -231,6 +232,59 @@ bool cpu_supports(enum cpufeatures feature)
 
 namespace cpu {
 
+namespace {
+
+
+static std::string make_string(unsigned features)
+{
+	std::string rv;
+	const char* sep = "";
+	while (features) {
+		unsigned next = (features - 1) & features;
+		cpufeatures lowest = static_cast<cpufeatures>(features ^ next);
+		features = next;
+		switch(lowest) {
+		case CPUDEFAULT:
+			assert(0 && "Default should be impossible");
+			return rv;
+		case CPUSSE:
+			rv = rv + sep + "sse";
+			break;
+		case CPUSSE2:
+			rv = rv + sep + "sse2";
+			break;
+		case CPUSSE3:
+			rv = rv + sep + "ssse3";
+			break;
+		case CPUPOPCNT:
+			rv = rv + sep + "popcnt";
+			break;
+		case CPUSSE41:
+			rv = rv + sep + "sse4.1";
+			break;
+		case CPUSSE42:
+			rv = rv + sep + "sse4.2";
+			break;
+		case CPUAVX:
+			rv = rv + sep + "avx";
+			break;
+		case CPUBMI:
+			rv = rv + sep + "bmi";
+			break;
+		case CPUBMI2:
+			rv = rv + sep + "bmi2";
+			break;
+		case CPUAVX2:
+			rv = rv + sep + "avx2";
+			break;
+		}
+		sep = ",";
+	}
+	return rv;
+}
+
+}
+
 detect::detect() :
 	features_{x86_cpu_init()}
 {
@@ -251,6 +305,18 @@ bool detect::supports(cpufeatures feature) const
 bool detect::supports(unsigned feature) const
 {
 	return (feature & features_) == feature;
+}
+
+const std::string& detect::compiler_string()
+{
+	static std::string rv{make_string(compiler_features())};
+	return rv;
+}
+
+const std::string& detect::cpu_string() const
+{
+	static std::string rv{make_string(features_)};
+	return rv;
 }
 
 } // namespace cpu
