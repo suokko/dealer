@@ -190,11 +190,13 @@ if (PERL_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     set_tests_properties(test_distribution PROPERTIES LABELS "regular")
 
-    add_test(NAME test_distribution_cov
-        COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set_tests_properties(test_distribution_cov PROPERTIES LABELS "coverage")
+    if (COVERAGE_COMPILER_SUPPORTED)
+        add_test(NAME test_distribution_cov
+            COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        set_tests_properties(test_distribution_cov PROPERTIES LABELS "coverage")
+    endif ()
 
     foreach (SRC ${EXAMPLES})
         add_test(NAME test_${SRC}
@@ -202,10 +204,12 @@ if (PERL_FOUND)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
         set_tests_properties(test_${SRC} PROPERTIES LABELS "regular")
 
-        add_test(NAME test_${SRC}_cov
-            COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer.cov> ${SRC}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        set_tests_properties(test_${SRC}_cov PROPERTIES LABELS "coverage")
+        if (COVERAGE_COMPILER_SUPPORTED)
+            add_test(NAME test_${SRC}_cov
+                COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer.cov> ${SRC}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+            set_tests_properties(test_${SRC}_cov PROPERTIES LABELS "coverage")
+        endif ()
     endforeach (SRC ${EXAMPLES})
 elseif (NOT PERL_FOUND)
     # Make targets showing error that perl wasn't found if trying to run tests.
