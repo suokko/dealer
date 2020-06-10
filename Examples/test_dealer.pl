@@ -17,47 +17,54 @@ $seed = 1;
 
 $exitcode = 0;
 
-sub replaceprogname {
-  my ($exe, $file) = @_;
-  $cov  = $exe;
-  $orig = $exe;
-  $cov  =~ s/^.*[\/\\]([^\/\\]*[^vfe])(\.cov|\.prof|)(\.exe|)$/\1.cov/;
-  $orig =~ s/^(.*[\/\\])([^\/\\]*[^v](\.cov|)(\.exe|))$/(\1|)\2/;
-  $wine = '\\b[A-Z]:\\\\.*\\\\dealer.*\\.exe(?!\\\\)';
+$cov  = $exe;
+$orig = $exe;
+$cov  =~ s/^.*[\/\\]([^\/\\]*[^vfe])(\.cov|\.prof|)(\.exe|)$/\1.cov/;
+$orig =~ s/^(.*[\/\\])([^\/\\]*[^v](\.cov|)(\.exe|))$/(\1|)\2/;
+$wine = '\\b[A-Z]:\\\\.*\\\\dealer.*\\.exe(?!\\\\)';
+$features = "(ssse3|sse3|sse2|sse4.1|sse4.2|sse|lzcnt|popcnt|bmi2|avx2|avx|bmi)";
 
-  open (IN, "<$file");
-  @lines = <IN>;
-  close IN;
+sub sanitize_output {
+  my ($out_pipe, $line) = @_;
+  $line =~ s/($orig|dealer|$wine)([^.\/][^cp])/$cov\3/mg;
 
-  open (OUT,">$file");
-  foreach $line (@lines) {
-    $line =~ s/($orig|dealer|$wine)([^.\/][^cp])/$cov\3/g;
-    # Remove version numbers
-    # Built: 0.99.0-53-g423341e-dirty
-    $line =~ s/(?<=[ (])[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?(-g[a-f0-9]+)?(-dirty)?(?=[ )]|\r?$)//g;
-    # Remove cpu features
-    $features = "(ssse3|sse3|sse2|sse4.1|sse4.2|sse|lzcnt|popcnt|bmi2|avx2|avx|bmi)";
-    $line =~ s/(?<= )$features(,$features)*//g;
-    print OUT "$line";
-  }
-  close OUT;
+  # Remove version numbers
+  # Built: 0.99.0-53-g423341e-dirty
+  $line =~ s/(?<=[ (])[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?(-g[a-f0-9]+)?(-dirty)?(?=[ )]|\r?$)//mg;
+  # Remove cpu features
+  $line =~ s/(?<= )$features(,$features)*//mg;
+
+  print $out_pipe $line;
 }
+
+use IPC::Run qw( start pump finish run );
 
 foreach $input (`ls $file`) {
   # Loop over all files that start with Descr.
   chop $input;
-  $cmdline = join " ", $0, @ARGV;
+  $cmdline = join " ", $0, $exe, $input;
   print "  TEST   $input: $cmdline\n";
 
-  $output = $input;
-  $output =~ s/Descr/Output/;
   $refer  = $input;
   $refer  =~ s/Descr/Refer/;
   $params = $input;
   $params =~ s/Descr/Params/;
 
-  unlink $output;
-  unlink "$output.err";
+  if (not -e $refer) {
+    print "Error: $refer is missing\n";
+    $exitcode = 3;
+    break;
+  }
+
+  # Start diff processes
+  my @diff_io = ("diff", "-u", "-Z", "-I", "Time needed*", "-I", "\\[Date ", "$refer", "-");
+  my @diff_err = ("diff", "-u", "-Z", "$refer.err", "-");
+  @diff_err = ('cat', '-') if (not -e "$refer.err");
+
+  pipe(in_diff_io_read, in_diff_io_write);
+  pipe(in_diff_err_read, in_diff_err_write);
+  my $h_diff_io = start \@diff_io, '<', \*in_diff_io_read, '>', \*STDOUT;
+  my $h_diff_err = start \@diff_err, '<', \*in_diff_err_read, '>', \$out_diff_err;
 
   if (-e $params) {
     open my $info, $params;
@@ -65,53 +72,33 @@ foreach $input (`ls $file`) {
       $line =~ s/\R//;
       my($rule, $arg) = split(',', $line);
       if (eval($rule)) {
-        system ("echo $arg $input >> $output");
-        system ("echo $arg $input >> $output.err");
-        system ("$exe $arg $input 2>> $output.err >> $output");
+        $arg =~ s/^ *//;
+        print in_diff_io_write "$arg $input\n";
+        print in_diff_err_write "$arg $input\n";
+        my @dealer = split(/ +/, "$exe $arg $input");
+        my $h_dealer = start \@dealer, \undef,
+            sub {sanitize_output(in_diff_io_write, $_[0]);},
+            sub {sanitize_output(in_diff_err_write, $_[0]);};
+        finish $h_dealer;
       }
+      pump_nb $h_diff_err;
     }
   } else {
-    system ("$exe -s $seed -C $input 2> $output.err > $output");
+    my @dealer = ($exe, "-s$seed", "-C", "$input");
+    my $h_dealer = start \@dealer, \undef,
+            sub {sanitize_output(in_diff_io_write, $_[0]);},
+            sub {sanitize_output(in_diff_err_write, $_[0]);};
+    finish $h_dealer;
   }
 
-  replaceprogname($exe, "$output.err");
-  replaceprogname($exe, $output);
+  close in_diff_io_write;
+  close in_diff_err_write;
+  finish $h_diff_io;
+  $exitcode += 1 if ($h_diff_io->full_result(0) ne 0);
+  finish $h_diff_err;
+  $exitcode += 2 if (-e "$refer.err" and $h_diff_err->full_result(0) ne 0);
+  $exitcode += 4 if (not -e "$refer.err" and  $out_diff_err ne "");
 
-  if (-s "$output.err" == 0) {
-    unlink("$output.err");
-  }
-
-  if (-e $refer) {
-    $diff = `diff -u -Z $refer $output`;
-    $diff =~ s/^(.*Time needed.*|.*\[Date ".*|[^+-].*|[+-][+-][+-] .*)\R//mg;
-    if (-e "$refer.err" || -e "$output.err") {
-      if (-e "$refer.err" && -e "$output.err") {
-        $err = `diff -u -Z $refer.err $output.err`;
-      } else { if (-e "$output.err") {
-          print "Error: $refer.err missing\n";
-          $err = `cat "$output.err"`;
-          $exitcode = 4;
-        } else {
-          print "Error: $output.err missing\n";
-          $err = `cat $refer.err`;
-          $exitcode = 5;
-        }
-      }
-      if ($err ne "") {
-        print "Error: stderr ($output.err) not matching\n";
-        print $err;
-        $exitcode = 2;
-      }
-    }
-    if ($diff ne "") {
-      print "Error: output ($output) not matching\n";
-      print $diff;
-      $exitcode = 1;
-    }
-  } else {
-    print "Error: $refer is missing\n";
-    $exitcode = 3
-  }
-
+  print $out_diff_err;
 }
 exit $exitcode;

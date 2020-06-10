@@ -66,6 +66,17 @@ find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 find_package(Perl QUIET)
 
+if (NOT PERL_FOUND)
+    message(STATUS "Perl wasn't found. Disabling tests. perl with module IPC::Run is required for testing.")
+else ()
+    execute_process(COMMAND ${PERL_EXECUTABLE} -MIPC::Run -e ""
+        ERROR_QUIET RESULT_VARIABLE RES)
+    if (NOT RES EQUAL "0")
+        set(PERL_FOUND FALSE)
+        message(STATUS "Perl module IPC::Run wasn't found. Disabling tests.")
+    endif ()
+endif ()
+
 #import cmake helpers
 include(GNUInstallDirs)
 cmake_policy(SET CMP0069 NEW)

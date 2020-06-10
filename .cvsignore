@@ -12,7 +12,6 @@ dealer
 dealer.cov
 dealer.prof
 dealer.tar.gz
-Examples/Output.*
 .libs
 .test
 tags
