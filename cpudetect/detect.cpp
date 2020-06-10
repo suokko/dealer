@@ -35,30 +35,67 @@ static int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsi
 
 static unsigned check_env(unsigned features)
 {
-	const char* env = getenv("CPUSUPPORTS");
+	const char *env = getenv("CPUSUPPORTS");
 	if (!env)
 		return features;
 
-	if (std::regex_search(env,std::regex{"nosse(,|$)"}))
-		features &= ~CPUSSE;
-	if (std::regex_search(env,std::regex{"nosse2(,|$)"}))
-		features &= ~CPUSSE2;
-	if (std::regex_search(env,std::regex{"nosse3(,|$)"}))
-		features &= ~CPUSSE3;
-	if (std::regex_search(env,std::regex{"nopopcnt(,|$)"}))
-		features &= ~CPUPOPCNT;
-	if (std::regex_search(env,std::regex{"nosse41(,|$)"}))
-		features &= ~CPUSSE41;
-	if (std::regex_search(env,std::regex{"nosse42(,|$)"}))
-		features &= ~CPUSSE42;
-	if (std::regex_search(env,std::regex{"noavx(,|$)"}))
-		features &= ~CPUAVX;
-	if (std::regex_search(env,std::regex{"nobmi(,|$)"}))
-		features &= ~CPUBMI;
-	if (std::regex_search(env,std::regex{"nobmi2(,|$)"}))
-		features &= ~CPUBMI2;
-	if (std::regex_search(env,std::regex{"noavx2(,|$)"}))
-		features &= ~CPUAVX2;
+	std::regex all_flags{
+		"\\bno(?:"
+		"(((sse)|(sse2)|sse3)|"
+		"(ssse3)|(popcnt)|sse4\\.?1)|"
+		"((sse4\\.?2)|(avx)|bmi)|"
+		"(lzcnt)|(bmi2)|avx2"
+		")\\b",
+		std::regex::optimize
+	};
+
+	const char *env_end = env + strlen(env);
+	std::cregex_iterator iter{env, env_end, all_flags};
+	std::cregex_iterator end{};
+
+	for (; iter != end; ++iter) {
+		assert(iter->size() == 10 + 2 &&
+				"Number of submatches in regular isn't expected");
+		if ((*iter)[1].matched) {
+			// First half
+			if ((*iter)[2].matched) {
+				// First quarter
+				if ((*iter)[3].matched)
+					features &= ~CPUSSE;
+				else if ((*iter)[4].matched)
+					features &= ~CPUSSE2;
+				else
+					features &= ~CPUSSE3;
+			} else {
+				// Second quarter
+				if ((*iter)[5].matched)
+					features &= ~CPUSSSE3;
+				else if ((*iter)[6].matched)
+					features &= ~CPUPOPCNT;
+				else
+					features &= ~CPUSSE41;
+			}
+		} else {
+			// Second half
+			if ((*iter)[7].matched) {
+				// Third quarter
+				if ((*iter)[8].matched)
+					features &= ~CPUSSE42;
+				else if ((*iter)[9].matched)
+					features &= ~CPUAVX;
+				else
+					features &= ~CPUBMI;
+			} else {
+				// Fourth quarter
+				if ((*iter)[10].matched)
+					features &= ~CPULZCNT;
+				else if ((*iter)[11].matched)
+					features &= ~CPUBMI2;
+				else
+					features &= ~CPUAVX2;
+			}
+		}
+	}
 	return features;
 }
 
