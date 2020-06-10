@@ -77,6 +77,27 @@ install(FILES ${EXAMPLES}
     DESTINATION ${CMAKE_INSTALL_DOCDIR}/Examples)
 
 if (PERL_FOUND)
+    macro (coverage_report _NAME)
+        # @TODO: Make sure clean can remove all generate files
+        add_custom_command(OUTPUT ${COVERAGE_DIR}/${_NAME}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_DIR}/${_NAME})
+        add_custom_command(OUTPUT ${COVERAGE_DIR}/${_NAME}/dealer.info
+            COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --base-directory . --directory . --rc lcov_branch_coverage=1 -q -c -o ${COVERAGE_DIR}/${_NAME}/dealer.info
+            DEPENDS ${COVERAGE_DIR}/${_NAME}
+            DEPENDS ${_NAME}_run
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+        add_custom_command(OUTPUT ${COVERAGE_DIR}/${_NAME}/dealer.stripped.info
+            COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --rc lcov_branch_coverage=1 -q -o ${COVERAGE_DIR}/${_NAME}/dealer.stripped.info --remove ${COVERAGE_DIR}/${_NAME}/dealer.info '/usr*'
+            DEPENDS ${COVERAGE_DIR}/${_NAME}/dealer.info
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+        add_custom_command(OUTPUT ${COVERAGE_DIR}/${_NAME}/index.html
+            COMMAND ${GENHTML_COMMAND} --num-spaces 4 -o ${COVERAGE_DIR}/${_NAME} --branch-coverage -t "Dealer test coverage" ${COVERAGE_DIR}/${_NAME}/dealer.stripped.info
+            DEPENDS ${COVERAGE_DIR}/${_NAME}/dealer.stripped.info)
+        add_custom_target(${_NAME}
+            COMMAND ${OPEN_COMMAND} ${COVERAGE_DIR}/${_NAME}/index.html ${DEV_NULL}
+            DEPENDS ${COVERAGE_DIR}/${_NAME}/index.html)
+    endmacro (coverage_report)
+
     include(ProcessorCount)
     ProcessorCount(CORES)
     set(ctest_args --output-on-failure)
@@ -87,19 +108,32 @@ if (PERL_FOUND)
     # Check runs test with current build configuration as is
     # @TODO: Figure out how to run this correctly from multi configuration generator
     add_custom_target(check
-        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular" ${ctest_args}
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_one" ${ctest_args}
         USES_TERMINAL)
     add_custom_target(check_failed
-        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular" --rerun-failed ${ctest_args}
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_one" --rerun-failed ${ctest_args}
         USES_TERMINAL)
     add_dependencies(check dealer)
     add_dependencies(check_failed dealer)
+
+    add_custom_target(check_all
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_all" ${ctest_args}
+        USES_TERMINAL)
+    add_custom_target(check_all_failed
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_all" --rerun-failed ${ctest_args}
+        USES_TERMINAL)
+    add_dependencies(check_all dealer)
+    add_dependencies(check_all_failed dealer)
     # check_coverage runs test using coverage built and generates html pages for
     # coverage report.
     add_custom_target(check_coverage_run
-        COMMAND ${CMAKE_CTEST_COMMAND} -L "coverage" ${ctest_args}
-        USES_TERMINAL) 
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "coverage_one" ${ctest_args}
+        USES_TERMINAL)
     add_dependencies(check_coverage_run dealer.cov)
+    add_custom_target(check_coverage_all_run
+        COMMAND ${CMAKE_CTEST_COMMAND} -L "coverage_all" ${ctest_args}
+        USES_TERMINAL)
+    add_dependencies(check_coverage_all_run dealer.cov)
 
 
     set(COVERAGE_DIR "${PROJECT_BINARY_DIR}/coverage")
@@ -135,24 +169,8 @@ if (PERL_FOUND)
         find_program(OPEN_COMMAND NAMES open xdg-open)
         mark_as_advanced(OPEN_COMMAND)
         if (LCOV_COMMAND AND GENHTML_COMMAND AND LLVM_WORKS)
-            # @TODO: Make sure clean can remove all generate files
-            add_custom_command(OUTPUT ${COVERAGE_DIR}
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_DIR})
-            add_custom_command(OUTPUT ${COVERAGE_DIR}/dealer.info
-                COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --base-directory . --directory . --rc lcov_branch_coverage=1 -q -c -o ${COVERAGE_DIR}/dealer.info
-                DEPENDS ${COVERAGE_DIR}
-                DEPENDS check_coverage_run
-                WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-            add_custom_command(OUTPUT ${COVERAGE_DIR}/dealer.stripped.info
-                COMMAND ${LCOV_COMMAND} ${GCOV_TOOL_CMD} --rc lcov_branch_coverage=1 -q -o ${COVERAGE_DIR}/dealer.stripped.info --remove ${COVERAGE_DIR}/dealer.info '/usr*'
-                DEPENDS ${COVERAGE_DIR}/dealer.info
-                WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-            add_custom_command(OUTPUT ${COVERAGE_DIR}/index.html
-                COMMAND ${GENHTML_COMMAND} --num-spaces 4 -o ${COVERAGE_DIR} --branch-coverage -t "Dealer test coverage" ${COVERAGE_DIR}/dealer.stripped.info
-                DEPENDS ${COVERAGE_DIR}/dealer.stripped.info)
-            add_custom_target(check_coverage
-                COMMAND ${OPEN_COMMAND} ${COVERAGE_DIR}/index.html ${DEV_NULL}
-                DEPENDS ${COVERAGE_DIR}/index.html)
+            coverage_report(check_coverage)
+            coverage_report(check_coverage_all)
         else ()
             set(MISSING)
 
@@ -174,6 +192,10 @@ if (PERL_FOUND)
                 COMMAND ${CMAKE_COMMAND} -E echo ${ERRMSG}
                 VERBATIM)
             add_dependencies(check_coverage check_coverage_run)
+            add_custom_target(check_coverage_all
+                COMMAND ${CMAKE_COMMAND} -E echo ${ERRMSG}
+                VERBATIM)
+            add_dependencies(check_coverage_all check_coverage_all_run)
         endif ()
     else ()
         add_custom_target(check_coverage
@@ -184,31 +206,78 @@ if (PERL_FOUND)
     find_program(DIFF_COMMAND diff)
     mark_as_advanced(DIFF_COMMAND)
 
+    set(CFGS ${COMPILER_CONFIGS})
+    list(REVERSE CFGS)
+    list(REMOVE_ITEM CFGS default)
+
     add_test(NAME test_distribution
         COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
-            -P test_distribution.cmake
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set_tests_properties(test_distribution PROPERTIES LABELS "regular")
+    set_tests_properties(test_distribution
+        PROPERTIES LABELS "regular_one;regular_all")
+
+    foreach (CFG ${CFGS})
+        add_test(NAME test_distribution_no${CFG}
+            COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        set_tests_properties(test_distribution_no${CFG}
+            PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
+        set_tests_properties(test_distribution_no${CFG}
+            PROPERTIES LABELS "regular_no${CFG};regular_all")
+    endforeach ()
 
     if (COVERAGE_COMPILER_SUPPORTED)
         add_test(NAME test_distribution_cov
             COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        set_tests_properties(test_distribution_cov PROPERTIES LABELS "coverage")
+        set_tests_properties(test_distribution_cov PROPERTIES LABELS "coverage_one;coverage_all")
+
+        foreach (CFG ${CFGS})
+            add_test(NAME test_distribution_cov_no${CFG}
+                COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+            set_tests_properties(test_distribution_cov_no${CFG}
+                PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
+            set_tests_properties(test_distribution_cov_no${CFG}
+                PROPERTIES LABELS "coverage_no${CFG};coverage_all")
+        endforeach ()
     endif ()
 
     foreach (SRC ${EXAMPLES})
         add_test(NAME test_${SRC}
             COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer> ${SRC}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        set_tests_properties(test_${SRC} PROPERTIES LABELS "regular")
+        set_tests_properties(test_${SRC} PROPERTIES LABELS "regular_one;regular_all")
+
+        foreach (CFG ${CFGS})
+            add_test(NAME test_${SRC}_no${CFG}
+                COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer> ${SRC}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+            set_tests_properties(test_${SRC}_no${CFG}
+                PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
+            set_tests_properties(test_${SRC}_no${CFG}
+                PROPERTIES LABELS "regular_no${CFG};regular_all")
+        endforeach ()
 
         if (COVERAGE_COMPILER_SUPPORTED)
             add_test(NAME test_${SRC}_cov
                 COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer.cov> ${SRC}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-            set_tests_properties(test_${SRC}_cov PROPERTIES LABELS "coverage")
+            set_tests_properties(test_${SRC}_cov PROPERTIES LABELS "coverage_one;coverage_all")
+
+            foreach (CFG ${CFGS})
+                add_test(NAME test_${SRC}_cov_no${CFG}
+                    COMMAND ${PERL_COMMAND} test_dealer.pl $<TARGET_FILE:dealer.cov> ${SRC}
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+                set_tests_properties(test_${SRC}_cov_no${CFG}
+                    PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
+                set_tests_properties(test_${SRC}_cov_no${CFG}
+                    PROPERTIES LABELS "coverage_no${CFG};coverage_all")
+            endforeach ()
         endif ()
     endforeach (SRC ${EXAMPLES})
 elseif (NOT PERL_FOUND)
@@ -216,8 +285,26 @@ elseif (NOT PERL_FOUND)
     set(PERL_MISSING_ERROR "Perl wasn't found during cmake configure. Perl is required to run tests.")
     add_custom_target(check
         COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
-        COMMAND false)
+        COMMAND false
+        VERBATIM)
+    add_custom_target(check_all
+        COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
+        COMMAND false
+        VERBATIM)
+    add_custom_target(check_failed
+        COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
+        COMMAND false
+        VERBATIM)
+    add_custom_target(check_all_failed
+        COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
+        COMMAND false
+        VERBATIM)
     add_custom_target(check_coverage
         COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
-        COMMAND false)
+        COMMAND false
+        VERBATIM)
+    add_custom_target(check_coverage_all
+        COMMAND ${CMAKE_COMMAND} -E echo ${PERL_MISSING_ERROR}
+        COMMAND false
+        VERBATIM)
 endif (PERL_FOUND)
