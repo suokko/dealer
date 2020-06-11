@@ -37,13 +37,18 @@ sub sanitize_output {
   print $out_pipe $line;
 }
 
+my $cpusupports = "";
+if (defined $ENV{'CPUSUPPORTS'}) {
+  $cpusupports = "CPUSUPPORTS=${ENV{'CPUSUPPORTS'}} "
+}
+
 use IPC::Run qw( start pump finish run );
 
 foreach $input (`ls $file`) {
   # Loop over all files that start with Descr.
   chop $input;
   $cmdline = join " ", $0, $exe, $input;
-  print "  TEST   $input: $cmdline\n";
+  print "  TEST   $input: $cpusupports$cmdline\n";
 
   $refer  = $input;
   $refer  =~ s/Descr/Refer/;
