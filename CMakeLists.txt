@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.12)
 # Make sure cmake finds custom modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Make sure compiler selects c++11 standard
-set(CMAKE_CXX_STANDARD 11)
+# Make sure compiler selects c++14 standard
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -158,13 +158,6 @@ if (NOT GETOPT_SUPPORTED)
     add_subdirectory(getopt)
 endif (NOT GETOPT_SUPPORTED)
 
-# A helper binary to generate lookup tables
-add_executable(table_generator EXCLUDE_FROM_ALL pregen.cpp)
-add_custom_command(
-    OUTPUT tables.cpp
-    COMMAND $<TARGET_FILE:table_generator> -irn > ${CMAKE_CURRENT_BINARY_DIR}/tables.cpp
-    DEPENDS table_generator)
-
 # Add bison and flex compilations
 bison_target(defs ${CMAKE_CURRENT_SOURCE_DIR}/defs.y
     ${CMAKE_CURRENT_BINARY_DIR}/defs.cpp
@@ -182,11 +175,11 @@ set (SRC
     main.cpp
     pbn.cpp
     pbn.h
+    pregen.cpp
     pregen.h
     pointcount.cpp
     pointcount.h
     ${BISON_defs_OUTPUTS}
-    tables.cpp
     tree.h
     version.cpp
     version.h

@@ -82,7 +82,7 @@ struct fast_uniform_int_distribution {
         do {
             n = mulhilo(g(), range, low);
             // Make sure we have uniform distribution
-        } while(low < prnglookup[range].reject_limit);
+        } while(low < prnglookup[range]);
 
         // Multiply value by range to get uniform values from 0 to range-1
         return n + params_.min_;
@@ -237,8 +237,8 @@ exhaust_mode::exhaust_mode(globals* gp) :
 
     bitvector_ = exh_vectordeal;
     // Setup limits to number of deals
-    gp->maxgenerate = ncrlarge(bit_pos, p1cnt);
-    gp->maxproduce = ncrlarge(bit_pos, p1cnt);
+    gp->maxgenerate = ncrtable(bit_pos, p1cnt);
+    gp->maxproduce = ncrtable(bit_pos, p1cnt);
     gp->ngen = gp->nprod = 0;
 }
 
