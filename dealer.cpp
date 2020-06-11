@@ -1215,17 +1215,8 @@ static int deal_main(struct globals *g) {
   return 0;
 }
 
-} // namespace DEFUN()
-
-extern "C" {
-static int DEFUN(deal_main)(struct globals *g) {
-  return DEFUN()::deal_main(g);
-}
-}
-
-namespace DEFUN() {
-
 auto dm_register = make_entry_register(cpu::detect::feature_id(),
     deal_main_entry,
-    DEFUN(deal_main));
-}
+    deal_main);
+
+} // namespace DEFUN()

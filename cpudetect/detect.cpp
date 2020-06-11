@@ -2,6 +2,11 @@
 #include <cassert>
 #include <set>
 #include <regex>
+
+namespace cpu {
+
+namespace {
+
 #if defined(__i386__) || defined(__x86_64__)
 static int get_cpuid(unsigned op, unsigned subop, unsigned &a, unsigned &b, unsigned &c, unsigned &d)
 {
@@ -312,16 +317,6 @@ static unsigned x86_cpu_init()
 #endif
 	return features;
 }
-
-bool cpu_supports(enum cpufeatures feature)
-{
-	return cpu::detect::instance().supports(feature);
-}
-
-namespace cpu {
-
-namespace {
-
 
 static std::string make_string(unsigned features)
 {

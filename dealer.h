@@ -1,5 +1,5 @@
-#ifndef DEALER_H
-#define DEALER_H
+
+#pragma once
 
 #include "card.h"
 #include "pointcount.h"
@@ -7,10 +7,6 @@
 #include "cpudetect/entry.h"
 
 #include <stdio.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern const char* const player_name[4];
 extern const char* const suit_name[5];
@@ -68,7 +64,7 @@ enum { STAT_MODE, EXHAUST_MODE };
 extern const struct globals *gptr;
 
 void  yyerror (const char*) __attribute__((noreturn));
-int yywrap ();
+extern "C" int yywrap ();
 int yyparse (void);
 
 int imps (int scorediff) __attribute__ ((pure));
@@ -119,6 +115,7 @@ void printcard(card c);
 
 
 extern int (*deal_main)(struct globals *g);
+extern entry<decltype(deal_main), &deal_main> deal_main_entry;
 
 #ifdef MVDEFAULT
 #define CONCAT2(a,b) a ##_## b
@@ -128,15 +125,9 @@ extern int (*deal_main)(struct globals *g);
 #define DEFUN(x) default_##x
 #endif
 
-#ifdef __cplusplus
-}
-
-extern entry<decltype(deal_main), &deal_main> deal_main_entry;
 
 namespace DEFUN() {
 int suitlength (const union board* d, int compass,int suit);
 }
 
-#endif
 
-#endif /* DEALER_H */

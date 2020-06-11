@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#else
-#include <stdbool.h>
-#endif
+#include <string>
 
 enum cpufeatures {
 	CPUDEFAULT	= 0x000,
@@ -21,12 +17,6 @@ enum cpufeatures {
 	CPUBMI2		= CPUAVX << 1,
 	CPUAVX2		= CPUBMI2 << 1,
 };
-
-bool cpu_supports(enum cpufeatures feature);
-
-#ifdef __cplusplus
-}
-#include <string>
 
 namespace cpu {
 
@@ -103,5 +93,3 @@ private:
 };
 
 } // namespace cpu
-
-#endif

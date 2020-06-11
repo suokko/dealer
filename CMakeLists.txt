@@ -103,7 +103,7 @@ if (NOT STD_THREAD_SUPPORTED)
 endif (NOT STD_THREAD_SUPPORTED)
 
 # Check if getopt is supported
-try_compile_cached(C GETOPT_SUPPORTED
+try_compile_cached(CXX GETOPT_SUPPORTED
     SOURCE_TEXT
 "#include <unistd.h>
 int main(int argc, char* const argv[]) {
@@ -114,7 +114,7 @@ int main(int argc, char* const argv[]) {
 add_library(wmain_flags INTERFACE)
 if (WIN32)
     # Check if calling from wmain to main works
-    try_run_cached(C CHECK_WMAIN_SUPPORTED
+    try_run_cached(CXX CHECK_WMAIN_SUPPORTED
         SOURCE_TEXT "int rv = 1;
 int main(void) {return rv;}
 int wmain(void) {rv = 0; return main();}"
@@ -133,7 +133,7 @@ int wmain(void) {rv = 0; return main();}"
     endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
 endif (WIN32)
 
-check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES C CXX)
+check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES CXX)
 
 if (LTO_SUPPORTED)
     message(STATUS "Link time optimization supported.")
@@ -161,13 +161,16 @@ endif (NOT GETOPT_SUPPORTED)
 # A helper binary to generate lookup tables
 add_executable(table_generator EXCLUDE_FROM_ALL pregen.cpp)
 add_custom_command(
-    OUTPUT tables.c
-    COMMAND $<TARGET_FILE:table_generator> -irn > ${CMAKE_CURRENT_BINARY_DIR}/tables.c
+    OUTPUT tables.cpp
+    COMMAND $<TARGET_FILE:table_generator> -irn > ${CMAKE_CURRENT_BINARY_DIR}/tables.cpp
     DEPENDS table_generator)
 
 # Add bison and flex compilations
-bison_target(defs ${CMAKE_CURRENT_SOURCE_DIR}/defs.y ${CMAKE_CURRENT_BINARY_DIR}/defs.c COMPILE_FLAGS -y)
-flex_target(scan ${CMAKE_CURRENT_SOURCE_DIR}/scan.l ${CMAKE_CURRENT_BINARY_DIR}/scan.c)
+bison_target(defs ${CMAKE_CURRENT_SOURCE_DIR}/defs.y
+    ${CMAKE_CURRENT_BINARY_DIR}/defs.cpp
+    COMPILE_FLAGS -y)
+flex_target(scan ${CMAKE_CURRENT_SOURCE_DIR}/scan.l
+    ${CMAKE_CURRENT_BINARY_DIR}/scan.cpp)
 set_source_files_properties(${BISON_defs_OUTPUTS}
     PROPERTIES OBJECT_DEPENDS ${FLEX_scan_OUTPUTS})
 
@@ -177,13 +180,13 @@ set (SRC
     dds.h
     dealer_once.cpp
     main.cpp
-    pbn.c
+    pbn.cpp
     pbn.h
     pregen.h
-    pointcount.c
+    pointcount.cpp
     pointcount.h
     ${BISON_defs_OUTPUTS}
-    tables.c
+    tables.cpp
     tree.h
     version.cpp
     version.h

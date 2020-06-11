@@ -2,10 +2,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct prngtable {
 	unsigned int reject_limit;
 };
@@ -29,6 +25,3 @@ static inline uint64_t ncrlarge(unsigned n, unsigned r)
 	return ncrtablelarge[ncridx(n, r)];
 }
 
-#ifdef __cplusplus
-}
-#endif

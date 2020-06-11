@@ -490,7 +490,7 @@ struct treebase *newshapetree(int compass, struct shape *list)
 {
         struct treeshape *t;
 
-        t = mycalloc(1, sizeof *t);
+        t = (treeshape*)mycalloc(1, sizeof *t);
         t->base.tr_type = TRT_SHAPE;
         t->compass = compass;
         t->shape = *list;
@@ -522,7 +522,7 @@ struct shape makeshape(char s[4], int any)
         default:
                 if (ccount>13)
                         yyerror("too many cards in ambiguous shape");
-                bcopy(s, copy_s, 4);
+                memmove(copy_s, s, 4);
                 for(i=0; copy_s[i] != 'x'; i++)
                         ;
                 if (xcount==1) {
@@ -548,10 +548,10 @@ int d2n(char s[4]) {
         return atoi(copys);
 }
 
-struct treebase *newtree(type, p1, p2, i1, i2)
-int type;
-struct treebase *p1, *p2;
-int i1,i2;
+struct treebase *newtree(
+int type,
+struct treebase *p1, struct treebase *p2,
+int i1, int i2)
 {
         /* char *mycalloc(); */
         struct tree *p;
@@ -569,19 +569,19 @@ struct treebase *newhascardtree(int type, int compass, card c)
 {
         struct treehascard *p;
 
-        p = mycalloc(1, sizeof(*p));
+        p = (treehascard *)mycalloc(1, sizeof(*p));
         p->base.tr_type = type;
         p->compass = compass;
         p->c = c;
         return &p->base;
 }
 
-struct action *newaction(type, p1, s1, i1, p2)
-int type;
-struct treebase *p1;
-char *s1;
-int i1;
-struct treebase *p2;
+struct action *newaction(
+int type,
+struct treebase *p1,
+char *s1,
+int i1,
+struct treebase *p2)
 {
         /* char *mycalloc(); */
         struct action *a;
@@ -614,20 +614,20 @@ struct expr *newexpr(struct treebase* tr1, char* ch1, struct expr* ex1)
     }
 }
 
-char *mystrcpy(s)
-char *s;
+char *mystrcpy(
+const char *s)
 {
         char *cs;
         /* char *mycalloc(); */
 
-        cs = mycalloc(strlen(s)+1, sizeof(char));
+        cs = (char*)mycalloc(strlen(s)+1, sizeof(char));
         strcpy(cs, s);
         return cs;
 }
 
-void predeal_holding(compass, holding)
-int compass;
-char *holding;
+void predeal_holding(
+int compass,
+char *holding)
 {
         char suit;
 
@@ -688,7 +688,7 @@ void bias_deal(int suit, int compass, int length){
 #pragma warning( disable : 4127 )
 #endif
 
-#include "scan.c"
+#include "scan.cpp"
 
 #ifdef WIN32
 #pragma warning( default : 4127 )

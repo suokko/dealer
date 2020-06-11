@@ -15,12 +15,12 @@ extern char* input_file;
 int printpbn (int board, const union board *d) {
 
   /* Symbols for the cards */
-  char representation[] = "23456789TJQKA";
+  const char representation[] = "23456789TJQKA";
   /* Mnemonics for vulnerability and dealer */
-  char *vulner_name[] = { "None",  "NS",   "EW",    "All"  };
-  char *dealer_name[] = { "N",     "E",    "S",     "W"    };
+  const char *vulner_name[] = { "None",  "NS",   "EW",    "All"  };
+  const char *dealer_name[] = { "N",     "E",    "S",     "W"    };
   /* Who's vulnerable on which boards */
-  int board_vul[] = { 0,1,2,3, 1,2,3,0, 2,3,0,1, 3,0,1,2 };
+  const int board_vul[] = { 0,1,2,3, 1,2,3,0, 2,3,0,1, 3,0,1,2 };
 
   /* Local variables */
   time_t timet;
