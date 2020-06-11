@@ -569,8 +569,6 @@ static void initglobals(struct globals *g)
   g->maxdealer = -1;
 }
 
-static const char *default_locale = "";
-
 int main (int argc, char **argv) {
   int seed_provided = 0;
   extern int optind;
@@ -659,10 +657,14 @@ int main (int argc, char **argv) {
 
   // User user preferred locale
   if (set_locale) {
+    const char *default_locale = "";
     try {
       std::locale::global(std::locale(default_locale));
     } catch(...) {
-      ucsep = noutf8_ucsep;
+      if (!setlocale(LC_ALL, default_locale)) {
+        fprintf(stderr, "Failed to set default locale\n");
+        ucsep = noutf8_ucsep;
+      }
     }
   } else {
     ucsep = noutf8_ucsep;
@@ -728,12 +730,6 @@ int wmain(int argc, wchar_t** wargv)
     // Disable utf-8 output
     ucsep = noutf8_ucsep;
   }
-
-  // Get user default locale
-  size = GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SNAME, nullptr, 0);
-  char locale[size];
-  GetLocaleInfoA(LOCALE_USER_DEFAULT, LOCALE_SNAME, locale, size);
-  default_locale = locale;
   return main(argc, argv);
 }
 #endif
