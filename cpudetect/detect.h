@@ -77,15 +77,6 @@ struct detect {
 		return compiler_features() & feature;
 	}
 
-	static constexpr unsigned feature_id()
-	{
-#if MVdefault
-		return CPUDEFAULT;
-#else
-		return compiler_features();
-#endif
-	}
-
 	static const std::string& compiler_string();
 	const std::string& cpu_string() const;
 private:

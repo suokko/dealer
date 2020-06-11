@@ -114,8 +114,7 @@ void printcard(card c);
 #define HAS_CARD(d,p,c) hand_has_card((d)->hands[p], c)
 
 
-extern int (*deal_main)(struct globals *g);
-extern entry<decltype(deal_main), &deal_main> deal_main_entry;
+extern entry<int (*)(struct globals *g)> deal_main;
 
 #ifdef MVDEFAULT
 #define CONCAT2(a,b) a ##_## b

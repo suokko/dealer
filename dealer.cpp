@@ -1215,8 +1215,8 @@ static int deal_main(struct globals *g) {
   return 0;
 }
 
-auto dm_register = make_entry_register(cpu::detect::feature_id(),
-    deal_main_entry,
+auto dm_register = make_entry_register(cpu::detect::compiler_features(),
+    ::deal_main,
     deal_main);
 
 } // namespace DEFUN()

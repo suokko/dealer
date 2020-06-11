@@ -11,7 +11,7 @@
  * Entry is used to manage selected runtime function for C function entry points
  * to specialized optimization code.
  */
-template<typename fn_t, fn_t* fn_ptr>
+template<typename fn_t>
 struct entry {
     constexpr entry() :
         current_{CPUDEFAULT}
@@ -22,10 +22,17 @@ struct entry {
         if (current_ <= required &&
                 cpu::detect::instance().supports(required)) {
             current_ = required;
-            *fn_ptr = fn;
+            fn_ = fn;
         }
     }
+
+    template <typename... Args>
+    auto operator()(Args&&... arg) const
+    {
+        return fn_(std::forward<Args>(arg)...);
+    }
 private:
+    fn_t fn_;
     unsigned current_;
 };
 

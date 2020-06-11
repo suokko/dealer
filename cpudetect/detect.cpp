@@ -377,7 +377,7 @@ static std::string make_string(unsigned features)
 detect::detect() :
 	features_{x86_cpu_init()}
 {
-	features_ = check_env(features_);
+	features_ = check_env(features_) | compiler_features();
 }
 
 const detect& detect::instance()
