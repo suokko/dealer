@@ -625,19 +625,43 @@ int main (int argc, char **argv) {
             config::version_long,
             cpu::detect::instance().compiler_string().c_str(),
             cpu::detect::instance().cpu_string().c_str());
-        return 1;
+        return 0;
       case 'C':
         set_locale = false;
         break;
       case '?':
+        errflg |= 2;
+        break;
       case 'h':
-        errflg = 1;
+        errflg |= 1;
         break;
       }
     }
   if (argc - optind > 2 || errflg) {
-    fprintf (stderr, "Usage: %s [-emv] [-s seed] [-i rng|52 cards] [-p num] [-v num] [inputfile]\n", argv[0]);
-    exit (-1);
+    fprintf (stderr,
+"Usage: %s [-emv023vC] [-s SEED] [-i rng|PACK] [-p COUNT] [-g COUNT] [-l INDEX] [INPUTFILE]\n"
+"Generate and analyze bridge hands with constraints INPUTFILE script.\n"
+"Default is to read script from standard input.\n"
+"\n"
+"  -e                         Select exhaust mode. Exhaust mode requires two\n"
+"                               completely defined hands. Mode generates all\n"
+"                               possible deals for unknown cards.\n"
+"  -l INDEX                   Load hands from library.dat. INDEX specifies\n"
+"                               number of boards to skip from the begin.\n"
+"  -g COUNT                   Generate COUNT number of deals. Value overrides\n"
+"                               the INPUTFILE.\n"
+"  -p COUNT                   Produce COUNT number of deals. Value overrides\n"
+"                               the INPUTFILE.\n"
+"  -m                         Show progress meter.\n"
+"  -q                         Prints only messages requested by the INPUTFILE.\n"
+"  -i rng|PACK                Select the initial order of cards in the pack.\n"
+"                               \"rng\" parameter requests unpredictable\n"
+"                               randomization. PACK must be string including\n"
+"                               52 cards with suit symbol before rank.\n"
+"  -C                         Use C locale. Helpful if trying to parse output.\n"
+"  -V                         Prints version information.\n"
+        , argv[0]);
+    exit (errflg == 1 ? EXIT_SUCCESS : EXIT_FAILURE);
   }
   if (optind < argc && freopen (input_file = argv[optind], "r", stdin) == NULL) {
     perror (argv[optind]);

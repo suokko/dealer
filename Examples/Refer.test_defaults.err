@@ -5,10 +5,50 @@ Calculating...  0% completeCalculating...  1% completeCalculating...  2% compl
 -s 1 -p 2 -C Descr.test_defaults
 -s 1 -g 2 -V -C Descr.test_defaults
 -s 1 -g 2 -h -C Descr.test_defaults
-Usage: dealer.cov [-emv] [-s seed] [-i rng|52 cards] [-p num] [-v num] [inputfile]
+Usage: dealer.cov [-emv023vC] [-s SEED] [-i rng|PACK] [-p COUNT] [-g COUNT] [-l INDEX] [INPUTFILE]
+Generate and analyze bridge hands with constraints INPUTFILE script.
+Default is to read script from standard input.
+
+  -e                         Select exhaust mode. Exhaust mode requires two
+                               completely defined hands. Mode generates all
+                               possible deals for unknown cards.
+  -l INDEX                   Load hands from library.dat. INDEX specifies
+                               number of boards to skip from the begin.
+  -g COUNT                   Generate COUNT number of deals. Value overrides
+                               the INPUTFILE.
+  -p COUNT                   Produce COUNT number of deals. Value overrides
+                               the INPUTFILE.
+  -m                         Show progress meter.
+  -q                         Prints only messages requested by the INPUTFILE.
+  -i rng|PACK                Select the initial order of cards in the pack.
+                               "rng" parameter requests unpredictable
+                               randomization. PACK must be string including
+                               52 cards with suit symbol before rank.
+  -C                         Use C locale. Helpful if trying to parse output.
+  -V                         Prints version information.
 -s 1 -g 2 -? -C Descr.test_defaults
 dealer.cov: invalid option -- '?'
-Usage: dealer.cov [-emv] [-s seed] [-i rng|52 cards] [-p num] [-v num] [inputfile]
+Usage: dealer.cov [-emv023vC] [-s SEED] [-i rng|PACK] [-p COUNT] [-g COUNT] [-l INDEX] [INPUTFILE]
+Generate and analyze bridge hands with constraints INPUTFILE script.
+Default is to read script from standard input.
+
+  -e                         Select exhaust mode. Exhaust mode requires two
+                               completely defined hands. Mode generates all
+                               possible deals for unknown cards.
+  -l INDEX                   Load hands from library.dat. INDEX specifies
+                               number of boards to skip from the begin.
+  -g COUNT                   Generate COUNT number of deals. Value overrides
+                               the INPUTFILE.
+  -p COUNT                   Produce COUNT number of deals. Value overrides
+                               the INPUTFILE.
+  -m                         Show progress meter.
+  -q                         Prints only messages requested by the INPUTFILE.
+  -i rng|PACK                Select the initial order of cards in the pack.
+                               "rng" parameter requests unpredictable
+                               randomization. PACK must be string including
+                               52 cards with suit symbol before rank.
+  -C                         Use C locale. Helpful if trying to parse output.
+  -V                         Prints version information.
 -s 1 SecondParam.file -C Descr.test_defaults
 SecondParam.file: No such file or directory
 -s 1 -i cJC3s7S5♧Qh9d9♠2H5Dt♢2♠j♣a♣4♣8♦J♦5♤3♣T♡2♥J♥A♥k♣5♦8♥q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 -C Descr.test_defaults
