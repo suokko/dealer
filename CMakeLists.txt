@@ -13,7 +13,7 @@ cmake_policy(SET CMP0048 NEW)
 
 # Declare project information.
 project(dealer
-    VERSION 0.99.0
+    VERSION 0.99.1
     DESCRIPTION "Generates bridge hands for statistical analyze"
     HOMEPAGE_URL "https://github.com/suokko/dealer"
     LANGUAGES CXX C)
