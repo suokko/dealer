@@ -43,7 +43,6 @@ struct globals {
 
     union board predealt;
     union board curboard;
-    int16_t distrbitmaps[14];
     uint16_t libtricks[5];
 
     struct treebase *decisiontree;
@@ -88,15 +87,6 @@ struct value_array {
   int key[13];
   int value[13];
 };
-
-static inline int getshapenumber (unsigned cl, unsigned di, unsigned ht)
-{
-  unsigned max = 14-cl;
-  unsigned min = max-di+1;
-  di = ((max+min)*(max-min+1))/2;
-  max = gptr->distrbitmaps[cl] + di + ht;
-  return max;
-}
 
 void * mycalloc (unsigned nel, unsigned siz);
 

@@ -81,3 +81,25 @@ constexpr prngtable<T, max, bits>::prngtable() :
 {}
 
 constinit const prngtable<uint32_t, 52> prnglookup{};
+
+consteval auto distrbitmaps::make_table() -> table_t
+{
+	value_type rv[std::tuple_size<table_t>()] = {0};
+	value_type shape = 0;
+
+	for (value_type clubs = 0; clubs <= 13; clubs++) {
+		value_type max = 14 - clubs;
+		value_type min = 0;
+		value_type toadd = ((max+min)*(max-min+1))/2;
+		rv[clubs] = shape;
+		shape += toadd;
+	}
+
+	return to_array(rv);
+}
+
+constexpr distrbitmaps::distrbitmaps() :
+	distributions_{make_table()}
+{}
+
+constinit const distrbitmaps getshapenumber{};

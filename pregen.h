@@ -107,3 +107,57 @@ extern const ncr_lookup<uint32_t, 26> ncrtable;
 /// Lookup table for large ncr values up to 52 cards available for selection
 extern const ncr_lookup<uint64_t, 52, 27> ncrtablelarge;
 
+
+/// Class to generate lookup tables to convert suit lengths to unique number
+struct distrbitmaps {
+	using value_type = unsigned;
+
+	/// Construct lookup table in compile time
+	constexpr distrbitmaps();
+
+	/** Helper to lookup correct offset value from club length
+	 *
+	 * @param clubs The length of club suit
+	 * @return Number for first potential distribution with the club length
+	 */
+	value_type operator[](value_type clubs) const
+	{
+		assert(clubs <= 13 &&
+				"The length of clubs must be at most 13");
+		return distributions_[clubs];
+	}
+
+	/** Helper to calculate shape number
+	 *
+	 * @param clubs The length of club suit
+	 * @param diamonds The length of diamond suit
+	 * @param hearts The length of hearts suit
+	 * @return The distribution number for the shape
+	 */
+	value_type operator()(value_type clubs, value_type diamonds, value_type hearts) const
+	{
+		assert(clubs <= 13 &&
+				"The length of clubs must be at most 13");
+		assert(diamonds <= 13 &&
+				"The length of diamonds must be at most 13");
+		assert(hearts <= 13 &&
+				"The length of hearts must be at most 13");
+		assert(clubs + diamonds + hearts <= 13 &&
+				"The total length must be at most 13");
+
+		value_type max = 14 - clubs;
+		value_type min = max - diamonds + 1;
+		diamonds = ((max+min)*(max-min+1))/2;
+		return (*this)[clubs] + diamonds + hearts;
+	}
+
+private:
+	using table_t = std::array<value_type, 14>;
+
+	/// Helper to construct the lookup table
+	static consteval table_t make_table();
+
+	table_t distributions_;
+};
+
+extern const distrbitmaps getshapenumber;

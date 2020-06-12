@@ -13,6 +13,7 @@
 
 #include "bittwiddle.h"
 #include "version.h"
+#include "pregen.h"
 
 #include <random>
 #include <regex>
@@ -201,23 +202,11 @@ void * mycalloc (unsigned nel, unsigned siz) {
   exit (-1); /*NOTREACHED */
 }
 
-static void initdistr (struct globals *g) {
-  unsigned clubs;
-
-  int shape = 0;
-
-  for (clubs = 0; clubs <= 13; clubs++) {
-    unsigned max = 14 - clubs;
-    unsigned min = 0;
-    unsigned toadd = ((max+min)*(max-min+1))/2;
-    g->distrbitmaps[clubs] = shape;
-    shape += toadd;
-  }
-}
-
 void  setshapebit (struct shape *s, int cl, int di, int ht, int sp)
 {
   (void)sp;
+  assert(cl + di + ht + sp == 13 &&
+      "Shape must have exactly 13 cards");
   unsigned nr = getshapenumber(cl, di, ht);
   int idx = nr / 32;
   int bit = nr % 32;
@@ -669,7 +658,6 @@ int main (int argc, char **argv) {
   } else {
     ucsep = noutf8_ucsep;
   }
-  initdistr (gp);
   gp->maxvuln = -1;
 
   yyparse ();
