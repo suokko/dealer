@@ -62,21 +62,21 @@ enum { STAT_MODE, EXHAUST_MODE };
 
 extern const struct globals *gptr;
 
-void  yyerror (const char*) __attribute__((noreturn));
+[[noreturn]] void  yyerror (const char*);
 extern "C" int yywrap ();
 int yyparse (void);
 
-int imps (int scorediff) __attribute__ ((pure));
+[[gnu::pure]] int imps (int scorediff);
 int scoreone (int vuln, int suit, int level, int dbl, int tricks);
-void error (const char* s) __attribute__ ((noreturn));
+[[noreturn]] void error (const char* s);
 void  setshapebit (struct shape *, int, int, int, int);
 void  predeal (int, card);
 void clearpointcount ();
 void clearpointcount_alt (int cin);
 void pointcount (int index, int value);
 void newpack (union pack *d, const char *initialpack);
-card make_card (char rankchar, char suitchar) __attribute__ ((pure));
-int make_contract (char suitchar, char trickchar, char dbl) __attribute__ ((pure));
+[[gnu::pure]] card make_card (char rankchar, char suitchar);
+[[gnu::pure]] int make_contract (char suitchar, char trickchar, char dbl);
 void fprintcompact (FILE * f, const union board *d, int ononeline, int disablecompass);
 void printdeal (const union board *d);
 void printhands (int boardno, const union board *dealp, int player, int nhands);
