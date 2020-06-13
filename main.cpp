@@ -568,7 +568,7 @@ int main (int argc, char **argv) {
 
   struct timeval tvstart, tvstop;
 
-  struct globals global = {.seed = 0};
+  struct globals global = {0};
 
   initglobals(&global);
 
