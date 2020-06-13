@@ -48,14 +48,14 @@ struct globals {
     struct treebase *decisiontree;
     struct action *actionlist;
 
-    int quiet      : 1;
-    int verbose    : 1;
-    int progressmeter : 1;
-    int will_print : 1;
-    int swapping   : 3;
-    int loading    : 1;
-    int use_compass: 4;
-    int computing_mode : 2;
+    unsigned quiet          : 1;
+    unsigned verbose        : 1;
+    unsigned progressmeter  : 1;
+    unsigned will_print     : 1;
+    unsigned swapping       : 3;
+    unsigned loading        : 1;
+    unsigned use_compass    : 4;
+    unsigned computing_mode : 2;
 };
 
 enum { STAT_MODE, EXHAUST_MODE };
