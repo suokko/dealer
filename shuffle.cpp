@@ -51,7 +51,6 @@ template<typename T>
 struct promote;
 
 template<> struct promote<uint32_t> { using type = uint64_t; };
-template<> struct promote<uint64_t> { using type = unsigned __int128; };
 
 template<typename IntType>
 struct fast_uniform_int_distribution {
