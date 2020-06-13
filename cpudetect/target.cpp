@@ -6,8 +6,8 @@
 #include <limits.h>
 #include <inttypes.h>
 
-#ifndef SLOWMUL
-#define SLOWMUL 0
+#ifndef MVslowmul
+#define MVslowmul 0
 #endif
 
 namespace std {
