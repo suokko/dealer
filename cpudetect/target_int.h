@@ -7,4 +7,4 @@
 #define DEFUN(x) default_##x
 #endif
 
-void DEFUN(test)(int);
+void DEFUN(test)(unsigned);
