@@ -943,7 +943,7 @@ static void frequency_to_lead(struct action *acp, struct value& val) {
                h[low2] = c;
         }
         acp->ac_expr2 = (treebase*)h;
-};
+}
 
 static void action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
