@@ -187,6 +187,8 @@ set (SRC
 
 # Build sources for different compiler optimization parameters
 set(MV_SRC
+    bittwiddle.cpp
+    bittwiddle.h
     card.h
     c4.cpp
     c4.h

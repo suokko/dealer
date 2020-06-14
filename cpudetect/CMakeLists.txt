@@ -27,7 +27,11 @@ set(CPUDETECT_CONFIGS ${COMPILER_CONFIGS})
 list(APPEND CPUDETECT_CONFIGS slowmul)
 set(COMPILER_CONFIG_slowmul ${COMPILER_CONFIG_default})
 foreach (CFG ${CPUDETECT_CONFIGS})
-    add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL target.cpp target.h)
+    add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL
+        target.cpp
+        target.h
+        ../bittwiddle.cpp
+        )
     target_compile_definitions(target_${CFG} PRIVATE MVDEFAULT=${CFG} MV${CFG}=1)
     target_compile_options(target_${CFG} PRIVATE ${COMPILER_CONFIG_${CFG}})
     target_include_directories(target_${CFG} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

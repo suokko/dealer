@@ -78,7 +78,7 @@ static const card suit_masks[] = {
 /* Some helper functions for hands */
 static inline int hand_count_cards(const hand h)
 {
-	return popcountll(h);
+	return popcount(h);
 }
 
 /* Return index of most significant card bit set */

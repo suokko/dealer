@@ -13,9 +13,9 @@ int main(void)
 			runtime.c_str());
 
 	if (cpu::detect::instance().supports(CPUPOPCNT))
-		popcnt_test(55);
-	default_test(55);
-	slowmul_test(55);
+		popcnt_::test(55);
+	default_::test(55);
+	slowmul_::test(55);
 
 	return 0;
 }

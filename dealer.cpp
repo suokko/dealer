@@ -1169,19 +1169,22 @@ static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
 }
 
 static int deal_main(struct globals *g) {
-
-  assert(0 == popcount(0x0000));
-  assert(1 == popcount(0x0100));
-  assert(2 == popcount(0x1001));
-  assert(16 == popcount(0xffff));
-  assert(0 == popcountl(0x0000));
-  assert(1 == popcountl(0x0100));
-  assert(2 == popcountl(0x1001));
-  assert(16 == popcountl(0xffff));
-  assert(0 == popcountll(0x0000));
-  assert(1 == popcountll(0x0100));
-  assert(2 == popcountll(0x1001));
-  assert(16 == popcountll(0xffff));
+  assert(0 == popcount(char{0x00}));
+  assert(1 == popcount(char{0x20}));
+  assert(2 == popcount(char{0x30}));
+  assert(8 == popcount(char{-1}));
+  assert(0 == popcount(short{0x0000}));
+  assert(1 == popcount(short{0x0100}));
+  assert(2 == popcount(short{0x1001}));
+  assert(16 == popcount(short{-1}));
+  assert(0 == popcount(unsigned{0x0000}));
+  assert(1 == popcount(unsigned{0x0100}));
+  assert(2 == popcount(unsigned{0x1001}));
+  assert(16 == popcount(unsigned{0xffff}));
+  assert(0 == popcount(uint64_t{0x0000}));
+  assert(1 == popcount(uint64_t{0x0100}));
+  assert(2 == popcount(uint64_t{0x1001}));
+  assert(16 == popcount(uint64_t{0xffff}));
 
   gp = g;
 

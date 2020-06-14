@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <limits>
 #include <cmath>
+#include <time.h>
 
 #ifndef MVslowmul
 #define MVslowmul 0
@@ -32,16 +33,6 @@ static std::ostream& operator<<(std::ostream& os, uint128_t v)
 	return os << static_cast<uint64_t>(v);
 }
 
-namespace std {
-
-template<>
-struct make_unsigned<int128_t>
-{ typedef uint128_t type;};
-
-template<>
-struct make_unsigned<uint128_t>
-{ typedef uint128_t type;};
-}
 #endif
 
 #if __WORDSIZE == 32 && !defined(__clang__)
@@ -49,34 +40,34 @@ struct make_unsigned<uint128_t>
 #endif
 
 #include <cxxabi.h>
-
+#if MVslowmul
 template <class T>
-static T popcount(T in)
+[[gnu::optimize("unroll-loops")]]
+static inline T popcount(T in)
 {
-#if __POPCNT__
-	/* If there is popcnt instruction that is faster.
-	 * But gcc provides typed builtin so we have to select correct one
-	 */
-	if (sizeof(in) <= sizeof(int))
-		return __builtin_popcount(in);
-	if (sizeof(in) <= sizeof(long))
-		return __builtin_popcountl(in);
-	if (sizeof(in) <= sizeof(long long))
-		return __builtin_popcountll(in);
-#if __x86_64__
-	constexpr auto llbits = std::numeric_limits<long long>::digits;
-	if (sizeof(in) == 2*sizeof(long long)) {
-		return __builtin_popcountll(static_cast<long long>(in)) +
-			__builtin_popcountll(static_cast<long long>(in >> llbits));
-	}
-#endif
+#if __WORDSIZE == 32
+	using native_t = unsigned int;
+#else
+	using native_t = unsigned long long;
 #endif
 	using uT = typename std::make_unsigned<T>::type;
-	uT x = in;
+	uT uv = in;
+	if (sizeof(uv) > sizeof(native_t)) {
+		native_t rv = 0;
+		unsigned count = sizeof(uv)/sizeof(native_t);
+		const unsigned shift = std::min(std::numeric_limits<native_t>::digits,
+				std::numeric_limits<uT>::digits - 1);
+		do {
+			rv += popcount(static_cast<native_t>(uv));
+			uv >>= shift;
+		} while(--count);
+		return rv;
+	}
+
+	uT x = uv;
 	unsigned depth = 1;
-	unsigned muldepth = MVslowmul ? std::numeric_limits<uT>::digits : 8;
+	unsigned muldepth = std::numeric_limits<uT>::digits;
 	auto mask = x;
-	auto mask01 = x;
 	/* count every second bit
 	 * 00 - 00 -> 00
 	 * 01 - 00 -> 01
@@ -85,7 +76,7 @@ static T popcount(T in)
 	 * Minus is just optimisation to avoid second mask operation because
 	 * of sum would overflow.
 	 */
-	mask = (~(uT)0)/((1ULL << depth)+1);
+	mask = (~(uT)0)/((uT{1} << depth)+1u);
 	x = x - ((x >> 1) & mask);
 	depth *= 2;
 	/* Sum the counted bits. First step may overflow so has to apply mask before overflow */
@@ -93,36 +84,29 @@ static T popcount(T in)
 	 * mask = 0xFFFF... / ((2**(depth*2)-1)/(2**depth-1))
 	 * mask = 0xFFFF... / (2**depth+1)
 	 */
-	mask = (~(uT)0)/((1ULL << depth)+1);
+	mask = (~(uT)0)/((uT{1} << depth)+1u);
 	x = (x & mask) + ((x >> depth) & mask);
 	/* Later steps don't apply mask after sum because no overflow */
 	for (depth = 4; depth < muldepth; depth *= 2) {
-		if (depth < sizeof(long long)*8)
-			mask = (~(uT)0)/((1ULL << depth)+1);
-		else
-			mask = (uT)~0ULL;
+		mask = (~(uT)0)/((uT{1} << depth)+1u);
 		x = ((x + (x >> depth)) & mask);
 	}
-	/* Shortcut using multiplication to sum each byte. But works
-	 * only if there is fast multiplication and results is less
-	 * than 256. For integers between 256 and 64k-1 bits one can
-	 * run one more shit mask counting step and then do 16bit
-	 * multiplication summing.
-	 */
-	if (depth < std::numeric_limits<uT>::digits) {
-		/* x * 0x0101... buts the sum to the highest bit
-		 * then simple shift moves it back down
-		 */
-		mask01 = (~(uT)0)/((1ULL << muldepth) - 1);
-		return (uT)(x * mask01) >> (std::numeric_limits<uT>::digits - 8);
-	}
-
 	return x;
 }
+#else
+#include "../bittwiddle.h"
+#endif
 
-#include <time.h>
+namespace DEFUN() {
+template <class T>
+[[gnu::optimize("unroll-loops"), gnu::noinline]]
+static T popcountt(T in)
+{
+	return popcount(in);
+}
 
 template<typename T>
+[[gnu::noinline]]
 static T run_test(const char *fn, const char *type, T first)
 {
 	// duplicate bits
@@ -135,25 +119,32 @@ static T run_test(const char *fn, const char *type, T first)
 		bits *= 2;
 	} while (first != next);
 	clock_t start = clock();
-	for (unsigned i = 0; i < 5'000'000u; i++)
-		first = popcount(first) + first;
+	for (unsigned i = 0; i < 20'000'000u; i++)
+		first = popcountt(first) + first;
 	clock_t end = clock();
 	std::cout << fn
 		<< ": " << type << "(" << std::numeric_limits<T>::digits << ")"
 		<< " took " << (end - start)
-		<< " -> " << (first + 0)
+		<< " -> " << (typename std::make_unsigned<decltype(first+0)>::type)(first + 0)
 		<< '\n';
 	return first;
 }
 
-void DEFUN(test)(unsigned x)
+void test(unsigned x)
 {
-	run_test(__func__, "uc", static_cast<unsigned char>(x));
-	run_test(__func__, "us", static_cast<unsigned short>(x));
-	run_test(__func__, "ui", static_cast<unsigned int>(x));
-	run_test(__func__, "ul", static_cast<unsigned long>(x));
-	run_test(__func__, "ull", static_cast<unsigned long long>(x));
+	run_test(__PRETTY_FUNCTION__, "uc", static_cast<unsigned char>(x));
+	run_test(__PRETTY_FUNCTION__, "c", static_cast<signed char>(x));
+	run_test(__PRETTY_FUNCTION__, "us", static_cast<unsigned short>(x));
+	run_test(__PRETTY_FUNCTION__, "s", static_cast<short>(x));
+	run_test(__PRETTY_FUNCTION__, "ui", static_cast<unsigned int>(x));
+	run_test(__PRETTY_FUNCTION__, "i", static_cast<int>(x));
+	run_test(__PRETTY_FUNCTION__, "ul", static_cast<unsigned long>(x));
+	run_test(__PRETTY_FUNCTION__, "l", static_cast<long>(x));
+	run_test(__PRETTY_FUNCTION__, "ull", static_cast<unsigned long long>(x));
+	run_test(__PRETTY_FUNCTION__, "ll", static_cast<long long>(x));
 #if __x86_64__
-	run_test(__func__, "u128", static_cast<uint128_t>(x));
+	run_test(__PRETTY_FUNCTION__, "u128", static_cast<uint128_t>(x));
+	run_test(__PRETTY_FUNCTION__, "128", static_cast<int128_t>(x));
 #endif
+}
 }
