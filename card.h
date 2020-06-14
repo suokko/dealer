@@ -85,7 +85,7 @@ static inline int hand_count_cards(const hand h)
 static inline int C_BITPOS(const card c)
 {
 	assert(hand_count_cards(c) >= 1);
-	return sizeof(c)*8 - __builtin_clzll(c) - 1;
+	return std::numeric_limits<card>::digits - clz(c) - 1;
 }
 
 static inline int C_SUIT(const card c)
@@ -105,7 +105,7 @@ static inline card MAKECARD(int suit, int rank)
 	assert(suit >= SUIT_CLUB && suit <= SUIT_SPADE);
 	assert(rank >= 0 && rank < CARDS_IN_SUIT);
 
-	return 1ULL << (suit * SUIT_WIDTH + rank);
+	return card{1} << (suit * SUIT_WIDTH + rank);
 }
 
 static inline card hand_has_card(const hand h, const card c)
@@ -115,7 +115,7 @@ static inline card hand_has_card(const hand h, const card c)
 
 static inline card hand_extract_card(const hand h)
 {
-	return 1ULL << C_BITPOS(h);
+	return card{1} << C_BITPOS(h);
 }
 
 static inline hand hand_remove_card(const hand h, const card c)

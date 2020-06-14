@@ -257,7 +257,7 @@ unsigned exhaust_mode::bitpermutate(unsigned vector)
      * number. This removes the lowest set bit in original vector and moves
      * all ones next to it to bottom.
      */
-    moveback >>= __builtin_ctz(vector) + 1;
+    moveback >>= ctz(vector) + 1;
     /* combine the result vector to get next permutation */
     return nextvector | moveback;
 }
@@ -278,7 +278,7 @@ int exhaust_mode::do_shuffle(board *b, globals *gp)
     bitstoflip = _pdep_u64(changed, exh_card_at_bit_[0]);
 #else
     do {
-        unsigned last = __builtin_ctz(changed);
+        unsigned last = ctz(changed);
         bitstoflip |= exh_card_at_bit_[last];
         changed &= changed - 1;
     } while (changed);
