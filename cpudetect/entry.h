@@ -7,6 +7,14 @@
 
 #include "detect.h"
 
+#ifdef MVDEFAULT
+#define CONCAT2(a,b) a ##_## b
+#define CONCAT(a,b) CONCAT2(a,b)
+#define DEFUN(x) CONCAT(MVDEFAULT, x)
+#else
+#define DEFUN(x) default_##x
+#endif
+
 /**
  * Entry is used to manage selected runtime function for C function entry points
  * to specialized optimization code.
@@ -48,13 +56,17 @@ struct entry_register {
     }
 };
 
+namespace DEFUN() {
+
 /**
  * Helper function to register an alternative function
  */
 template<typename fn_t, typename entry_t>
-entry_register<fn_t> make_entry_register(unsigned required, entry_t &entry, fn_t fn)
+static inline entry_register<fn_t> make_entry_register(entry_t &entry, fn_t fn)
 {
-    return {required, entry, fn};
+    return {cpu::detect::compiler_features(), entry, fn};
+}
+
 }
 
 #endif // __cplusplus

@@ -18,10 +18,12 @@ basically a no-op.
 
 */
 
-#include <assert.h>
-#include "tree.h"
-#include "dealer.h"
 #include "c4.h"
+
+#include <assert.h>
+#include "dealer.h"
+#include "card.h"
+#include "tree.h"
 
 namespace DEFUN() {
 

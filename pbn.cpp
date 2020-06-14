@@ -5,10 +5,10 @@
 
 #include <time.h>
 
-#include "tree.h"
+#include "card.h"
 #include "dealer.h"
 #include "pbn.h"
-#include "card.h"
+#include "tree.h"
 
 extern char* input_file;
 

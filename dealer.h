@@ -4,7 +4,7 @@
 #include "card.h"
 #include "pointcount.h"
 
-#include "cpudetect/entry.h"
+#include "entry.h"
 
 #include <stdio.h>
 
@@ -105,14 +105,6 @@ void printcard(card c);
 
 
 extern entry<int (*)(struct globals *g)> deal_main;
-
-#ifdef MVDEFAULT
-#define CONCAT2(a,b) a ##_## b
-#define CONCAT(a,b) CONCAT2(a,b)
-#define DEFUN(x) CONCAT(MVDEFAULT, x)
-#else
-#define DEFUN(x) default_##x
-#endif
 
 
 namespace DEFUN() {
