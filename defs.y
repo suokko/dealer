@@ -418,9 +418,8 @@ struct treebase *var_lookup(char *s, int mustbethere)
                 if (strcmp(s, v->v_ident)==0)
                         return v->v_tree;
         if (mustbethere) {
-                char buffer[40 + strlen(s)];
-                sprintf(buffer, "unknown variable: %s", s);
-                yyerror(buffer);
+                std::string buffer{"unknown variable: "};
+                yyerror((buffer + s).c_str());
         }
         return 0;
 }
