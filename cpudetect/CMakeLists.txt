@@ -18,7 +18,7 @@ set(CPU_SRC
     )
 
 add_executable(testcpu ${CPU_SRC})
-target_link_libraries(testcpu cpudetect default_flags)
+target_link_libraries_old(testcpu cpudetect default_flags)
 if (LTO_SUPPORTED)
     set_target_properties(testcpu PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
@@ -27,7 +27,7 @@ set(CPUDETECT_CONFIGS ${COMPILER_CONFIGS})
 list(APPEND CPUDETECT_CONFIGS slowmul)
 set(COMPILER_CONFIG_slowmul ${COMPILER_CONFIG_default})
 foreach (CFG ${CPUDETECT_CONFIGS})
-    add_library(target_${CFG} OBJECT EXCLUDE_FROM_ALL
+    add_library_old(target_${CFG} OBJECT EXCLUDE_FROM_ALL
         target.cpp
         target.h
         ../bittwiddle.cpp
@@ -39,5 +39,5 @@ foreach (CFG ${CPUDETECT_CONFIGS})
         set_target_properties(target_${CFG} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif ()
     set_target_properties(target_${CFG} PROPERTIES CXX_EXTENSIONS ON)
-    target_link_libraries(testcpu target_${CFG})
+    target_link_libraries_old(testcpu target_${CFG})
 endforeach (CFG ${CPUDETECT_CONFIGS})

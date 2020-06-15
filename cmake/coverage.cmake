@@ -3,14 +3,12 @@
 # libraries with custom compiler flags. Then check_coverage depends on coverage
 # binary instead of main binary.
 
-include_guard(GLOBAL)
-include(try_compile_cached)
-
 set(COVERAGE_FAIL_MSG "***Error: There is no support for coverage build for your compiler. You can add support to cmake/coverage.cmake")
 
 # Make interface libraries to propagate coverage compiler arguments to all
 # targets
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND
+        CMAKE_VERSION VERSION_GREATER 3.8)
 
     set(COVERAGE_CPP_FLAGS -Og -g --coverage
         CACHE STRING "Coverage compiler flags appended to configuration flags")
@@ -33,13 +31,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_options(coverage_options INTERFACE ${COVERAGE_CPP_FLAGS})
         target_compile_definitions(coverage_options INTERFACE NDEBUG)
 
-        if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-            target_link_options(coverage_options INTERFACE ${COVERAGE_LINK_FLAGS})
-        else (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-            target_link_libraries(coverage_options INTERFACE ${COVERAGE_LINK_FLAGS})
-        endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+        target_link_options_old(coverage_options INTERFACE ${COVERAGE_LINK_FLAGS})
     endif (COVERAGE_COMPILER_SUPPORTED)
-endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+endif ()
 
 # Add an error message if compiler isn't supported but user attempts to use
 # coverage a target.
@@ -83,12 +77,12 @@ function(exe_clear_counts target type)
         #list(APPEND DUMMY_ARG dummy.c)
         add_executable(${tgt} ${DUMMY_ARG})
         set(tgt "${tgt}.objlib")
-        add_library(${tgt} EXCLUDE_FROM_ALL OBJECT ${ARGN})
-        target_link_libraries(${target}.${type} ${tgt})
+        add_library_old(${tgt} EXCLUDE_FROM_ALL OBJECT ${ARGN})
+        target_link_libraries_old(${target}.${type} ${tgt})
     else (CMAKE_VERSION VERSION_LESS 3.15)
         add_executable(${tgt} ${ARGN})
     endif (CMAKE_VERSION VERSION_LESS 3.15)
-    target_link_libraries(${tgt} coverage_options)
+    target_link_libraries_old(${tgt} coverage_options)
     clear_target_counts(${target}.${type} ${tgt})
 endfunction(exe_clear_counts)
 
@@ -104,14 +98,14 @@ function(lib_clear_counts target type)
         #list(APPEND DUMMY_ARG dummy.c)
         add_library(${tgt} ${DUMMY_ARG})
         set(tgt "${tgt}.objlib")
-        add_library(${tgt} OBJECT ${ARGN})
-        target_link_libraries(${target}.${type} ${tgt})
+        add_library_old(${tgt} EXCLUDE_FROM_ALL OBJECT ${ARGN})
+        target_link_libraries_old(${target}.${type} ${tgt})
     else (CMAKE_VERSION VERSION_LESS 3.15
             AND ${index} EQUAL -1)
-        add_library(${tgt} ${ARGN})
+        add_library_old(${tgt} ${ARGN})
     endif (CMAKE_VERSION VERSION_LESS 3.15
         AND ${index} EQUAL -1)
-    target_link_libraries(${tgt} coverage_options)
+    target_link_libraries_old(${tgt} coverage_options)
     if (${index} EQUAL -1)
         clear_target_counts(${target}.${type} ${tgt})
     endif (${index} EQUAL -1)
@@ -139,7 +133,7 @@ endfunction(dealer_add_executable)
 # Wrapper to add_library which makes three target variants with different
 # compiler options
 function(dealer_add_library target)
-    add_library(${target} ${ARGN})
+    add_library_old(${target} ${ARGN})
 
     # Do not built coverage targets by default
     list(INSERT ARGN 0 EXCLUDE_FROM_ALL)
@@ -164,7 +158,7 @@ endfunction(get_target_name)
 
 # Helper to link all variants with correct library variant
 function(dealer_target_link_libraries target)
-    target_link_libraries(${target} ${ARGN})
+    target_link_libraries_old(${target} ${ARGN})
     foreach (arg IN LISTS ARGN)
         if (TARGET ${arg})
             get_target_property(LIBTYPE ${arg} TYPE)
@@ -184,7 +178,7 @@ function(dealer_target_link_libraries target)
         endif ()
     endforeach (arg)
     if (COVERAGE_COMPILER_SUPPORTED)
-        target_link_libraries(${target}.cov ${cov_args})
+        target_link_libraries_old(${target}.cov ${cov_args})
     endif (COVERAGE_COMPILER_SUPPORTED)
 endfunction(dealer_target_link_libraries)
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.1)
 
 # Make sure cmake finds custom modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -10,16 +10,36 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Use new policy for version number variables
 cmake_policy(SET CMP0048 NEW)
-
+set(DESCR "Generates bridge hands for statistical analyze")
+set(PURL "https://github.com/suokko/dealer")
 # Declare project information.
-project(dealer
-    VERSION 0.99.1
-    DESCRIPTION "Generates bridge hands for statistical analyze"
-    HOMEPAGE_URL "https://github.com/suokko/dealer"
-    LANGUAGES CXX C)
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+    project(dealer
+        VERSION 0.99.1
+        DESCRIPTION ${DESCR}
+        HOMEPAGE_URL ${PURL}
+        LANGUAGES CXX C)
+elseif (CMAKE_VERSION VERSION_GREATER 3.9)
+    project(dealer
+        VERSION 0.99.1
+        DESCRIPTION ${DESCR}
+        LANGUAGES CXX C)
+    set(PROJECT_HOMEPAGE_URL ${PURL})
+    set(DEALER_HOMEPAGE_URL ${PURL})
+else ()
+    project(dealer
+        VERSION 0.99.1
+        LANGUAGES CXX C)
+    set(PROJECT_HOMEPAGE_URL ${PURL})
+    set(DEALER_HOMEPAGE_URL ${PURL})
+    set(PROJECT_DESCRIPTION ${DESCR})
+    set(DEALER_DESCRIPTION ${DESCR})
+endif ()
 
 # Set symbols hidden by default to eliminate unnecessary exported symbols
-cmake_policy(SET CMP0063 NEW)
+if (CMAKE_VERSION VERSION_GREATER 3.3)
+    cmake_policy(SET CMP0063 NEW)
+endif ()
 set(CMAKE_CXX_VISIBILITY_PRESET internal)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
@@ -79,8 +99,14 @@ endif ()
 
 #import cmake helpers
 include(GNUInstallDirs)
-cmake_policy(SET CMP0069 NEW)
-include(CheckIPOSupported)
+if (CMAKE_VERSION VERSION_GREATER 3.9)
+    cmake_policy(SET CMP0069 NEW)
+    include(CheckIPOSupported)
+else ()
+    message(STATUS "Disabling link time optimization for cmake below version 3.9")
+endif ()
+
+include(oldcmake)
 include(try_compile_cached)
 include(optimization_flags)
 include(coverage)
@@ -99,7 +125,7 @@ int main(void) {
 }")
 
 if (NOT STD_THREAD_SUPPORTED)
-    message(FATAL_ERROR "Compiler is missing std::thread support. If you use mingw then selecting alternative threading model potentially fixes the issue")
+    message(SEND_ERROR "Compiler is missing std::thread support. If you use mingw then selecting alternative threading model potentially fixes the issue")
 endif (NOT STD_THREAD_SUPPORTED)
 
 # Check if getopt is supported
@@ -122,24 +148,22 @@ int wmain(void) {rv = 0; return main();}"
         LINK_LIBRARIES -municode)
 
     if (NOT CHECK_WMAIN_SUPPORTED)
-        message(FATAL_ERROR "Failed to use wmain entry for windows.")
+        message(SEND_ERROR "Failed to use wmain entry for windows.")
     endif ()
 
     target_compile_options(wmain_flags INTERFACE -municode)
-    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-        target_link_options(wmain_flags INTERFACE -municode)
-    else (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-        target_link_libraries(wmain_flags INTERFACE -municode)
-    endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options_old(wmain_flags INTERFACE -municode)
 endif (WIN32)
 
-check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES CXX)
+if (CMAKE_VERSION VERSION_GREATER 3.9)
+    check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES CXX)
 
-if (LTO_SUPPORTED)
-    message(STATUS "Link time optimization supported.")
-else (LTO_SUPPORTED)
-    message(STATUS "CMAKE doesn't support link time optimization for your compiler.")
-endif (LTO_SUPPORTED)
+    if (LTO_SUPPORTED)
+        message(STATUS "Link time optimization supported.")
+    else (LTO_SUPPORTED)
+        message(STATUS "CMAKE doesn't support link time optimization for your compiler.")
+    endif (LTO_SUPPORTED)
+endif ()
 
 
 # Enable testing system
@@ -221,13 +245,13 @@ add_executable(dealergenlib genddslib.cpp)
 
 if (WIN32)
     dealer_target_link_libraries(dealer ws2_32)
-    target_link_libraries(dealergenlib ws2_32)
+    target_link_libraries_old(dealergenlib ws2_32)
 endif (WIN32)
-target_link_libraries(dealergenlib default_flags)
+target_link_libraries_old(dealergenlib default_flags)
 
 if (NOT GETOPT_SUPPORTED)
     dealer_target_link_libraries(dealer getopt)
-    target_link_libraries(dealergenlib getopt)
+    target_link_libraries_old(dealergenlib getopt)
 endif (NOT GETOPT_SUPPORTED)
 
 # Make sure generated sources can find headers

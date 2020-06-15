@@ -1,7 +1,5 @@
 # A simple helper to use try_compile with caching
 
-include_guard(GLOBAL)
-
 include(CMakeCheckCompilerFlagCommonPatterns)
 
 macro(try_compile_parse_args WRAPPER FORWARD)
@@ -13,10 +11,10 @@ macro(try_compile_parse_args WRAPPER FORWARD)
         set(${VAR})
     endforeach ()
     set(_WRAPPER ${WRAPPER})
-    list(JOIN _WRAPPER "|" WREGEXP)
+    list_join(_WRAPPER "|" WREGEXP)
     set(WREGEXP "^(${WREGEXP})$")
     set(_FORWARD ${FORWARD})
-    list(JOIN _FORWARD "|" FREGEXP)
+    list_join(_FORWARD "|" FREGEXP)
     set(FREGEXP "^(${FREGEXP})$")
     set(ARG_VAR)
     foreach (arg ${ARGN})
@@ -73,8 +71,8 @@ function(try_compile_report _VAR)
 
     # Report compile results
     if (SOURCE_TEXT)
-        string(PREPEND SOURCE_TEXT "Source code:\n")
-        string(APPEND SOURCE_TEXT "\n")
+        string_prepend(SOURCE_TEXT "Source code:\n")
+        string_append(SOURCE_TEXT "\n")
     endif (SOURCE_TEXT)
     # Find out compilation result
     if (DEFINED _COMPILE_VAR)
@@ -130,7 +128,7 @@ function(try_compile_report_status _VAR CACHESTR)
         set(ALIGN "")
         while (LEN LESS ${TRY_COMPILE_LONGEST_VAR})
             math(EXPR LEN "${LEN} + 1")
-            string(APPEND ALIGN " ")
+            string_append(ALIGN " ")
         endwhile ()
 
         #Align language names too
@@ -138,7 +136,7 @@ function(try_compile_report_status _VAR CACHESTR)
         string(LENGTH ${_LANG} LLEN)
         while (LLEN LESS 7) # Fortran
             math(EXPR LLEN "${LLEN} + 1")
-            string(APPEND ALIGN_LANG " ")
+            string_append(ALIGN_LANG " ")
         endwhile ()
 
         if (${_VAR})
@@ -164,13 +162,30 @@ function(try_compile_cached _LANG _VAR)
     # Run test if variable isn't cached yet
     if (NOT DEFINED ${_VAR})
 
-        try_compile_parse_args("FAIL_REGEX;SOURCE_TEXT"
-            "CMAKE_FLAGS;COMPILE_DEFINITIONS;LINK_LIBRARIES;COPY_FILE;COPY_FILE_ERROR;\
-${_LANG}_STANDARD;${_LANG}_STANDARD_REQUIRED;${_LANG}_EXTENSIONS" ${ARGN})
+        set(STD "${_LANG}_STANDARD;${_LANG}_STANDARD_REQUIRED;${_LANG}_EXTENSIONS")
+        if (CMAKE_VERSION VERSION_GREATER 3.8)
+            set(LSTD)
+            set(FSTD ";${STD}")
+        else ()
+            set(LSTD ";${STD}")
+            set(FSTD)
+        endif ()
+
+        try_compile_parse_args("FAIL_REGEX;SOURCE_TEXT${LSTD}"
+            "CMAKE_FLAGS;COMPILE_DEFINITIONS;LINK_LIBRARIES;COPY_FILE;COPY_FILE_ERROR;${FSTD}"
+            ${ARGN})
+
+        if (CMAKE_VERSION VERSION_LESS 3.8)
+            foreach (_VAR ${STD})
+                if (DEFINED ${_VAR})
+                    list(APPEND ARG_VAR CMAKE_FLAGS "-DCMAKE_${_VAR}=${${_VAR}}")
+                endif ()
+            endforeach ()
+        endif()
 
         list(APPEND ARG_VAR OUTPUT_VARIABLE OUTPUT)
 
-        if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
+        if (CMAKE_VERSION VERSION_GREATER 3.15)
             message(DEBUG "try_compile(${_VAR} ${CMAKE_BINARY_DIR} ${ARG_VAR})")
         endif ()
 
@@ -194,16 +209,15 @@ function(try_run_cached _LANG _VAR)
 
     # Run test if variable isn't cached yet
     if (NOT DEFINED ${_VAR})
-
         try_compile_parse_args("FAIL_REGEX;SOURCE_TEXT"
             "CMAKE_FLAGS;COMPILE_DEFINITIONS;LINK_LIBRARIES;ARGS" ${ARGN})
 
         list(APPEND ARG_VAR COMPILE_OUTPUT_VARIABLE OUTPUT)
         list(APPEND ARG_VAR RUN_OUTPUT_VARIABLE RUN_OUTPUT)
 
-        if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
+        if (CMAKE_VERSION VERSION_GREATER 3.15)
             message(DEBUG "try_run(${_VAR}_RUN ${_VAR}_COMPILE ${CMAKE_BINARY_DIR} ${ARG_VAR})")
-        endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
+        endif (CMAKE_VERSION VERSION_GREATER 3.15)
 
         try_run(${_VAR}_RUN ${_VAR}_COMPILE
             ${CMAKE_BINARY_DIR}

@@ -184,7 +184,7 @@ if (PERL_FOUND)
                 list(APPEND MISSING "'llvm-cov'")
             endif (NOT LLVM_WORKS)
 
-            list(JOIN MISSING " and " MISSING)
+            list_join(MISSING " and " MISSING)
 
             set(ERRMSG "Coverage report requires tools ${MISSING} which are missing.")
 

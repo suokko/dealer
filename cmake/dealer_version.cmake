@@ -1,6 +1,4 @@
 
-include_guard(GLOBAL)
-
 set(VERSION_SELF_FILE ${CMAKE_CURRENT_LIST_FILE})
 
 function(configure_version _FILE)
