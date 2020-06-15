@@ -99,6 +99,7 @@ endif ()
 
 #import cmake helpers
 include(GNUInstallDirs)
+include(ExternalProject)
 if (CMAKE_VERSION VERSION_GREATER 3.9)
     cmake_policy(SET CMP0069 NEW)
     include(CheckIPOSupported)
@@ -169,6 +170,63 @@ endif ()
 # Enable testing system
 enable_testing()
 
+# Find out if we can support different dds threading models
+# This doesn't support all possible but at least most systems should be happy with one of them
+find_package(Threads)
+find_package(Boost COMPONENTS system thread)
+find_package(OpenMP)
+
+set(DDS_DIR dds/src)
+
+# Read file list from make variable assignment
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${DDS_DIR}/Makefiles/sources.txt SRC_FILES)
+string(REGEX REPLACE "[^a-z]+[ \t]([a-zA-Z]+\\.cpp)" ";${DDS_DIR}/\\1" SRC_DDS "${SRC_FILES}")
+string(REGEX REPLACE "\r?\n" "" SRC_DDS "${SRC_DDS}")
+list(REMOVE_AT SRC_DDS 0)
+
+if (WIN32)
+    enable_language(RC)
+    # Add windows only export locations and dll information resource
+    list(APPEND SRC_DDS
+        ${DDS_DIR}/dds.rc
+        ${DDS_DIR}/Exports.def
+        )
+endif ()
+
+add_library(dds SHARED ${SRC_DDS})
+# Make shared objects versioned
+set_target_properties(dds PROPERTIES
+    SOVERSION 2.9.0
+    VERSION 2.9.0
+    )
+
+if (LTO_SUPPORTED)
+    set_target_properties(dds PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
+
+# Always enable stl threads as c++11 is required
+target_link_libraries(dds PRIVATE Threads::Threads)
+target_compile_definitions(dds PRIVATE DDS_THREADS_STL=1)
+
+# If C++ standard is 17 or higher then STLIMPL is available
+if (CMAKE_CXX_STANDARD GREATER 14)
+    target_compile_definitions(dds PRIVATE DDS_THREADS_STLIMPL=1)
+endif ()
+
+if (Boost_FOUND)
+    # Add boost threading if libraries were found
+    target_compile_definitions(dds PRIVATE DDS_THREADS_BOOST=1)
+    target_include_directories(dds PRIVATE ${Boost_INCLUDE_DIRS})
+    target_link_libraries(dds PRIVATE ${Boost_LIBRARIES})
+endif ()
+
+if (OpenMP_FOUND)
+    # Add OpenMP if compilers supports it
+    target_compile_definitions(dds PRIVATE DDS_THREADS_OPENMP=1)
+    target_compile_options(dds PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_libraries(dds PRIVATE ${OpenMP_CXX_LIB_NAMES})
+endif ()
+
 flags_add_optimization(default_flags)
 configure_version(version.cpp.in.in)
 
@@ -223,6 +281,7 @@ set(MV_SRC
     )
 
 dealer_add_executable(dealer ${SRC})
+dealer_set_target_properties(dealer PROPERTIES BUILD_RPATH ${CMAKE_CURRENT_BINARY_DIR})
 # Required libraries
 dealer_target_link_libraries(dealer cpudetect ${CMAKE_DL_LIBS} default_flags wmain_flags)
 if (LTO_SUPPORTED)
@@ -270,5 +329,7 @@ if (SUBMODULES)
 endif (SUBMODULES)
 
 #Install binaries
-install(TARGETS dealer dealergenlib
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS dealer dealergenlib dds
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )

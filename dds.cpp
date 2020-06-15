@@ -116,9 +116,9 @@ static void loadLib()
 	void *handle = dlopen(LIBNAME, RTLD_LAZY);
 #else
 #if UNICODE
-#define LIBNAME L"dds.dll"
+#define LIBNAME L"libdds.dll"
 #else
-#define LIBNAME "dds.dll"
+#define LIBNAME "libdds.dll"
 #endif
 #define dlsym GetProcAddress
 	HMODULE handle = LoadLibrary(LIBNAME);
@@ -131,6 +131,9 @@ static void loadLib()
 		solve = Solve;
 		solveLead = SolveLead;
 	} else {
+#if !_WIN32
+		fprintf(stderr, "%s\n", dlerror());
+#endif
 		error("Error: No libdds library found. DD support disabled.\n");
 		solve = noSolve;
 		solveLead = noSolveLead;

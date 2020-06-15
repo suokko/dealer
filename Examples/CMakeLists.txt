@@ -113,8 +113,8 @@ if (PERL_FOUND)
     add_custom_target(check_failed
         COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_one" --rerun-failed ${ctest_args}
         USES_TERMINAL)
-    add_dependencies(check dealer)
-    add_dependencies(check_failed dealer)
+    add_dependencies(check dealer dds)
+    add_dependencies(check_failed dealer dds)
 
     add_custom_target(check_all
         COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_all" ${ctest_args}
@@ -122,18 +122,18 @@ if (PERL_FOUND)
     add_custom_target(check_all_failed
         COMMAND ${CMAKE_CTEST_COMMAND} -L "regular_all" --rerun-failed ${ctest_args}
         USES_TERMINAL)
-    add_dependencies(check_all dealer)
-    add_dependencies(check_all_failed dealer)
+    add_dependencies(check_all dealer dds)
+    add_dependencies(check_all_failed dealer dds)
     # check_coverage runs test using coverage built and generates html pages for
     # coverage report.
     add_custom_target(check_coverage_run
         COMMAND ${CMAKE_CTEST_COMMAND} -L "coverage_one" ${ctest_args}
         USES_TERMINAL)
-    add_dependencies(check_coverage_run dealer.cov)
+    add_dependencies(check_coverage_run dealer.cov dds)
     add_custom_target(check_coverage_all_run
         COMMAND ${CMAKE_CTEST_COMMAND} -L "coverage_all" ${ctest_args}
         USES_TERMINAL)
-    add_dependencies(check_coverage_all_run dealer.cov)
+    add_dependencies(check_coverage_all_run dealer.cov dds)
 
 
     set(COVERAGE_DIR "${PROJECT_BINARY_DIR}/coverage")
