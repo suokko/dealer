@@ -36,7 +36,7 @@ endmacro(string_prepend)
 
 # Helper to switch OBJECT_LIBRARIES to static on old cmake
 function(add_library_old _TGT)
-    if (CMAKE_VERSION VERSION_GREATER 3.8)
+    if (CMAKE_VERSION VERSION_GREATER 3.12)
         add_library(${_TGT} ${ARGN})
     else ()
         set(_ARGN ${ARGN})
@@ -51,7 +51,7 @@ function(add_library_old _TGT)
 endfunction(add_library_old)
 
 function(target_link_libraries_old _TGT)
-    if (CMAKE_VERSION VERSION_GREATER 3.8)
+    if (CMAKE_VERSION VERSION_GREATER 3.12)
         target_link_libraries(${_TGT} ${ARGN})
     else ()
         set(_ARGN)
