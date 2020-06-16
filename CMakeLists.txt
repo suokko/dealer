@@ -74,10 +74,13 @@ if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
     add_custom_command(
         OUTPUT submodule
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/submodule
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         DEPENDS .gitmodules)
+
+    execute_process(COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 endif (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
@@ -329,6 +332,10 @@ if (SUBMODULES)
         PROPERTIES OBJECT_DEPENDS submodule)
     set_source_files_properties(pregen.cpp
         PROPERTIES OBJECT_DEPENDS submodule)
+    foreach(F ${SRC_DDS})
+        set_source_files_properties(${F}
+            PROPERTIES OBJECT_DEPENDS submodule)
+    endforeach()
 endif (SUBMODULES)
 
 #Install binaries
