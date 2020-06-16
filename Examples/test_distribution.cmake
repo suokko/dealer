@@ -7,13 +7,12 @@
 execute_process(COMMAND ${CMD} -s 1 Test.distribution
     COMMAND ./convert.pl
     COMMAND ${DIFF_COMMAND} -u Refer.distribution -
-    RESULT_VARIABLE RES
     OUTPUT_VARIABLE OUT
     ERROR_VARIABLE OUT)
 
-if (NOT RES EQUAL 0)
-    message(FATAL_ERROR ${ERR})
-else (NOT RES EQUAL 0)
+if (OUT MATCHES "/\*\*\*FAILED\*\*\*/")
+    message(FATAL_ERROR ${OUT})
+else ()
     message(STATUS ${OUT})
-endif (NOT RES EQUAL 0)
+endif ()
 
