@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.1)
 # Make sure cmake finds custom modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+#Set default build type to Release
+set(CMAKE_BUILD_TYPE_INIT Release)
+
 # Make sure compiler selects c++14 standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
