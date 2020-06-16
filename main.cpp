@@ -724,9 +724,9 @@ int wmain(int argc, wchar_t** wargv)
     size += WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, NULL);
 
   // Convert arguments
-  char buffer[size];
-  char* iter = buffer;
-  char* argv[argc+1];
+  auto buffer = std::make_unique<char[]>(size);
+  char* iter = std::addressof(buffer[0]);
+  auto argv = std::make_unique<char*[]>(argc+1);
 
   for (i = 0; i < argc; ++i) {
     int res = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, iter, size, NULL, NULL);
@@ -742,6 +742,6 @@ int wmain(int argc, wchar_t** wargv)
     // Disable utf-8 output
     ucsep = noutf8_ucsep;
   }
-  return main(argc, argv);
+  return main(argc, std::addressof(argv[0]));
 }
 #endif
