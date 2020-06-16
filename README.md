@@ -110,3 +110,39 @@ Time needed    0.426 sec
 
 More details about scripting language can be found from
 Manual/index.html.
+
+5. Development
+
+If you want to write code or debug issues then it is best to set
+CMAKE_BUILD_TYPE to RelWithDebInfo or Debug. If you use RelWithDebInfo then I
+would recommend removing NDEBUG from CMAKE_CXX_FLAGS_RELWITHDEBINFO. Changing
+variables can be done using cmake user interface tools. Curses variant can be
+executed in a build directory like `ccmake ..`.
+
+Other helpful flags include adding -Wpedantic and -Wall to CMAKE_CXX_FLAGS.
+These gcc flags or similar for your compiler makes compiler warn about common
+programming errors which are likely to cause bugs.
+
+Build system offers build targets to run test in different manners:
+* `check` runs test suit once for the runtime detected optimization configuration
+* `check_failed` runs only test cases which failed in the previous `check` or
+  `check_failed` test run
+* `check_all` runs test for all compiled optimization configurations
+* `check_all_failed` runs failed tests from all configurations
+* `check_coverage` builds and runs coverage instrument version and generates and
+  html coverage report. This target requires optional tools for your compiler.
+  (eg. gcov, lcov and genhtml for gcc)
+* `check_coverage_all` is like `check_coverage` but runs test for all runtime
+  configurations.
+
+Asserts are written to indicate internal coding error. They are supposed to
+be impossible to trigger by any user input. But in practice bugs like incorrect
+state transitions or missing user input validation can lead to assert failure.
+Asserts are early warning indicating that follow up executions would have likely
+resulted to crash or garbage output. An early assert failure after a bug can
+make debugging the issue mush easier.
+
+Old asserts have only condition without explanations. Often condition is self
+explanatory for someone familiar with the code. I decided to start add
+explanation strings to new asserts because a common case is assert failure
+happening for an user without understanding the code.
