@@ -55,14 +55,55 @@ static void new_var(char *s, struct treebase *t) ;
 %left ARTIMES ARDIVIDE ARMOD
 %nonassoc NOT
 
-%token GENERATE PRODUCE HCP SHAPE ANY EXCEPT CONDITION ACTION
-%token PRINT PRINTALL PRINTEW PRINTPBN PRINTCOMPACT PRINTONELINE
-%token AVERAGE HASCARD FREQUENCY PREDEAL POINTCOUNT ALTCOUNT
-%token CONTROL LOSER DEALER
-%token QUALITY CCCC
-%token TRICKS LEADTRICKS NOTRUMPS NORTHSOUTH EASTWEST
-%token EVALCONTRACT ALL NONE SCORE IMPS RND AVG ABS
-%token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
+%token GENERATE
+%token PRODUCE
+%token HCP
+%token SHAPE
+%token ANY
+%token EXCEPT
+%token CONDITION
+%token ACTION
+%token PRINT
+%token PRINTALL
+%token PRINTEW
+%token PRINTPBN
+%token PRINTCOMPACT
+%token PRINTONELINE
+%token AVERAGE
+%token HASCARD
+%token FREQUENCY
+%token PREDEAL
+%token POINTCOUNT
+%token ALTCOUNT
+%token CONTROL
+%token LOSER
+%token DEALER
+%token QUALITY
+%token CCCC
+%token TRICKS
+%token LEADTRICKS
+%token NOTRUMPS
+%token NORTHSOUTH
+%token EASTWEST
+%token EVALCONTRACT
+%token ALL
+%token NONE
+%token SCORE
+%token IMPS
+%token RND
+%token AVG
+%token ABS
+%token PT0
+%token PT1
+%token PT2
+%token PT3
+%token PT4
+%token PT5
+%token PT6
+%token PT7
+%token PT8
+%token PT9
+%token PRINTES
 
 %token <y_int> NUMBER
 %token <y_str> HOLDING
@@ -74,10 +115,16 @@ static void new_var(char *s, struct treebase *t) ;
 %token <y_int> SUIT
 %token <y_card> CARD
 %token <y_int> CONTRACT
-%token <y_distr> DISTR DISTR_OR_NUMBER
+%token <y_distr> DISTR
+%token <y_distr> DISTR_OR_NUMBER
 
 %type <y_treebase>  expr
-%type <y_int> number compass printlist shlprefix any vulnerable
+%type <y_int> number
+%type <y_int> compass
+%type <y_int> printlist
+%type <y_int> shlprefix
+%type <y_int> any
+%type <y_int> vulnerable
 %type <y_distr> shape
 %type <y_action> actionlist action
 %type <y_expr> exprlist
