@@ -339,8 +339,8 @@ endif ()
 dealer_target_link_libraries(dealer
     cpudetect
     ${CMAKE_DL_LIBS}
-    DDS::DDS
-    PCGCXX::PCGCXX
+    DDS
+    PCGCXX
     default_flags
     wmain_flags
     )
@@ -353,7 +353,7 @@ foreach (CFG ${COMPILER_CONFIGS})
     dealer_add_library(dealer_${CFG} OBJECT EXCLUDE_FROM_ALL ${MV_SRC})
     dealer_target_compile_definitions(dealer_${CFG} PRIVATE MVDEFAULT=${CFG} MV${CFG}=1)
     # Make sure pcg headers are found during compile
-    dealer_target_link_libraries(dealer_${CFG} PCGCXX::PCGCXX)
+    dealer_target_link_libraries(dealer_${CFG} PCGCXX)
     # Make config part of binary (just appends objects to link command)
     dealer_target_link_libraries(dealer dealer_${CFG})
     dealer_target_include_directories(dealer_${CFG} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpudetect)
@@ -369,7 +369,7 @@ if (WIN32)
     dealer_target_link_libraries(dealer ws2_32)
     target_link_libraries_old(dealergenlib ws2_32)
 endif (WIN32)
-target_link_libraries_old(dealergenlib PCGCXX::PCGCXX default_flags)
+target_link_libraries_old(dealergenlib PCGCXX default_flags)
 
 if (NOT GETOPT_SUPPORTED)
     dealer_target_link_libraries(dealer getopt)
@@ -398,12 +398,16 @@ if (SUBMODULES)
 endif (SUBMODULES)
 
 #Install binaries
+set(NLC)
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+    set(NLC NAMELINK_COMPONENT Development)
+endif ()
 install(TARGETS dealer dealergenlib ${DDS_TARGET}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT Runtime
-        NAMELINK_COMPONENT Development
+        ${NLC}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT Development
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dds
