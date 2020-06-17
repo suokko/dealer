@@ -73,14 +73,14 @@ print "Generated $constant hands\n\n";
 $constant /= 100;
 
 print "HCP Distribution\n================\n";
-print " #     N            E            S            W\n";
-print "       %   diff     %   diff     %   diff     %   diff\n";
+print " #     N           E           S           W\n";
+print "       %  diff     %  diff     %  diff     %  diff\n";
 
 for ($i=0 ; $i<38 ; $i++) {
   printf ("%2d ", $i);
   for ($j=0 ; $j<4; $j++) {
      printf ("%5.2f ", $hcp[$i][$j]/$constant);
-     printf ("%6.3f ", $hcp[$i][$j]/$constant- $rawhcp[$i]);
+     printf ("%5.2f ", $hcp[$i][$j]/$constant - $rawhcp[$i]);
   }
   printf ("%5.2f", $rawhcp[$i]);
   print "\n";

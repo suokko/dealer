@@ -25,5 +25,8 @@ foreach $input (`ls Descr.*`) {
      print "Comparing against reference output from $refer\n";
      print `diff $output $refer`;
   }
+ 
+  $seed++;
+
 }
 

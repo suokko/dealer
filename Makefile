@@ -1,40 +1,40 @@
 # $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
 CC      = gcc
-CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -c
+CFLAGS = -Wall -pedantic -I. -DNDEBUG -c
 FLEX    = flex
 YACC    = yacc
+# Note: this should be the Berkeley Yacc, sometimes called byacc
 
 PROGRAM  = dealer
 TARFILE  = ${PROGRAM}.tar
 GZIPFILE = ${PROGRAM}.tar.gz
 
-SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
+SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c __random.c rand.c srand.c
 LSRC = scan.l
 YSRC = defs.y
 HDR  = dealer.h tree.h
 
-OBJ  = dealer.o defs.o pbn.o c4.o getopt.o pointcount.o
+OBJ  = dealer.o defs.o pbn.o c4.o getopt.o pointcount.o __random.o rand.o srand.o
 LOBJ = scan.c
 YOBJ = defs.c
 
 
 dealer: ${OBJ} ${LOBJ} ${YOBJ}
-	${MAKE} -C Random lib
-	$(CC) -o $@ ${OBJ} -L./Random -lgnurand
-
+	$(CC) -o $@ ${OBJ} 
+	
 clean:
 	rm -f ${OBJ} ${LOBJ} ${YOBJ} 
 	${MAKE} -C Examples clean
-	${MAKE} -C Random   clean
 
 tarclean: clean ${YOBJ}
-	rm -f dealer
+	rm -f ${PROGRAM}
 	rm -f ${TARFILE}  ${GZIPFILE}
 
 tarfile: tarclean
 	cd .. ; \
-	tar cvf ${TARFILE} ${PROGRAM} --exclude CVS --exclude ${TARFILE}; \
+        rm ${TARFILE} ${GZIPFILE} ; \
+	tar cvf ${TARFILE} ${PROGRAM} ; \
 	mv ${TARFILE} ${PROGRAM} 
 	gzip -f ${TARFILE}
 

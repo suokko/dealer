@@ -56,6 +56,7 @@ int will_print;
 
 #define printcompact(d) (fprintcompact(stdout, d, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1))
+#define printlin(d) (fprintlin(stdout, d, 1))
 
 #ifdef FRANCOIS
   int hascard (deal, int, card, int);

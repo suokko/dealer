@@ -2,17 +2,17 @@ Frequency controls:
     0	       0
     1	       0
     2	       0
-    3	       1
-    4	      23
-    5	     289
-    6	    1615
-    7	    3573
-    8	    3467
-    9	     965
-   10	      67
+    3	       0
+    4	      25
+    5	     296
+    6	    1683
+    7	    3536
+    8	    3414
+    9	     967
+   10	      79
    11	       0
    12	       0
-Generated 1541279 hands
+Generated 1556485 hands
 Produced 10000 hands
-Initial random seed 1
-Time needed    2.201 sec
+Initial random seed 3
+Time needed    2.368 sec

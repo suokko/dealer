@@ -333,7 +333,8 @@ Besides that, special operators useful in a bridge-program are provided:
 	This operator is one of the most important in the program and is
 	very efficiently implemented. Any shape() call, no matter how
 	complicated is executed in constant time. Use shape()
-	for all length expressions if you can.
+	for all length expressions if you can.  There is a maximum of 32 shape()
+        commands in an input file.  
    <li><b> hascard ( (compass), (card) )</b>, eg hascard(east, TC)<br>
         whether east holds the 10 (T) of clubs
  </UL>

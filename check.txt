@@ -1,0 +1,8 @@
+	produce 28
+
+action	average "N" hcp(north),
+        average "E" hcp(east),
+        average "S" hcp(south),
+        average "W" hcp(west),
+        average "NS" hcp(north)+hcp(south),
+        average "EW" hcp(east)+hcp(west)
