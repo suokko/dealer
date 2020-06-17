@@ -1,6 +1,8 @@
 
-#include "dds/include/dll.h"
 #include "dds.h"
+
+#include <dll.h>
+
 #include <cstdio>
 #include <cstring>
 

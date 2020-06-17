@@ -160,3 +160,6 @@ DESTDIR=../debian/tmp cmake -DCOMPONENT=Runtime -P cmake_install.cmake
 DESTDIR=../debian/dev cmake -DCOMPONENT=Development -P cmake_install.cmake
 DESTDIR=../debian/docs cmake -DCOMPONENT=Docs -P cmake_install.cmake
 ````
+
+Build system offers packaging support using cpack. Supported targets are:
+* `package_source` Generates source tarballs (default is .tar.gz and .zip)

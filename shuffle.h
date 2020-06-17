@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pcg-cpp/include/pcg_random.hpp"
+#include <pcg_random.hpp>
 #include <memory>
 
 namespace DEFUN() {

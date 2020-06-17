@@ -19,7 +19,7 @@
 
 #include <errno.h>
 
-#include "pcg-cpp/include/pcg_random.hpp"
+#include <pcg_random.hpp>
 
 #include <random>
 #include <thread>

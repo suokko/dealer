@@ -79,9 +79,6 @@ if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         DEPENDS .gitmodules)
 
-    execute_process(COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-
 endif (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION} - ${PROJECT_DESCRIPTION}")
@@ -109,7 +106,7 @@ list(REMOVE_ITEM GITIGNORE "SourceVersion.cmake")
 #Convert glob to regular expression
 string(REPLACE "." "\\\\." GITIGNORE "${GITIGNORE}")
 string(REPLACE "*" ".*" GITIGNORE "${GITIGNORE}")
-list(APPEND GITIGNORE "\\\\.git" "\\\\.gitmodules" "dds" "pcg-cpp")
+list(APPEND GITIGNORE "\\\\.git/" "\\\\.gitmodules$" "/dds/" "/pcg-cpp/")
 set(CPACK_SOURCE_GENERATOR TGZ ZIP)
 set(CPACK_PACKAGE_VENDOR "Dealer project")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
@@ -191,73 +188,95 @@ endif ()
 # Enable testing system
 enable_testing()
 
-# Find out if we can support different dds threading models
-# This doesn't support all possible but at least most systems should be happy with one of them
-find_package(Threads)
-find_package(Boost COMPONENTS system thread)
-find_package(OpenMP)
+#Check if submodules are available from the system
+set(DDSREQUIRED)
+if (NOT SUBMODULES)
+    set(DDSREQUIRED REQUIRED)
+endif ()
+set(PCGREQUIRED)
+if (NOT SUBMODULES)
+    set(PCGREQUIRED REQUIRED)
+endif ()
 
-set(DDS_DIR dds/src)
-set(DDS_IDIR dds/include)
+find_package(DDS ${DDSREQUIRED})
+find_package(PCGCXX ${PCGREQUIRED})
 
-# Read file list from make variable assignment
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${DDS_DIR}/Makefiles/sources.txt SRC_FILES)
-string(REGEX REPLACE "[^a-z]+[ \t]([a-zA-Z]+\\.cpp)" ";${DDS_DIR}/\\1" SRC_DDS "${SRC_FILES}")
-string(REGEX REPLACE "\r?\n" "" SRC_DDS "${SRC_DDS}")
-list(REMOVE_AT SRC_DDS 0)
+if (NOT USE_SYSTEM_DDS)
+    set(DDS_TARGET dds)
 
-set(INC_DDS
-    ${DDS_IDIR}/dll.h
-    )
+    # Make sure submodules has been updated
+    execute_process(COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-list(APPEND SRC_DDS ${DDS_IDIR}/portab.h)
 
-if (WIN32)
-    enable_language(RC)
-    # Add windows only export locations and dll information resource
-    list(APPEND SRC_DDS
-        ${DDS_DIR}/dds.rc
-        ${DDS_DIR}/Exports.def
+    # Find out if we can support different dds threading models
+    # This doesn't support all possible but at least most systems should be happy with one of them
+    find_package(Threads)
+    find_package(Boost COMPONENTS system thread)
+    find_package(OpenMP)
+
+    set(DDS_DIR dds/src)
+    set(DDS_IDIR dds/include)
+
+    # Read file list from make variable assignment
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${DDS_DIR}/Makefiles/sources.txt SRC_FILES)
+    string(REGEX REPLACE "[^a-z]+[ \t]([a-zA-Z]+\\.cpp)" ";${DDS_DIR}/\\1" SRC_DDS "${SRC_FILES}")
+    string(REGEX REPLACE "\r?\n" "" SRC_DDS "${SRC_DDS}")
+    list(REMOVE_AT SRC_DDS 0)
+
+    set(INC_DDS
+        ${DDS_IDIR}/dll.h
         )
-endif ()
 
-add_library(dds SHARED ${SRC_DDS} ${INC_DDS})
-# Make sure install knows about headers required to use libdds
-set_target_properties(dds PROPERTIES PUBLIC_HEADER "${INC_DDS}")
-target_include_directories(dds PUBLIC dds/include)
+    list(APPEND SRC_DDS ${DDS_IDIR}/portab.h)
 
-# Make shared objects versioned
-set_target_properties(dds PROPERTIES
-    SOVERSION 2.9.0
-    VERSION 2.9.0
-    )
+    if (WIN32)
+        enable_language(RC)
+        # Add windows only export locations and dll information resource
+        list(APPEND SRC_DDS
+            ${DDS_DIR}/dds.rc
+            ${DDS_DIR}/Exports.def
+            )
+    endif ()
 
-if (LTO_SUPPORTED)
-    set_target_properties(dds PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif ()
+    add_library(dds SHARED ${SRC_DDS} ${INC_DDS})
+    # Make sure install knows about headers required to use libdds
+    set_target_properties(dds PROPERTIES PUBLIC_HEADER "${INC_DDS}")
 
-# Always enable stl threads as c++11 is required
-target_link_libraries(dds PRIVATE Threads::Threads)
-target_compile_definitions(dds PRIVATE DDS_THREADS_STL=1)
+    # Make shared objects versioned
+    set_target_properties(dds PROPERTIES
+        SOVERSION 2.9.0
+        VERSION 2.9.0
+        )
 
-# If C++ standard is 17 or higher then STLIMPL is available
-if (CMAKE_CXX_STANDARD GREATER 14)
-    target_compile_definitions(dds PRIVATE DDS_THREADS_STLIMPL=1)
-endif ()
+    if (LTO_SUPPORTED)
+        set_target_properties(dds PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif ()
 
-if (Boost_FOUND)
-    # Add boost threading if libraries were found
-    target_compile_definitions(dds PRIVATE DDS_THREADS_BOOST=1)
-    target_include_directories(dds PRIVATE ${Boost_INCLUDE_DIRS})
-    target_link_libraries(dds PRIVATE ${Boost_LIBRARIES})
-endif ()
+    # Always enable stl threads as c++11 is required
+    target_link_libraries(dds PRIVATE Threads::Threads)
+    target_compile_definitions(dds PRIVATE DDS_THREADS_STL=1)
 
-if (OpenMP_FOUND)
-    # Add OpenMP if compilers supports it
-    target_compile_definitions(dds PRIVATE DDS_THREADS_OPENMP=1)
-    target_compile_options(dds PRIVATE ${OpenMP_CXX_FLAGS})
-    target_link_libraries(dds PRIVATE ${OpenMP_CXX_LIB_NAMES})
-endif ()
+    # If C++ standard is 17 or higher then STLIMPL is available
+    if (CMAKE_CXX_STANDARD GREATER 14)
+        target_compile_definitions(dds PRIVATE DDS_THREADS_STLIMPL=1)
+    endif ()
+
+    if (Boost_FOUND)
+        # Add boost threading if libraries were found
+        target_compile_definitions(dds PRIVATE DDS_THREADS_BOOST=1)
+        target_include_directories(dds PRIVATE ${Boost_INCLUDE_DIRS})
+        target_link_libraries(dds PRIVATE ${Boost_LIBRARIES})
+    endif ()
+
+    if (OpenMP_FOUND)
+        # Add OpenMP if compilers supports it
+        target_compile_definitions(dds PRIVATE DDS_THREADS_OPENMP=1)
+        target_compile_options(dds PRIVATE ${OpenMP_CXX_FLAGS})
+        target_link_libraries(dds PRIVATE ${OpenMP_CXX_LIB_NAMES})
+    endif ()
+
+endif (NOT USE_SYSTEM_DDS)
 
 flags_add_optimization(default_flags)
 configure_version(version.cpp.in.in)
@@ -313,9 +332,18 @@ set(MV_SRC
     )
 
 dealer_add_executable(dealer ${SRC})
-dealer_set_target_properties(dealer PROPERTIES BUILD_RPATH ${CMAKE_CURRENT_BINARY_DIR})
+if (NOT USE_SYSTEM_DDS)
+    dealer_set_target_properties(dealer PROPERTIES BUILD_RPATH ${CMAKE_CURRENT_BINARY_DIR})
+endif ()
 # Required libraries
-dealer_target_link_libraries(dealer cpudetect ${CMAKE_DL_LIBS} default_flags wmain_flags)
+dealer_target_link_libraries(dealer
+    cpudetect
+    ${CMAKE_DL_LIBS}
+    DDS::DDS
+    PCGCXX::PCGCXX
+    default_flags
+    wmain_flags
+    )
 if (LTO_SUPPORTED)
     dealer_set_target_properties(dealer PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
@@ -324,6 +352,9 @@ endif ()
 foreach (CFG ${COMPILER_CONFIGS})
     dealer_add_library(dealer_${CFG} OBJECT EXCLUDE_FROM_ALL ${MV_SRC})
     dealer_target_compile_definitions(dealer_${CFG} PRIVATE MVDEFAULT=${CFG} MV${CFG}=1)
+    # Make sure pcg headers are found during compile
+    dealer_target_link_libraries(dealer_${CFG} PCGCXX::PCGCXX)
+    # Make config part of binary (just appends objects to link command)
     dealer_target_link_libraries(dealer dealer_${CFG})
     dealer_target_include_directories(dealer_${CFG} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpudetect)
     dealer_target_compile_options(dealer_${CFG} PRIVATE ${OPTIMIZE_${CFG}_CPP_FLAGS})
@@ -338,7 +369,7 @@ if (WIN32)
     dealer_target_link_libraries(dealer ws2_32)
     target_link_libraries_old(dealergenlib ws2_32)
 endif (WIN32)
-target_link_libraries_old(dealergenlib default_flags)
+target_link_libraries_old(dealergenlib PCGCXX::PCGCXX default_flags)
 
 if (NOT GETOPT_SUPPORTED)
     dealer_target_link_libraries(dealer getopt)
@@ -350,22 +381,24 @@ dealer_target_include_directories(dealer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Make sure submodules are available correctly
 if (SUBMODULES)
-    set_source_files_properties(dds.cpp
-        PROPERTIES OBJECT_DEPENDS submodule)
-    set_source_files_properties(shuffle.cpp
-        PROPERTIES OBJECT_DEPENDS submodule)
-    set_source_files_properties(genddslib.cpp
-        PROPERTIES OBJECT_DEPENDS submodule)
-    set_source_files_properties(pregen.cpp
-        PROPERTIES OBJECT_DEPENDS submodule)
-    foreach(F ${SRC_DDS})
-        set_source_files_properties(${F}
+    if (NOT USE_SYSTEM_PCGCXX)
+        set_source_files_properties(shuffle.h
             PROPERTIES OBJECT_DEPENDS submodule)
-    endforeach()
+        set_source_files_properties(genddslib.cpp
+            PROPERTIES OBJECT_DEPENDS submodule)
+    endif ()
+    if (NOT USE_SYSTEM_DDS)
+        set_source_files_properties(dds.cpp
+            PROPERTIES OBJECT_DEPENDS submodule)
+        foreach(F ${SRC_DDS})
+            set_source_files_properties(${F}
+                PROPERTIES OBJECT_DEPENDS submodule)
+        endforeach()
+    endif ()
 endif (SUBMODULES)
 
 #Install binaries
-install(TARGETS dealer dealergenlib dds
+install(TARGETS dealer dealergenlib ${DDS_TARGET}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
