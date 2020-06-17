@@ -1,12 +1,7 @@
-*.o
-*.a
 *.swp
-*.dll
 *~
 .build*
 build*
 tags
 etags
-build.mk
-library.dat
 SourceVersion.cmake

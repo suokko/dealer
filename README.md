@@ -146,3 +146,17 @@ Old asserts have only condition without explanations. Often condition is self
 explanatory for someone familiar with the code. I decided to start add
 explanation strings to new asserts because a common case is assert failure
 happening for an user without understanding the code.
+
+6. Packaging
+
+The build system supports installation components `Runtime`, `Development` and
+`Docs`. Each target is expected to include files related to a specific type of
+distribution package.
+
+Example use to installation to multiple packages. Commands are run in the build
+directory.
+```
+DESTDIR=../debian/tmp cmake -DCOMPONENT=Runtime -P cmake_install.cmake
+DESTDIR=../debian/dev cmake -DCOMPONENT=Development -P cmake_install.cmake
+DESTDIR=../debian/docs cmake -DCOMPONENT=Docs -P cmake_install.cmake
+````

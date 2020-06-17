@@ -19,4 +19,5 @@ install(FILES
     prev.gif
     running.html
     updates.html
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}/Manual)
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}/Manual
+    COMPONENT Docs)

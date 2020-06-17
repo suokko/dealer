@@ -103,9 +103,24 @@ else ()
     endif ()
 endif ()
 
+#Configure packaging
+file(STRINGS "${CMAKE_SOURCE_DIR}/.gitignore" GITIGNORE)
+list(REMOVE_ITEM GITIGNORE "SourceVersion.cmake")
+#Convert glob to regular expression
+string(REPLACE "." "\\\\." GITIGNORE "${GITIGNORE}")
+string(REPLACE "*" ".*" GITIGNORE "${GITIGNORE}")
+list(APPEND GITIGNORE "\\\\.git" "\\\\.gitmodules" "dds" "pcg-cpp")
+set(CPACK_SOURCE_GENERATOR TGZ ZIP)
+set(CPACK_PACKAGE_VENDOR "Dealer project")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_SOURCE_IGNORE_FILES "${GITIGNORE}")
+
 #import cmake helpers
 include(GNUInstallDirs)
-include(ExternalProject)
+include(CPack)
+include(InstallRequiredSystemLibraries)
+
 if (CMAKE_VERSION VERSION_GREATER 3.9)
     cmake_policy(SET CMP0069 NEW)
     include(CheckIPOSupported)
@@ -183,12 +198,19 @@ find_package(Boost COMPONENTS system thread)
 find_package(OpenMP)
 
 set(DDS_DIR dds/src)
+set(DDS_IDIR dds/include)
 
 # Read file list from make variable assignment
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${DDS_DIR}/Makefiles/sources.txt SRC_FILES)
 string(REGEX REPLACE "[^a-z]+[ \t]([a-zA-Z]+\\.cpp)" ";${DDS_DIR}/\\1" SRC_DDS "${SRC_FILES}")
 string(REGEX REPLACE "\r?\n" "" SRC_DDS "${SRC_DDS}")
 list(REMOVE_AT SRC_DDS 0)
+
+set(INC_DDS
+    ${DDS_IDIR}/dll.h
+    )
+
+list(APPEND SRC_DDS ${DDS_IDIR}/portab.h)
 
 if (WIN32)
     enable_language(RC)
@@ -199,7 +221,11 @@ if (WIN32)
         )
 endif ()
 
-add_library(dds SHARED ${SRC_DDS})
+add_library(dds SHARED ${SRC_DDS} ${INC_DDS})
+# Make sure install knows about headers required to use libdds
+set_target_properties(dds PROPERTIES PUBLIC_HEADER "${INC_DDS}")
+target_include_directories(dds PUBLIC dds/include)
+
 # Make shared objects versioned
 set_target_properties(dds PROPERTIES
     SOVERSION 2.9.0
@@ -341,5 +367,12 @@ endif (SUBMODULES)
 #Install binaries
 install(TARGETS dealer dealergenlib dds
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT Runtime
+        NAMELINK_COMPONENT Development
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT Development
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dds
+        COMPONENT Development
     )

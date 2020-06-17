@@ -35,6 +35,7 @@ macro(pod2man PODFILE NAME SECTION CENTER)
         install(
             FILES ${MANFILE_FULL}
             DESTINATION ${CMAKE_INSTALL_MANDIR}/man${SECTION}
+            COMPONENT Runtime
         )
     endif()
 endmacro(pod2man PODFILE NAME SECTION OUTPATH CENTER)

@@ -74,7 +74,8 @@ set(EXAMPLES
     )
 
 install(FILES ${EXAMPLES}
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}/Examples)
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}/Examples
+    COMPONENT Docs)
 
 if (PERL_FOUND)
     macro (coverage_report _NAME)
