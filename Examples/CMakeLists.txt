@@ -1,4 +1,6 @@
 set(EXAMPLES
+    Descr.1c
+    Descr.2nt
     Descr.6c
     Descr.blue_team
     Descr.controls
