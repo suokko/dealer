@@ -1735,7 +1735,7 @@ Compiler optimization:
 Runtime optimization: 
 -s 1 -g 2 -h -C Descr.test_defaults
 -s 1 -g 2 -? -C Descr.test_defaults
--s 1 SecondParam.file -C Descr.test_defaults
+-s 1 -C SecondParam.file Descr.test_defaults
 -s 1 -i cJC3s7S5♧Qh9d9♠2H5Dt♢2♠j♣a♣4♣8♦J♦5♤3♣T♡2♥J♥A♥k♣5♦8♥q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 -C Descr.test_defaults
 Initial pack order: CJC3S7S5CQH9D9S2H5DTD2SJCAC4C8DJD5S3CTH2HJHAHKC5D8HQD3H7D6HTH6STS6S9S4SQD7C2C9SAD4C7DKDACKDQH8H4S8H3SKC6
    1.

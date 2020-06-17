@@ -49,7 +49,7 @@ Default is to read script from standard input.
                                52 cards with suit symbol before rank.
   -C                         Use C locale. Helpful if trying to parse output.
   -V                         Prints version information.
--s 1 SecondParam.file -C Descr.test_defaults
+-s 1 -C SecondParam.file Descr.test_defaults
 SecondParam.file: No such file or directory
 -s 1 -i cJC3s7S5♧Qh9d9♠2H5Dt♢2♠j♣a♣4♣8♦J♦5♤3♣T♡2♥J♥A♥k♣5♦8♥q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 -C Descr.test_defaults
 -s 1 -i cJC3s7S5♧Qh9d9♠2H5Dt♢2♠j♣a♣4♣8♦J♦5♤3♣T♡2♥J♥A♥k♣5♦8♥q♦3♥7♦6♥T♥6♠T♠6♠9♠4♠Q♦7♣2♣9♠A♦4♣7♦K♦A♣K♦Q♥8♥4♠8♥3♠K♣6 Descr.test_defaults
