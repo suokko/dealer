@@ -1,0 +1,91 @@
+produce 1
+
+# Test QUERY and COLON ordering
+
+qc1 = 1 ? 0 ? 3 : 2 : 1
+qc2 = 0 ? 0 ? 3 : 2 : 1
+qc3 = 1 ? 3 : 1 ? 2 : 1
+qc4 = 0 ? 3 : 1 ? 2 : 1
+qc5 = 1 ? 1 ? 4 : 3 : 1 ? 2 : 1
+qc6 = 0 ? 1 ? 4 : 3 : 1 ? 2 : 1
+qc7 = 1 ? 0 ? 4 : 3 : 1 ? 2 : 1
+qc8 = 0 ? 1 ? 4 : 3 : 0 ? 2 : 1
+
+# Test Query and colon ordering to other opps
+
+qco1 = 1 || 0 ?  1 : 0
+qco2 = 1 ?  0 : 1 || 1
+
+# Test OR vs AND ordering
+oa1 = 0 && 0 || 1
+oa2 = 1 || 0 && 0
+oa3 = 1 || 0 || 0 && 0 && 0
+oa4 = 0 || 0 || 1 && 0 && 0
+oa5 = 0 || 0 || 0 && 1 && 1
+
+# Test CMPEQ, CMPNE vs AND
+ea1 = 2 == 2 != 0
+ea2 = 0 != 2 == 1
+ea3 = 2 == 2 && 1
+ea4 = 1 && 2 == 2
+ea5 = 1 != 2 && 1
+ea6 = 1 && 2 != 1
+
+# Test CMPLT, .... vs CMPEQ
+le1 = -2 <  -1 <= 0
+le2 = -2 <= -1 <  1
+le3 =  2 >   3 >= 1
+le4 =  2 >=  3 >  0
+le5 =  4 >   3 <  1
+le6 =  2 <   3 >  0
+le7 =  1 <   1 == 0
+le8 =  0 ==  0 <  0
+
+# Test ARPLUS, ARMINUS vs CMPLT
+al1 = 1 - 1 + 1
+# I can't figure out anyway to test if minus is executed before plus
+# operator left of it.
+al2 = 1 + 0 < 1
+al3 = 1 > 0 + 1
+
+# Test ARTIMES, ... VS ARPUS
+ta1 = 3 * 3 % 2
+ta2 = 3 % 2 * 2
+ta3 = 4 / 4 % 3
+ta4 = 10 % 8 / 2
+ta5 = 1 + 2 * 3
+ta6 = 3 * 2 + 1
+
+# Test NOT VS ARTIMES
+nt1 = !0 * 2
+nt2 = 2 * !0
+
+#Test UNMINUS
+um1 = -1 - 2
+um2 = 2 - -1
+
+action
+printes ("?:    ", qc1, "==2, ", qc2, "==1, ", qc3, "==3, ", qc4, "==2
+"),
+printes ("?:    ", qc5, "==4, ", qc6, "==2, ", qc7, "==3, ", qc8, "==1
+"),
+printes ("||?:  ", qco1, "==1, ", qco2, "==0
+"),
+printes ("&&||  ", oa1, "==1, ", oa2, "==1, ", oa3, "==1, ", oa4, "==0, ", oa5, "==0
+"),
+printes ("!=&&  ", ea1, "==1, ", ea2, "==1, ", ea3, "==1, ", ea4, "==1, ", ea5, "==1, ", ea6, "==1
+"),
+printes (">=<   ", le1, "==0, ", le2, "==0, ", le3, "==0, ", le4, "==0
+"),
+printes (">=<== ", le5, "==0, ", le6, "==1, ", le7, "==1, ", le8, "==1
+"),
+printes ("+-<   ", al1, "==1, ", al2, "==0, ", al3, "==0
+"),
+printes ("*/%   ", ta1, "==1, ", ta2, "==2, ", ta3, "==1, ", ta4, "==1
+"),
+printes ("*/%+  ", ta5, "==7, ", ta6, "==7
+"),
+printes ("!*    ", nt1, "==2, ", nt2, "==2
+"),
+printes ("--    ", um1, "==-3, ", um2, "==3
+"),

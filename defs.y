@@ -46,7 +46,7 @@ static void new_var(char *s, struct treebase *t) ;
         char    y_distr[4];
 };
 
-%left QUERY COLON
+%right QUERY COLON
 %left OR2
 %left AND2
 %left CMPEQ CMPNE

@@ -40,6 +40,7 @@ set(EXAMPLES
     Descr.test_library
     Descr.test_multiline_string
     Descr.test_only_exression
+    Descr.test_operator_order
     Descr.test_operators
     Descr.test_packorder_random
     Descr.test_pointcount_aliases
