@@ -38,12 +38,16 @@ checked too.
 
 1. Dependencies
 
-Required dependecies are
-* cmake (>= 3.12)
-* Compiler with c and c++11 support
+Required dependencies are
+* cmake (>= 3.1)
+* Compiler with c++14 support
+
+Required dependencies building from sources tarball:
+* libdds
+* pcg-cpp
 
 Recommended dependencies for development:
-* perl
+* perl and module IPC::Run
 * lcov if compiling with gcc
 * genhtml if compiling with gcc
 
