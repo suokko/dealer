@@ -109,9 +109,36 @@ string(REPLACE "*" ".*" GITIGNORE "${GITIGNORE}")
 list(APPEND GITIGNORE "\\\\.git/" "\\\\.gitmodules$" "/dds/" "/pcg-cpp/")
 set(CPACK_SOURCE_GENERATOR TGZ ZIP)
 set(CPACK_PACKAGE_VENDOR "Dealer project")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/DESCRIPTION")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_SOURCE_IGNORE_FILES "${GITIGNORE}")
+set(CPACK_PACKAGE_CONTACT "$ENV{NAME} <$ENV{EMAIL}>")
+
+# DEB packaging configuration
+set(CPACK_DEB_COMPONENT_INSTALL ON)
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${PROJECT_HOMEPAGE_URL}")
+set(CPACK_DEBIAN_PACKAGE_SECTION "games")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_ENABLE_COMPONENT_DEPENDS ON)
+
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_SUGGESTS "libdds0")
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_NAME "dealer")
+set(CPACK_DEBIAN_DOCS_PACKAGE_NAME "dealer-doc")
+set(CPACK_DEBIAN_LIBDDS_RUNTIME_PACKAGE_NAME "libdds0")
+set(CPACK_DEBIAN_LIBDDS_DEVELOPMENT_PACKAGE_NAME "libdds-dev")
+
+# RPM packaging configuration
+set(CPACK_RPM_MAIN_COMPONENT Runtime)
+set(CPACK_RPM_FILENAME RPM-DEFAULT)
+set(CPACK_RPM_DOCS_PACKAGE_ARCHITECTURE noarch)
+
+# Windows NSIS installer configuration
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL OFF)
+set(CPACK_NSIS_MODIFY_PATH ON)
+set(CPACK_NSIS_URL_INFO_ABOUT "${PROJECT_HOMEPAGE_URL}")
+
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Runtime_Libs)
 
 #import cmake helpers
 include(GNUInstallDirs)
@@ -398,18 +425,97 @@ if (SUBMODULES)
 endif (SUBMODULES)
 
 #Install binaries
-set(NLC)
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-    set(NLC NAMELINK_COMPONENT Development)
-endif ()
-install(TARGETS dealer dealergenlib ${DDS_TARGET}
+install(TARGETS dealer dealergenlib
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT Runtime
-        ${NLC}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT Development
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dds
-        COMPONENT Development
     )
+
+set(NLC)
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+    set(NLC NAMELINK_COMPONENT libdds_Development)
+endif ()
+if (DDS_TARGET)
+    install(TARGETS ${DDS_TARGET}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT libdds_Runtime
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT libdds_Runtime
+            ${NLC}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT libdds_Development
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dds
+            COMPONENT libdds_Development
+        )
+endif ()
+
+if(MINGW)
+    find_program(OBJDUMP_COMMAND objdump)
+    if (OBJDUMP_COMMAND)
+        # Some black magic to pull or mingw dlls into installer
+        # Basic idea is to list all linked dlls using objdump. Next step is
+        # to use find_path to check all linked dlls which are inside mingw
+        # default library path.
+        # libdds.dll is use for linked libraries because it has strict super
+        # set of dependencies to dealer.exe
+        cmake_policy(SET CMP0087 NEW)
+        if (NOT DDS_TARGET)
+            set(DDS_TARGET dealer)
+        endif ()
+        execute_process(COMMAND "${CMAKE_CXX_COMPILER}" -print-search-dirs
+            OUTPUT_VARIABLE OUT)
+        string(REGEX REPLACE ".*libraries: =" "" LIBPATH "${OUT}")
+        string(REPLACE ":" ";" LIBPATH ${LIBPATH})
+        install(CODE
+    "
+    execute_process(COMMAND \"${OBJDUMP_COMMAND}\" --private-headers \"$<TARGET_FILE:${DDS_TARGET}>\"
+        OUTPUT_VARIABLE OUT)
+    string(REGEX MATCHALL \"[A-Za-z0-9+-_]*\\\\.dll\" DLL_LIST \"\${OUT}\")
+    foreach (F \${DLL_LIST})
+        find_path(\${F}_RES \${F} PATHS ${LIBPATH})
+        if (\${F}_RES)
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\"
+                TYPE SHARED_LIBRARY FILES \"\${\${F}_RES}/\${F}\")
+        endif ()
+    endforeach ()
+    "
+            COMPONENT Runtime_Libs
+            )
+
+    else ()
+        message(WARNING "objdump not found. objdump is required by install target to collect required mingw dlls")
+    endif ()
+endif()
+
+# Configure installation components
+set(RLIBS)
+if (WIN32)
+    # Can this be made separated download which can be same for multiple versions?
+    set(RLIBS DEPENDS Runtime_Libs)
+    cpack_add_component(Runtime_Libs
+        DISPLAY_NAME dealer-libs
+        DESCRIPTION "Libraries required to run the dealer."
+        HIDDEN
+        )
+endif ()
+cpack_add_component(Runtime
+    DISPLAY_NAME dealer
+    DESCRIPTION "The dealer program to generate hands."
+    ${RLIBS}
+    REQUIRED)
+cpack_add_component(Docs
+    DISPLAY_NAME dealer-doc
+    DESCRIPTION "The documentation for the dealer program."
+    DEPENDS Runtime
+    )
+if (DDS_TARGET)
+    cpack_add_component(libdds_Runtime
+        DISPLAY_NAME libdds
+        DESCRIPTION "The double dummy solver for the dealer."
+        ${RLIBS}
+        )
+    cpack_add_component(libdds_Development
+        DISPLAY_NAME libdds-dev
+        DESCRIPTION "Development files for the double dummy solver library."
+        DEPENDS libdds_Runtime
+        )
+endif ()

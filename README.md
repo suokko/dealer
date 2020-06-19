@@ -1,42 +1,5 @@
-This program is hereby put in the public domain. Do with it whatever
-you want, but I would like you not to redistribute it in modified form
-without mentioning the fact of modification. I will accept bug reports
-and modification requests, without any obligation of course, but fixing
-bugs someone else put in is beyond me.
 
-When you report bugs please mention the version number in the source
-files, and preferably send context diffs if you changed anything.
-I might put in your fixes, and distribute a new version someday.
-
-I would prefer if you did *not* use this program for generating hands
-for tournaments. I have not investigated the random number generation
-closely enough for me to be comfortable with that thought.
-
-	Hans van Staveren
-	Amsterdam
-	Holland
-	<sater@xs4all.nl>
-
-------------------------------------------------------------------------------
-This is a version of Hans' program with several new functions.   Please
-look in the Manual directory for a description.
-
-        Henk Uijterwaal
-        Amsterdam
-        Holland
-        henk@ripe.net
-
-------------------------------------------------------------------------------
-This is modification based on Henk's version with several improvements. The
-prefered bug report method is github bug tracking but email bugs will beyond
-checked too.
-
-	https://github.com/suokko/dealer/issues
-
-	Pauli Nieminen <suokkos@gmail.com>
-------------------------------------------------------------------------------
-
-1. Dependencies
+# 1. Dependencies
 
 Required dependencies are
 * cmake (>= 3.1)
@@ -58,7 +21,7 @@ Recommended run time dependencies are
 libdds.so, libdds.dylib or dds.dll needs to be in runtime library search path to
 use double dummy solver in dealer scripts.
 
-2.  Building from sources
+# 2.  Building from sources
 
 ```
 mkdir -p build
@@ -70,7 +33,7 @@ Then you can compile sources using your selected build system.
 
 Project settings can be modified using cmake GUI. (eg. `ccmake ..`)
 
-3. Testing
+# 3. Testing
 
 Build system adds two testing targets. `check` target runs test using binary
 compiled with flags for configuration. `check_coverage` runs same set of tests
@@ -84,7 +47,7 @@ cmake ..
 make check_coverage
 ```
 
-4. Using dealer
+# 4. Using dealer
 
 Dealer uses a simple scripting language to allow user place conditions to
 generate hands, print hands and do statistical analyze. Example use would be to
@@ -115,7 +78,7 @@ Time needed    0.426 sec
 More details about scripting language can be found from
 Manual/index.html.
 
-5. Development
+# 5. Development
 
 If you want to write code or debug issues then it is best to set
 CMAKE_BUILD_TYPE to RelWithDebInfo or Debug. If you use RelWithDebInfo then I
@@ -151,7 +114,7 @@ explanatory for someone familiar with the code. I decided to start add
 explanation strings to new asserts because a common case is assert failure
 happening for an user without understanding the code.
 
-6. Packaging
+# 6. Packaging
 
 The build system supports installation components `Runtime`, `Development` and
 `Docs`. Each target is expected to include files related to a specific type of
@@ -167,3 +130,4 @@ DESTDIR=../debian/docs cmake -DCOMPONENT=Docs -P cmake_install.cmake
 
 Build system offers packaging support using cpack. Supported targets are:
 * `package_source` Generates source tarballs (default is .tar.gz and .zip)
+* `package` Generates binary installers

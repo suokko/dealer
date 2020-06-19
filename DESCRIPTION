@@ -1,0 +1,4 @@
+This program is a powerful tool to generate constrained random hands, printing
+them or doing statistical analyze on them. You can generate practice hands,
+analyze probabilities for different biding and play choices. You can also use
+double dummy analyze with libdds.
