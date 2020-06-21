@@ -25,12 +25,10 @@ else ()
         ${USE_SYSTEM_DDS_INIT})
 endif ()
 
-add_library(DDS INTERFACE)
 if (USE_SYSTEM_DDS)
+    add_library(DDS INTERFACE)
     target_include_directories(DDS INTERFACE "${DDS_INCLUDE_DIR}")
     #Not used: target_link_libraries(DDS::DDS INTERFACE "${DDS_LIBRARY}")
-else ()
-    target_include_directories(DDS INTERFACE "dds/include")
 endif ()
 
 set(DDS_REQUIRED ${USE_SYSTEM_DDS})

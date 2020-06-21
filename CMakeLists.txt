@@ -122,11 +122,8 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEBIAN_ENABLE_COMPONENT_DEPENDS ON)
 
-set(CPACK_DEBIAN_RUNTIME_PACKAGE_SUGGESTS "libdds0")
 set(CPACK_DEBIAN_RUNTIME_PACKAGE_NAME "dealer")
 set(CPACK_DEBIAN_DOCS_PACKAGE_NAME "dealer-doc")
-set(CPACK_DEBIAN_LIBDDS_RUNTIME_PACKAGE_NAME "libdds0")
-set(CPACK_DEBIAN_LIBDDS_DEVELOPMENT_PACKAGE_NAME "libdds-dev")
 
 # RPM packaging configuration
 set(CPACK_RPM_MAIN_COMPONENT Runtime)
@@ -142,6 +139,7 @@ set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Runtime_Libs)
 
 #import cmake helpers
 include(GNUInstallDirs)
+include(ExternalProject)
 include(CPack)
 include(InstallRequiredSystemLibraries)
 
@@ -229,79 +227,53 @@ find_package(DDS ${DDSREQUIRED})
 find_package(PCGCXX ${PCGREQUIRED})
 
 if (NOT USE_SYSTEM_DDS)
-    set(DDS_TARGET dds)
-
+    message(STATUS "System libdds wasn't found. Using source from dds subdirectory.")
     # Make sure submodules has been updated
     execute_process(COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-
-
-    # Find out if we can support different dds threading models
-    # This doesn't support all possible but at least most systems should be happy with one of them
-    find_package(Threads)
-    find_package(Boost COMPONENTS system thread)
-    find_package(OpenMP)
-
-    set(DDS_DIR dds/src)
-    set(DDS_IDIR dds/include)
-
-    # Read file list from make variable assignment
-    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${DDS_DIR}/Makefiles/sources.txt SRC_FILES)
-    string(REGEX REPLACE "[^a-z]+[ \t]([a-zA-Z]+\\.cpp)" ";${DDS_DIR}/\\1" SRC_DDS "${SRC_FILES}")
-    string(REGEX REPLACE "\r?\n" "" SRC_DDS "${SRC_DDS}")
-    list(REMOVE_AT SRC_DDS 0)
-
-    set(INC_DDS
-        ${DDS_IDIR}/dll.h
+    set(TOOL)
+    if (CMAKE_CROSSCOMPILING)
+        set(TOOL CMAKE_CACHE_ARGS "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${CMAKE_TOOLCHAIN_FILE}")
+    endif ()
+    ExternalProject_Add(dds
+        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dds"
+        CMAKE_CACHE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/dds-install"
+        ${TOOL}
+        STAMP_DIR dds-prefix/stamp
+        BINARY_DIR dds-prefix/build
+        INSTALL_DIR dds-install
+        STEP_TARGETS configure build test
         )
 
-    list(APPEND SRC_DDS ${DDS_IDIR}/portab.h)
-
+    add_library(DDS INTERFACE)
+    target_include_directories(DDS INTERFACE
+        ${CMAKE_CURRENT_BINARY_DIR}/dds-install/include/dds)
     if (WIN32)
-        enable_language(RC)
-        # Add windows only export locations and dll information resource
-        list(APPEND SRC_DDS
-            ${DDS_DIR}/dds.rc
-            ${DDS_DIR}/Exports.def
-            )
+        set(DDS_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/dds-install/bin)
+    else ()
+        set(DDS_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/dds-install/lib)
+    endif ()
+    target_link_directories(DDS INTERFACE ${DDS_LIBDIR})
+    if (WIN32)
+        set(WINE)
+        if (CMAKE_CROSSCOMPILING)
+            set(WINE "WINE")
+        endif ()
+        message(WARNING "You likely need to add to your ${WINE}PATH when \
+running dealer from the build directory. This is required to allow library \
+loading to find the libdds.dll file.
+set PATH=%PATH%;${DDS_LIBDIR}")
     endif ()
 
-    add_library(dds SHARED ${SRC_DDS} ${INC_DDS})
-    # Make sure install knows about headers required to use libdds
-    set_target_properties(dds PROPERTIES PUBLIC_HEADER "${INC_DDS}")
-
-    # Make shared objects versioned
-    set_target_properties(dds PROPERTIES
-        SOVERSION 2.9.0
-        VERSION 2.9.0
+    set(DDS_INSTALL_ARGS
+        --install dds-prefix/build
+        --prefix "\${CMAKE_INSTALL_PREFIX}"
+        --component Runtime
         )
-
-    if (LTO_SUPPORTED)
-        set_target_properties(dds PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-    endif ()
-
-    # Always enable stl threads as c++11 is required
-    target_link_libraries(dds PRIVATE Threads::Threads)
-    target_compile_definitions(dds PRIVATE DDS_THREADS_STL=1)
-
-    # If C++ standard is 17 or higher then STLIMPL is available
-    if (CMAKE_CXX_STANDARD GREATER 14)
-        target_compile_definitions(dds PRIVATE DDS_THREADS_STLIMPL=1)
-    endif ()
-
-    if (Boost_FOUND)
-        # Add boost threading if libraries were found
-        target_compile_definitions(dds PRIVATE DDS_THREADS_BOOST=1)
-        target_include_directories(dds PRIVATE ${Boost_INCLUDE_DIRS})
-        target_link_libraries(dds PRIVATE ${Boost_LIBRARIES})
-    endif ()
-
-    if (OpenMP_FOUND)
-        # Add OpenMP if compilers supports it
-        target_compile_definitions(dds PRIVATE DDS_THREADS_OPENMP=1)
-        target_compile_options(dds PRIVATE ${OpenMP_CXX_FLAGS})
-        target_link_libraries(dds PRIVATE ${OpenMP_CXX_LIB_NAMES})
-    endif ()
+    install(CODE
+        "execute_process(COMMAND ${CMAKE_COMMAND} ${DDS_INSTALL_ARGS})"
+        COMPONENT Runtime
+        )
 
 endif (NOT USE_SYSTEM_DDS)
 
@@ -359,9 +331,6 @@ set(MV_SRC
     )
 
 dealer_add_executable(dealer ${SRC})
-if (NOT USE_SYSTEM_DDS)
-    dealer_set_target_properties(dealer PROPERTIES BUILD_RPATH ${CMAKE_CURRENT_BINARY_DIR})
-endif ()
 # Required libraries
 dealer_target_link_libraries(dealer
     cpudetect
@@ -416,11 +385,7 @@ if (SUBMODULES)
     endif ()
     if (NOT USE_SYSTEM_DDS)
         set_source_files_properties(dds.cpp
-            PROPERTIES OBJECT_DEPENDS submodule)
-        foreach(F ${SRC_DDS})
-            set_source_files_properties(${F}
-                PROPERTIES OBJECT_DEPENDS submodule)
-        endforeach()
+            PROPERTIES OBJECT_DEPENDS dds)
     endif ()
 endif (SUBMODULES)
 
@@ -429,24 +394,6 @@ install(TARGETS dealer dealergenlib
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Runtime
     )
-
-set(NLC)
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-    set(NLC NAMELINK_COMPONENT libdds_Development)
-endif ()
-if (DDS_TARGET)
-    install(TARGETS ${DDS_TARGET}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT libdds_Runtime
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT libdds_Runtime
-            ${NLC}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT libdds_Development
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dds
-            COMPONENT libdds_Development
-        )
-endif ()
 
 if(MINGW)
     find_program(OBJDUMP_COMMAND objdump)
@@ -507,15 +454,3 @@ cpack_add_component(Docs
     DESCRIPTION "The documentation for the dealer program."
     DEPENDS Runtime
     )
-if (DDS_TARGET)
-    cpack_add_component(libdds_Runtime
-        DISPLAY_NAME libdds
-        DESCRIPTION "The double dummy solver for the dealer."
-        ${RLIBS}
-        )
-    cpack_add_component(libdds_Development
-        DISPLAY_NAME libdds-dev
-        DESCRIPTION "Development files for the double dummy solver library."
-        DEPENDS libdds_Runtime
-        )
-endif ()
