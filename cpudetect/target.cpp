@@ -19,12 +19,18 @@ using uint128_t = unsigned __int128;
 #error "Missing support for 128bit integer for your compiler."
 #endif
 
+template<typename T, typename ET>
+constexpr T cpow(T b, ET e)
+{
+	return e ? b*cpow(b, e-1) : 1;
+}
+
 static std::ostream& operator<<(std::ostream& os, uint128_t v)
 {
 	if (!(os.flags() & os.dec))
 		return os << static_cast<uint64_t>(v >> 64) << static_cast<uint64_t>(v);
 
-	constexpr uint64_t max = std::pow(10ULL, std::numeric_limits<uint64_t>::digits10);
+	constexpr uint64_t max = cpow(10ULL, std::numeric_limits<uint64_t>::digits10);
 	if (v > max) {
 		auto high = v / max;
 		v = v % max;
