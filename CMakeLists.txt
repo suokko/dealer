@@ -246,6 +246,7 @@ if (NOT USE_SYSTEM_DDS)
     ExternalProject_Add(dds
         SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dds"
         CMAKE_CACHE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/dds-install"
+        CMAKE_CACHE_ARGS "-DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}"
         ${TOOL}
         STAMP_DIR dds-prefix/stamp
         BINARY_DIR dds-prefix/build
