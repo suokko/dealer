@@ -24,8 +24,9 @@ if (LTO_SUPPORTED)
 endif ()
 
 set(CPUDETECT_CONFIGS ${COMPILER_CONFIGS})
-list(APPEND CPUDETECT_CONFIGS slowmul)
+list(APPEND CPUDETECT_CONFIGS slowmul popcnt)
 set(COMPILER_CONFIG_slowmul ${COMPILER_CONFIG_default})
+list(REMOVE_DUPLICATES CPUDETECT_CONFIGS)
 foreach (CFG ${CPUDETECT_CONFIGS})
     add_library_old(target_${CFG} OBJECT EXCLUDE_FROM_ALL
         target.cpp
