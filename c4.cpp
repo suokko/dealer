@@ -40,21 +40,7 @@ static inline bool HAS_CARD2(int seat, int suit, int rank)
 
 namespace DEFUN() {
 
-#define C4_TYPE int
-static C4_TYPE Rescale (int nValue) {
-  return nValue;
-}
-
-C4_TYPE cccc (int seat) {
-  return Rescale (eval_cccc (seat));
-}
-
-C4_TYPE quality (int seat, int suit) {
-  return Rescale (suit_quality (seat, suit));
-}
-#undef C4_TYPE
-
-int eval_cccc (int seat) {
+int cccc (int seat) {
   int eval = 0;
   int ShapePoints = 0;
 
@@ -118,7 +104,7 @@ int eval_cccc (int seat) {
           eval += 25;
       }
 
-      eval += suit_quality (seat, suit);
+      eval += quality (seat, suit);
 
     }                        /* end for (suit;...) */
 
@@ -129,10 +115,10 @@ int eval_cccc (int seat) {
 
   assert ((eval % 5) == 0);
 
-  return Rescale (eval);
+  return eval;
 }
 
-int suit_quality (int seat, int suit) {
+int quality (int seat, int suit) {
   int Quality = 0;
 
   int Length = suitlength(&gptr->curboard, seat, suit);
