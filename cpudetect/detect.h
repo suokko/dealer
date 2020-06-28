@@ -21,8 +21,6 @@ enum cpufeatures {
 namespace cpu {
 
 struct detect {
-	detect();
-
 	/// Singleton management interface
 	static const detect& instance();
 
@@ -80,6 +78,12 @@ struct detect {
 	static const std::string& compiler_string();
 	const std::string& cpu_string() const;
 private:
+	/// Private constructor for singleton
+	detect();
+
+	/// Singleton must not be copied
+	detect(const detect&) = delete;
+
 	unsigned features_;
 };
 
