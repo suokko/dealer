@@ -16,18 +16,10 @@
 
 namespace dds {
 
-static decltype(SetMaxThreads)* ddSetMaxThreads = NULL;
+/// Function pointer to SolveBoard function in libdds
 static decltype(SolveBoard)* ddSolveBoard = NULL;
+/// Function pointer to helper converting libdds error codes to error text
 static decltype(ErrorMessage)* ddErrorMessage = NULL;
-static int noSolve(const union board *, int, int)
-{
-	return 0;
-}
-
-static void noSolveLead(const union board *, int, int, card, char res[13])
-{
-	std::memset(res, 0, sizeof(*res));
-}
 
 static void cardsToDeal(struct deal *dl, const union board *d)
 {
@@ -126,6 +118,7 @@ static void loadLib()
 	HMODULE handle = LoadLibrary(LIBNAME);
 #endif
 	if (handle) {
+		decltype(SetMaxThreads)* ddSetMaxThreads = NULL;
 		ddSetMaxThreads = (decltype(SetMaxThreads) *)dlsym(handle, "SetMaxThreads");
 		ddSolveBoard = (decltype(SolveBoard) *)dlsym(handle, "SolveBoard");
 		ddErrorMessage = (decltype(ErrorMessage) *)dlsym(handle, "ErrorMessage");
@@ -137,8 +130,6 @@ static void loadLib()
 		fprintf(stderr, "%s\n", dlerror());
 #endif
 		error("Error: No libdds library found. DD support disabled.\n");
-		solve = noSolve;
-		solveLead = noSolveLead;
 	}
 }
 
