@@ -19,12 +19,14 @@ using uint128_t = unsigned __int128;
 #error "Missing support for 128bit integer for your compiler."
 #endif
 
+/// Calculate compile time integer power
 template<typename T, typename ET>
 constexpr T cpow(T b, ET e)
 {
 	return e ? b*cpow(b, e-1) : 1;
 }
 
+/// Write a 128bit integer to a stream
 static std::ostream& operator<<(std::ostream& os, uint128_t v)
 {
 	if (!(os.flags() & os.dec))
@@ -104,6 +106,8 @@ static inline T popcount(T in)
 #endif
 
 namespace DEFUN() {
+/// noinline wrapper to make bit count function show as separate function
+/// profiling output.
 template <class T>
 [[gnu::optimize("unroll-loops"), gnu::noinline]]
 static T popcountt(T in)
@@ -111,6 +115,7 @@ static T popcountt(T in)
 	return popcount(in);
 }
 
+/// Test running helper for different types.
 template<typename T>
 [[gnu::noinline]]
 static T run_test(const char *fn, const char *type, T first)
@@ -118,13 +123,19 @@ static T run_test(const char *fn, const char *type, T first)
 	// duplicate bits
 	T bits = std::numeric_limits<unsigned char>::digits;
 	T next = first;
+	// Duplicate reference bits to higher bytes also to check if they are
+	// counted correctly too.
 	do {
 		first = next;
 		next <<= bits;
 		next |= first;
 		bits *= 2;
 	} while (first != next);
+	// See how long the test takes
 	clock_t start = clock();
+	// Repeat calls enough to hide random variance. Adding each results to next
+	// value makes sure calls aren't optimized out and we can check all
+	// implementations resulted to same final value.
 	for (unsigned i = 0; i < 20'000'000u; i++)
 		first = popcountt(first) + first;
 	clock_t end = clock();
