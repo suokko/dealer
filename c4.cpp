@@ -25,6 +25,19 @@ basically a no-op.
 #include "card.h"
 #include "tree.h"
 
+/**
+ * Helper to check if a card is held by a player
+ *
+ * @param seat The compass direction for player
+ * @param suit The suit of card
+ * @param rank The rank of card
+ * @return true if the hand has the card
+ */
+static inline bool HAS_CARD2(int seat, int suit, int rank)
+{
+  return hand_has_card(gptr->curboard.hands[seat], MAKECARD(suit,rank));
+}
+
 namespace DEFUN() {
 
 #define C4_TYPE int
@@ -51,12 +64,12 @@ int eval_cccc (int seat) {
   for (suit = SUIT_CLUB; suit <= SUIT_SPADE; ++suit) {
     int Length = suitlength(&gptr->curboard, seat, suit);
 
-    int HasAce   = HAS_CARD2 (suit, RK_ACE);
-    int HasKing  = HAS_CARD2 (suit, RK_KING);
-    int HasQueen = HAS_CARD2 (suit, RK_QUEEN);
-    int HasJack  = HAS_CARD2 (suit, RK_JACK);
-    int HasTen   = HAS_CARD2 (suit, RK_TEN);
-    int HasNine  = HAS_CARD2 (suit, RK_NINE);
+    int HasAce   = HAS_CARD2 (seat, suit, RK_ACE);
+    int HasKing  = HAS_CARD2 (seat, suit, RK_KING);
+    int HasQueen = HAS_CARD2 (seat, suit, RK_QUEEN);
+    int HasJack  = HAS_CARD2 (seat, suit, RK_JACK);
+    int HasTen   = HAS_CARD2 (seat, suit, RK_TEN);
+    int HasNine  = HAS_CARD2 (seat, suit, RK_NINE);
 
     int HigherHonors = 0;
 
@@ -124,13 +137,13 @@ int suit_quality (int seat, int suit) {
 
   int Length = suitlength(&gptr->curboard, seat, suit);
 
-  int HasAce   = HAS_CARD2 (suit, RK_ACE);
-  int HasKing  = HAS_CARD2 (suit, RK_KING);
-  int HasQueen = HAS_CARD2 (suit, RK_QUEEN);
-  int HasJack  = HAS_CARD2 (suit, RK_JACK);
-  int HasTen   = HAS_CARD2 (suit, RK_TEN);
-  int HasNine  = HAS_CARD2 (suit, RK_NINE);
-  int HasEight = HAS_CARD2 (suit, RK_EIGHT);
+  int HasAce   = HAS_CARD2 (seat, suit, RK_ACE);
+  int HasKing  = HAS_CARD2 (seat, suit, RK_KING);
+  int HasQueen = HAS_CARD2 (seat, suit, RK_QUEEN);
+  int HasJack  = HAS_CARD2 (seat, suit, RK_JACK);
+  int HasTen   = HAS_CARD2 (seat, suit, RK_TEN);
+  int HasNine  = HAS_CARD2 (seat, suit, RK_NINE);
+  int HasEight = HAS_CARD2 (seat, suit, RK_EIGHT);
 
   int HigherHonors = 0;
 
