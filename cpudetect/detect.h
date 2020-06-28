@@ -2,6 +2,11 @@
 
 #include <string>
 
+/**
+ * Feature bits for different CPU features. These are combined to a bit mask in
+ * runtime feature detection. Query for features is done using
+ * cpu::detect::supports()
+ */
 enum cpufeatures {
 	CPUDEFAULT	= 0x000,
 	CPUSSE		= 1,
@@ -20,12 +25,17 @@ enum cpufeatures {
 
 namespace cpu {
 
+/**
+ * A singleton providing ability to check cpu instruction set support in runtime
+ * and compiler time.
+ */
 struct detect {
 	/// Singleton management interface
 	static const detect& instance();
 
-	/// helper to check if cpu supports required feature
+	/// Check if cpu supports required feature
 	bool supports(enum cpufeatures feature) const;
+	/// Check if cpu support all required features in a bit mask
 	bool supports(unsigned feature) const;
 
 	/// Return features supported by current compiler options
@@ -70,12 +80,15 @@ struct detect {
 			;
 	}
 
+	/// Check if compiler supports a required feature
 	static constexpr bool compiler_supports(cpufeatures feature)
 	{
 		return compiler_features() & feature;
 	}
 
+	/// Return human readable list for compiler supported instruction sets
 	static const std::string& compiler_string();
+	/// Return human readable list for runtime supported instruction sets
 	const std::string& cpu_string() const;
 private:
 	/// Private constructor for singleton
@@ -84,6 +97,7 @@ private:
 	/// Singleton must not be copied
 	detect(const detect&) = delete;
 
+	/// Cached runtime instruction set bit mask
 	unsigned features_;
 };
 
