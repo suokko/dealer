@@ -100,7 +100,17 @@ Low      34    392   1896   4728   6972   6146   3558   1256    275     32      
 High      1      6      0      0      0      0      0      0      0      0      0      7
 Sum   25430 160117 412102 572222 478032 248584  83306  17633   2380    187      7 2000000
 
+Frequency :
+       High    Sum
+Low  2000000 2000000
+Sum  2000000 2000000
+
+Frequency :
+        Low    Sum
+High 2000000 2000000
+Sum  2000000 2000000
+
 Generated 2000000 hands
 Produced 2000000 hands
 Initial random seed 1
-Time needed    1.231 sec
+Time needed    0.828 sec

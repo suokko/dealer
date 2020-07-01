@@ -7,3 +7,5 @@ action
 	average "5 % 3" (5 % 3),
 	average "5 == 3" (5 == 3),
 	frequency "rnd(10)" (rnd(10),0,9),
+	frequency (-2147483638, 50, 100),
+	frequency (2147483638, -100, -50),

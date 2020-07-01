@@ -13,7 +13,11 @@ Frequency rnd(10):
     7	   10016
     8	    9936
     9	    9773
+Frequency :
+Low	  100000
+Frequency :
+High	  100000
 Generated 100000 hands
 Produced 100000 hands
 Initial random seed 1
-Time needed    0.058 sec
+Time needed    0.043 sec

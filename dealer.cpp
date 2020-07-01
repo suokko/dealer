@@ -899,6 +899,24 @@ static void setup_action () {
     }
 }
 
+#if __cplusplus >= 201702L
+using std::clamp;
+#else
+template<typename T>
+constexpr const T& clamp(const T& value, const T& low, const T& high)
+{
+    assert(low <= high && "Clamp requires low to be smaller or equal to high");
+    return value < low ? low : value > high ? high : value;
+}
+#endif
+
+/**
+ * Add values to two dimensional histogram
+ *
+ * @param acp The histogram action
+ * @param expr The first value
+ * @param expr2 The second value
+ */
 static void frequency2dout(struct action *acp, int expr,  int expr2) {
         int val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
 
@@ -906,18 +924,11 @@ static void frequency2dout(struct action *acp, int expr,  int expr2) {
         high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
         low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
         low2 = acp->ac_u.acu_f2d.acuf_lowbnd_expr2;
-        if (expr > high1)
-                val1 = high1 - low1 + 2;
-        else {
-                val1 = expr - low1 + 1;
-                if (val1 < 0) val1 = 0;
-        }
-        if (expr2 > high2)
-                val2 = high2 - low2 + 2;
-        else {
-                val2 = expr2 - low2 + 1;
-                if (val2 < 0) val2 = 0;
-        }
+        // Make sure the value is in the range, Lowest and highest are for all
+        // outside values in their respective direction.
+        val1 = clamp(expr, low1 - 1, high1 + 1) - low1 + 1;
+        val2 = clamp(expr2, low2 - 1, high2 + 1) - low2 + 1;
+
         acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * val1 + val2]++;
 }
 
