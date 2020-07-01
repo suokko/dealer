@@ -11,12 +11,6 @@
 extern const char* const player_name[4];
 extern const char* const suit_name[5];
 
-/* Changes for cccc and quality */
-struct context {
-  union board *pd;
-  struct handstat *ps ; /* Pointer to stats of current deal */
-};
-
 struct handstat {
     int hs_points[(NSUITS + 1)*2];  /* 4321 HCP per suit or total */
     int hs_bits[2];                 /* Distribution bit position */
