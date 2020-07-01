@@ -7,11 +7,25 @@ find_path(DDS_INCLUDE_DIR dll.h
     DOC "The path of libdds.{so,dll}"
     )
 
+set(save_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+if (APPLE)
+    string(REGEX REPLACE "[^;]+" ".2\\0"
+        CMAKE_FIND_LIBRARY_SUFFIXES
+        "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+elseif (NOT WIN32)
+    string(REGEX REPLACE "[^;]+" "\\0.2"
+        CMAKE_FIND_LIBRARY_SUFFIXES
+        "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+endif ()
+
+
 find_library(DDS_LIBRARY
     NAMES dds
     HINTS $ENV{DDSDIR}
     DOC "The directory of libdds development headers"
     )
+
+set(CMAKE_FIND_LIBRARY_SUFFIXES ${save_CMAKE_FIND_LIBRARY_SUFFIXES})
 
 set(USE_SYSTEM_DDS_INIT OFF)
 if (DDS_LIBRARY AND DDS_INCLUDE_DIR)

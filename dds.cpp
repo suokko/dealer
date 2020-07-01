@@ -140,9 +140,9 @@ static void loadLib()
 {
 #if !defined(_WIN32)
 #ifndef __APPLE__
-#define LIBNAME "libdds.so"
+#define LIBNAME "libdds.so.2"
 #else
-#define LIBNAME "libdds.dylib"
+#define LIBNAME "libdds.2.dylib"
 #endif
 	void *handle = dlopen(LIBNAME, RTLD_LAZY);
 #else
