@@ -31,63 +31,179 @@
 #if 1
 #define debugf noop
 #else
+/**
+ * Trace eval_tree and value operations
+ */
 #define debugf printf
 #endif
 
+/**
+ * Do nothing function to replace printf if not wanting debug prints
+ */
 template<typename... Args>
 void noop(Args... args) {}
 
-#define DEFAULT_MODE STAT_MODE
-
 namespace DEFUN() {
 
+/**
+ * Implement dynamic value typing for scripts. It supports 32bit integers and
+ * an associative table mapping each opening lead card to tricks taken by
+ * declarer.
+ *
+ * Implementation enforces unique ownership to underlying data. This requirement
+ * helps memory management to avoid leeks from pointer to array which may have
+ * to be copied.
+ *
+ * @TODO: Convert to template type with evaltree using static typing
+ */
 struct value {
-    // Construction from different types
+    /**
+     * Construct an integer typed value
+     */
     value(int v = 0);
+    /**
+     * Construct an array typed value
+     */
     value(value_array *varr);
+    /**
+     * Create a copy from a variable
+     */
     value(treebase *tb);
 
-    // Copy and assignment
+    /**
+     * Assignment takes ownership of underlying data
+     */
     value& operator=(value&& other);
+    /**
+     * Move constructor takes ownership of underlying data
+     */
     value(value&& other);
 
-    // Destructor
+    /**
+     * Destructor makes sure underlying data is freed if there is an owned
+     * pointer
+     */
     ~value();
 
-    // Helper to check type of value
+    /**
+     * Helper to check if content is a pointer to array or an integer
+     */
     inline bool is_array() const;
 
-    // Helper to fetch key information from value array
+    /// Access the key information (card) from the array
     inline int key(unsigned index) const;
 
-    // Apply some function to the value
+    /**
+     * Apply a function object to all underlying values. If underlying value is
+     * an integer then visit calls fn once with an integer value. If underlying
+     * value is an array then visit calls fn one to thirteen times with an
+     * integer value.
+     *
+     * @param fn Function object used to process stored value(s)
+     * @return Reference to this object
+     */
     template<typename fn_t>
     inline const value& visit(fn_t fn) const;
+
+    /**
+     * Use a function object to modify all underlying values. It calls fn for
+     * each underlying value and returns the modified value object.
+     *
+     * @param fn Function object which modifies stored value(s)
+     * @return The modified value object after the transform operation
+     */
     template<typename fn_t>
     inline value transform(fn_t fn);
+
+    /**
+     * Use a function object to modify two value objects. It calls fn with two
+     * arguments which match to value from this object and o object.
+     *
+     * If this or o object are different types then scalar value stays constant
+     * while array value changes for each call to fn
+     *
+     * @param o Other value object which provides values to the second argument
+     * @param fn Function object which modifies stored value(s)
+     * @return The modified value after the transform operation.
+     */
     template<typename fn_t>
     inline value transform(value& o, fn_t fn);
 
-    // Implicit conversions
+    /**
+     * Allow conversion to treebase pointer which is used to store script
+     * variable values.
+     */
     explicit inline operator treebase*();
+    /**
+     * Convert the underlying value to bool assuming all values must be true to
+     * evaluate the array as true.
+     */
     explicit inline operator bool() const;
+    /**
+     * Calculate an average integer value
+     */
     explicit inline operator int() const;
+    /**
+     * Calculate an average floating point value
+     */
     explicit inline operator double() const;
 
-    // Arithmetic
+    /** Arithmetic addition
+     * @return value object takes ownership of underlying array
+     */
     inline value operator+(value& o);
+    /** Arithmetic subtraction
+     * @return value object takes ownership of underlying array
+     */
     inline value operator-(value& o);
+    /** Arithmetic multiplication
+     * @return value object takes ownership of underlying array
+     */
     inline value operator*(value& o);
+    /** Arithmetic division
+     *
+     * Division operation checks for division by zero. It returns INT_MAX, INT_MIN
+     * or zero if denominator is zero. Return value depends on numerator.
+     *
+     * @return value object takes ownership of underlying array
+     */
     inline value operator/(value& o);
+    /** Arithmetic modulo
+     *
+     * Modulo operation checks for division by zero. It return zero if
+     * denominator is zero.
+     *
+     * @return value object takes ownership of underlying array
+     */
     inline value operator%(value& o);
 
-    // Comparison
+    /** Compare equality
+     * @return value object takes ownership of underlying array
+     */
     inline value operator==(value& o);
+    /** Compare inequality
+     * @return value object takes ownership of underlying array
+     */
     inline value operator!=(value& o);
+    /** Compare less than
+     * @return value object takes ownership of underlying array
+     */
     inline value operator<(value& o);
+    /** Compare less than or equal
+     * @return value object takes ownership of underlying array
+     */
     inline value operator<=(value& o);
+    /** Compare greater than
+     * @return value object takes ownership of underlying array
+     */
     inline value operator>(value& o);
+    /** Compare greater than or equal
+     * @return value object takes ownership of underlying array
+     */
     inline value operator>=(value& o);
+    /** Apply logical not
+     * @return value object takes ownership of underlying array
+     */
     inline value operator!();
 
 private:
@@ -349,19 +465,19 @@ value value::operator!()
 
 /* Global variables */
 
+/**
+ * Cache expensive computation for scripts. (e.g. hcp)
+ */
 static struct handstat hs[4];
-
-/* Various handshapes can be asked for. For every shape the user is
-   interested in a number is generated. In every distribution that fits that
-   shape the corresponding bit is set in the distrbitmaps 3-dimensional array.
-   This makes looking up a shape a small constant cost.
-*/
 
 /* Function definitions */
 static int true_dd (const union board *d, int l, int c); /* prototype */
 
 static struct globals *gp;
 
+/**
+ * Initialize evalcontatract action
+ */
 static void initevalcontract () {
   int i, j, k;
   for (i = 0; i < 2; i++)
@@ -370,6 +486,15 @@ static void initevalcontract () {
         gp->results[i][j][k] = 0;
 }
 
+/**
+ * Cache double dummy results. If no cached value for the hand then it call
+ * true_dd() to run the double dummy solver.
+ *
+ * @param d Board used for double dummy solving
+ * @param l Declarer's compass direction
+ * @param c Contract denomination to solve
+ * @return The number of tricks declarer can take
+ */
 static int dd (const union board *d, int l, int c) {
   /* results-cached version of dd() */
   /* the dd cache, and the gp->ngen it refers to */
@@ -390,12 +515,21 @@ static int dd (const union board *d, int l, int c) {
   return cached_tricks[l][c];
 }
 
+/**
+ * Run double dummy solver for all cards in the opening lead hand.
+ *
+ * @param d Board used for double dummy solving
+ * @param l Declarer's compass direction
+ * @param c Contract denomination to solve
+ * @return Array of tricks each lead would allow declarer to take
+ */
 static struct value lead_dd (const union board *d, int l, int c) {
   char res[13];
   struct value_array *arr = (value_array *)mycalloc(1, sizeof(*arr));
   unsigned idx, fill = 0;
   memset(res, -1, sizeof(res));
   card hand = gptr->predealt.hands[(l+1) % 4];
+  // Validate that script provides 13 cards for opening lead hand
   if (hand_count_cards(hand) != 13) {
     char errmsg[512];
     snprintf(errmsg, sizeof(errmsg),
@@ -404,12 +538,18 @@ static struct value lead_dd (const union board *d, int l, int c) {
         player_name[(l+1) % 4], player_name[l], suit_name[c]);
     error(errmsg);
   }
+  // Run the double dummy solver
   solveLead(d, l, c, hand, res);
+  // Convert results to associative array
   for (idx = 0; idx < sizeof(res); idx++) {
+    // Results are set from the highest bit index to the lowest
     card c = hand_extract_card(hand);
     hand &= ~c;
+    // If there is -1 tricks it means the card doesn't have solution. It is
+    // caused by libdds solving only one of equal cards.
     if (res[idx] == -1)
       continue;
+    // Convert card to the bit position index
     arr->key[fill] = C_BITPOS(c);
     arr->value[fill] = res[idx];
     fill++;
@@ -419,6 +559,12 @@ static struct value lead_dd (const union board *d, int l, int c) {
   return {arr};
 }
 
+/**
+ * Read double dummy results from library.dat
+ * @param pn The compass of declarer
+ * @param dn The contract denomination
+ * @return The number of tricks taken by declarer
+ */
 static int get_tricks (int pn, int dn) {
   int tk = gp->libtricks[dn];
   int resu;
@@ -426,6 +572,13 @@ static int get_tricks (int pn, int dn) {
   return resu;
 }
 
+/**
+ * Run double dummy solver or read result from library.dat provided data.
+ * @param d The board to analyze
+ * @param l The compass of declarer
+ * @param c The contract denomination
+ * @return The number of tricks declarer can take
+ */
 static int true_dd (const union board *d, int l, int c) {
   if (gp->loading) {
     int resu = get_tricks (l, c);
@@ -437,6 +590,9 @@ static int true_dd (const union board *d, int l, int c) {
   }
 }
 
+/**
+ * Collect double dummy results for evalcontract action.
+ */
 static void evalcontract () {
   int s;
   for (s = 0; s < 5; s++) {
@@ -459,6 +615,9 @@ static int checkshape (unsigned nr, struct shape *s)
   return r;
 }
 
+/**
+ * Check if player has a card in their hand
+ */
 static card statichascard (const union board *d, int player, card onecard) {
   return hand_has_card(d->hands[player], onecard);
 }
@@ -490,6 +649,15 @@ static int hcp (const union board *d, struct handstat *hsbase, int compass, int 
       return hs->hs_points[suit*2+1];
 }
 
+/**
+ * Calculate and cache control points for a player
+ *
+ * @param d The board to analyze
+ * @param hsbase The cache structure
+ * @param compass The player who's controls to calculate
+ * @param suit The suit to calculate controls, if 4 the all suits
+ * @return The total control points
+ */
 static int control (const union board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
@@ -509,7 +677,7 @@ static int control (const union board *d, struct handstat *hsbase, int compass, 
 }
 
 /**
- * Assume that popcnt is fast enough operation not needing caching.
+ * Calculate suit length for a player.
  */
 static inline int staticsuitlength (const union board* d,
         int compass,
@@ -529,7 +697,13 @@ int suitlength (const union board* d,
 }
 
 /**
- * The nit position in shape bitmap for this board is calculated from length of suits.
+ * Calculate shape index for a player. Shape index is used to check shape
+ * functions in scripts.
+ *
+ * @param d The board to analyze
+ * @param hsbase The cache
+ * @param compass The player to analyze
+ * @return
  */
 static int distrbit (const union board* d, struct handstat *hsbase, int compass)
 {
@@ -544,6 +718,15 @@ static int distrbit (const union board* d, struct handstat *hsbase, int compass)
   }
   return hs->hs_bits[1];
 }
+
+/**
+ * Count losers
+ *
+ * @param d The board to analyze
+ * @param hsbase The cache
+ * @param compass The player to analyze
+ * @param suit The suit to analyze. If 4 then analyze all suits
+ */
 static int loser (const union board *d, struct handstat *hsbase, int compass, int suit)
 {
       assert (compass >= COMPASS_NORTH && compass <= COMPASS_WEST);
@@ -573,7 +756,7 @@ static int loser (const union board *d, struct handstat *hsbase, int compass, in
             {
               /* Singleton A 0 losers, K or Q 1 loser */
               int losers[] = {1, 1, 0};
-              assert (control < 3);
+              assert (control <= 2 && "Control count for a singleton should be at most 2");
               hs->hs_loser[suit*2+1] = losers[control];
               break;
             }
@@ -581,7 +764,7 @@ static int loser (const union board *d, struct handstat *hsbase, int compass, in
             {
               /* Doubleton AK 0 losers, Ax or Kx 1, Qx 2 */
               int losers[] = {2, 1, 1, 0};
-              assert (control <= 3);
+              assert (control <= 3 && "Control count for a doubleton should be at most 3");
               hs->hs_loser[suit*2+1] = losers[control];
               break;
             }
@@ -595,6 +778,9 @@ static int loser (const union board *d, struct handstat *hsbase, int compass, in
       return hs->hs_loser[suit*2+1];
 }
 
+/**
+ * Initialize point count and cache variables
+ */
 static void initprogram (void)
 {
   initpc();
@@ -605,6 +791,9 @@ static void initprogram (void)
 
 /* Specific routines for EXHAUST_MODE */
 
+/**
+ * Print statistics for a hand
+ */
 static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   int s;
   for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
@@ -614,6 +803,9 @@ static inline void exh_print_stats (struct handstat *hs, int hs_length[4]) {
   printf ("  Totalpoints: %2d\n", hs->hs_points[s*2+1]);
 }
 
+/**
+ * Print cards shuffled in exhaust mode
+ */
 static inline void exh_print_cards (hand vector,
     unsigned exh_vect_length,
     card *exh_card_at_bit)
@@ -636,6 +828,9 @@ static inline void exh_print_cards (hand vector,
 #endif
 }
 
+/**
+ * Prints state of hands which are shuffled in exhaust mode
+ */
 static inline void exh_print_vector (struct handstat *hs,
     unsigned exh_player[2],
     unsigned exh_vectordeal,
@@ -664,13 +859,29 @@ static inline void exh_print_vector (struct handstat *hs,
   exh_print_stats (hs + exh_player[1], hs_length);
 }
 
+/**
+ * Return score for a given number of tricks which can be an array of tricks
+ *
+ * @param vuln Vulnerability used for scoring
+ * @param suit The denomination of contract
+ * @param level The level of contract
+ * @param dbl Is contract doubled
+ * @param tricks Tricks taken in the contract
+ * @return Score for the result
+ */
 static struct value score (int vuln, int suit, int level, int dbl, struct value& tricks) {
   return tricks.transform([&](int value) {
         return scoreone(vuln, suit, level, dbl, value);
       });
 }
 
-
+/**
+ * Evaluate a script
+ *
+ * @param b The script in AST format
+ * @param shuffle The shuffling state
+ * @return The results of tree evaluation
+ */
 static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuffle) {
   struct tree *t = (struct tree*)b;
   debugf("%s %d\n", __func__, b->tr_type);
@@ -860,11 +1071,17 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
   }
 }
 
+/**
+ * Check if the had passes the script condition
+ */
 static inline bool interesting (std::unique_ptr<shuffle> &shuffle) {
   debugf("hand: %d\n", gptr->ngen);
   return static_cast<bool>(evaltree(gp->decisiontree, shuffle));
 }
 
+/**
+ * Initialize action states
+ */
 static void setup_action () {
   struct action *acp;
 
@@ -938,6 +1155,9 @@ static void frequency2dout(struct action *acp, int expr,  int expr2) {
         acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * val1 + val2]++;
 }
 
+/**
+ * Convert 1D frequency to 2D lead frequency
+ */
 static void frequency_to_lead(struct action *acp, struct value& val) {
         int low1 = acp->ac_u.acu_f.acuf_lowbnd;
         int high1 = acp->ac_u.acu_f.acuf_highbnd;
@@ -962,6 +1182,9 @@ static void frequency_to_lead(struct action *acp, struct value& val) {
         acp->ac_expr2 = (treebase*)h;
 }
 
+/**
+ * Execute script actions
+ */
 static void action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
   int expr, expr2;
@@ -1052,10 +1275,13 @@ frequencylead:
         expr2 = static_cast<int>(evaltree (acp->ac_expr2, shuffle));
         frequency2dout(acp, expr, expr2);
         break;
-      }
     }
-    }
+  }
+}
 
+/**
+ * Complete actions after all hands has been produced
+ */
 static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
   struct action *acp;
   int player, i;
@@ -1185,7 +1411,12 @@ static void cleanup_action (std::unique_ptr<shuffle> &shuffle) {
   }
 }
 
+/**
+ * Main loop for the dealer
+ */
 static int deal_main(struct globals *g) {
+  // Quick test for bitops to make sure they are implement correctly for the
+  // current cpu.
   assert(0 == popcount(char{0x00}));
   assert(1 == popcount(char{0x20}));
   assert(2 == popcount(char{0x30}));
@@ -1235,6 +1466,9 @@ static int deal_main(struct globals *g) {
   return 0;
 }
 
+/**
+ * Register the optimization alternative for the main loop
+ */
 auto dm_register = make_entry_register(::deal_main, deal_main);
 
 } // namespace DEFUN()
