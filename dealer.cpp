@@ -445,10 +445,16 @@ static void evalcontract () {
   }
 }
 
-static int checkshape (int nr, struct shape *s)
+/**
+ * Check if shape function has the nr shape index bit set
+ * @param nr The index of hand shape to check
+ * @param s The shape function to check
+ * @return 1 if the shape bit is set
+ */
+static int checkshape (unsigned nr, struct shape *s)
 {
-  int idx = nr / 32;
-  int bit = nr % 32;
+  unsigned idx = nr / 32;
+  unsigned bit = nr % 32;
   int r = (s->bits[idx] & (1 << bit)) != 0;
   return r;
 }
