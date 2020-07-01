@@ -3,6 +3,9 @@
 
 #include <malloc.h>
 
+/**
+ * Preset pointcount tables which script can modify
+ */
 int tblPointcount [idxEnd][13] =
 {
 	/* 2  3  4  5  6  7  8  9  T  J  Q  K  A */

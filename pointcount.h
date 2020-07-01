@@ -38,11 +38,17 @@ extern struct pccheck check[idxEnd*14];
 
 void initpc(void);
 
+/**
+ * Get point count mask and multiplier for point count index and localtion
+ */
 static inline struct pccheck *checkidx(int pc, int loc)
 {
 	return &check[pc*14 + loc];
 }
 
+/**
+ * Calculate idx pointe count for h hand.
+ */
 static inline int getpc(int idx, const hand h)
 {
 	struct pccheck *iter = checkidx(idx, 0);

@@ -7,10 +7,16 @@
 #include <stdint.h>
 #include "card.h"
 
+/**
+ * Base type for all AST nodes
+ */
 struct treebase {
         int tr_type;
 };
 
+/**
+ * Generic AST node
+ */
 struct tree {
         struct treebase base;
         struct treebase *tr_leaf1, *tr_leaf2;
@@ -25,12 +31,18 @@ struct shape {
         uint32_t bits[18];
 };
 
+/**
+ * Special AST node for shape function
+ */
 struct treeshape {
         struct treebase base;
         int compass;
         struct shape    shape;
 };
 
+/**
+ * Special AST node for hascard function
+ */
 struct treehascard {
         struct treebase base;
         int compass;
@@ -139,7 +151,9 @@ struct acuft2d{
 
 
 
-
+/**
+ * Generic action
+ */
 struct action {
         struct action   *ac_next;
         int             ac_type;

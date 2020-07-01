@@ -24,6 +24,10 @@
 #include <random>
 #include <thread>
 
+
+/**
+ * Print the help message for the tool
+ */
 static void usage(const char *name, int exitcode, const char *msg, ...)
 {
   va_list ap;
@@ -46,6 +50,9 @@ static void usage(const char *name, int exitcode, const char *msg, ...)
   exit(exitcode);
 }
 
+/**
+ * State for each subprocess launched using popen
+ */
 struct process {
   FILE *f;
   int fd;

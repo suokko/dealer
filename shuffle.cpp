@@ -52,6 +52,11 @@ struct promote;
 
 template<> struct promote<uint32_t> { using type = uint64_t; };
 
+/**
+ * Implement uniform int distribution for ranges between one and 52. It uses
+ * compile time generate lookup table to filter values which result to uneven
+ * distribution
+ */
 template<typename IntType>
 struct fast_uniform_int_distribution {
 
@@ -100,6 +105,9 @@ private:
     param_type params_;
 };
 
+/**
+ * Use deals from library.dat instead of random hands.
+ */
 struct load_library : public shuffle {
 
     load_library(globals* gp);
@@ -110,6 +118,9 @@ private:
     std::ifstream lib_;
 };
 
+/**
+ * Generate all possible deals if two hands are completely know
+ */
 struct exhaust_mode : public shuffle {
     exhaust_mode(globals *gp);
 
@@ -149,6 +160,10 @@ private:
     static unsigned bitpermutate(unsigned vector);
 };
 
+/**
+ * Find two hands which don't have all cards defined.
+ * @return lookup table to player positions with unknown cards
+ */
 std::array<unsigned, 2> exhaust_mode::map_players(const globals *gp)
 {
     std::array<unsigned, 2> exh_player;
@@ -271,9 +286,12 @@ int exhaust_mode::do_shuffle(board *b, globals *gp)
 
     hand bitstoflip = 0;
 
+    // Generate next bitpermutation
     unsigned exh_vectordeal = bitpermutate(bitvector_);
+    // Find out bit positions which changed
     unsigned changed = exh_vectordeal ^ bitvector_;
 
+    // Convert changed bit positions to card bit mask
 #if __BMI2__
     bitstoflip = _pdep_u64(changed, exh_card_at_bit_[0]);
 #else
@@ -286,12 +304,17 @@ int exhaust_mode::do_shuffle(board *b, globals *gp)
 
     bitvector_ = exh_vectordeal;
 
+    // Apply changes to hands with unknown cards
     b->hands[players_[0]] ^= bitstoflip;
     b->hands[players_[1]] ^= bitstoflip;
 
     return 0;
 }
 
+/**
+ * Swap east-west-south cards to generate different hands from same cards. Used
+ * for command line arguments -2 and -3.
+ */
 template<typename parent>
 struct shuffle_swap : public parent {
     shuffle_swap(globals* gp);
@@ -301,6 +324,9 @@ private:
     int swapbound_;
 };
 
+/**
+ * Check production and generation limits.
+ */
 template<typename parent>
 struct limit final : public parent {
     limit(globals* gp) : parent(gp)
@@ -323,6 +349,10 @@ struct limit final : public parent {
     }
 };
 
+/**
+ * Generate random hands with no constraints like fixed cards or defined
+ * shapes.
+ */
 struct random_hand : public shuffle {
     random_hand(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
@@ -380,6 +410,9 @@ void random_hand::build_hands(board* d, unsigned cards_per_player)
     *d = temp;
 }
 
+/**
+ * Deal random hands with fixed cards
+ */
 struct predeal_cards : public random_hand {
     predeal_cards(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
@@ -443,6 +476,9 @@ int predeal_cards::do_shuffle(board* d, globals* gp)
     return 0;
 }
 
+/**
+ * Deal random hands with potentially fixed cards and shape restrictions
+ */
 struct predeal_bias : public predeal_cards {
     predeal_bias(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
