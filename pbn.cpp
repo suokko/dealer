@@ -27,8 +27,15 @@ int printpbn (int board, const union board *d) {
   char timearray[12];
   int player, suit, rank;
 
-  printf ("[Event \"Hand simulated by dealer with file %s, seed %lu\"]\n",
-  input_file, gptr->seed);
+  printf ("[Event \"Hand simulated by dealer with file %s",
+          input_file);
+  if (gptr->seed_provided) {
+    printf (", seed %u", gptr->seed[0]);
+    for (unsigned i = 1; i < gptr->seed_provided; i++) {
+      printf (",%u", gptr->seed[i]);
+    }
+  }
+  printf ("\"]\n");
 
   printf ("[Site \"-\"]\n");
 

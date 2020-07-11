@@ -7,6 +7,7 @@
 #include "entry.h"
 
 #include <stdio.h>
+#include <array>
 
 /**
  * Convert compass direction a human readable string
@@ -28,13 +29,20 @@ struct handstat {
     int hs_control[(NSUITS + 1)*2]; /* Controls in a suit or total */
 } ;
 
+static constexpr std::array<size_t, 2> seed_size{
+  4,
+  0
+};
+static constexpr size_t max_seed_size = std::max(seed_size[0], seed_size[1]);
+
 /**
  * Command line argument and script requested runtime state
  * @TODO should be constant after initialization
  */
 struct globals {
-    time_t seed;
+    std::array<uint32_t, max_seed_size> seed;
     const char *initialpack;
+    unsigned seed_provided;
     int maxgenerate;
     int maxproduce;
     int nprod;

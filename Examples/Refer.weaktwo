@@ -1,16 +1,16 @@
 Frequency points:
-    5	    1328
-    6	    1549
-    7	    2139
-    8	    1871
-    9	    2291
-   10	    2012
-   11	    2032
-hearts: 2.32491
-Ace of spades: 0.553018
-Jack of spades: 0.469218
-Heart fit: 0.131674
+    5	    1260
+    6	    1561
+    7	    2200
+    8	    1949
+    9	    2282
+   10	    1995
+   11	    2035
+hearts: 2.3324
+Ace of spades: 0.549917
+Jack of spades: 0.473122
+Heart fit: 0.139362
 Generated 1000000 hands
-Produced 13222 hands
+Produced 13282 hands
 Initial random seed 1
-Time needed    0.441 sec
+Time needed    0.275 sec

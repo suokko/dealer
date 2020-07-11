@@ -45,7 +45,7 @@ shuffle::~shuffle()
 {}
 
 struct random_device : public std::random_device {
-    random_device(unsigned long) :
+    random_device(std::seed_seq &&) :
         std::random_device{}
     {}
 
@@ -55,12 +55,13 @@ struct random_device : public std::random_device {
     using copy_type = random_device&;
 };
 
-struct pcg32 : public pcg32_fast {
-    pcg32(unsigned long seed) :
-        pcg32_fast{seed}
-    {}
+struct pcg : public pcg32 {
+    pcg(std::seed_seq &&seq) :
+        pcg32{seq}
+    {
+    }
 
-    using copy_type = pcg32;
+    using copy_type = pcg;
 };
 
 template<typename rng_t>
@@ -77,7 +78,7 @@ protected:
 template<typename rng_t>
 shuffle_rng<rng_t>::shuffle_rng(globals* gp) :
     shuffle(gp),
-    rng_{static_cast<unsigned long>(gp->seed)}
+    rng_{std::seed_seq(gp->seed.begin(), gp->seed.begin() + gp->seed_provided)}
 {}
 
 template<typename rng_t>
@@ -789,7 +790,7 @@ struct std::unique_ptr<shuffle> shuffle::factory(globals *gp)
     switch (gp->random_engine) {
     case 0:
     default:
-        return shuffle_rng<pcg32>::factory(gp);
+        return shuffle_rng<pcg>::factory(gp);
     case 1:
         return shuffle_rng<random_device>::factory(gp);
     }

@@ -559,7 +559,7 @@ static void initglobals(struct globals *g)
 }
 
 int main (int argc, char **argv) {
-  int seed_provided = 0;
+  unsigned seed_provided = 0;
   extern int optind;
   extern char *optarg;
   int c;
@@ -605,12 +605,18 @@ int main (int argc, char **argv) {
         gp->initialpack = strdup(optarg);
         break;
       case 's':
-        seed_provided = 1;
-        gp->seed = atol (optarg);
-        if (gp->seed == LONG_MIN || gp->seed == LONG_MAX) {
-            fprintf (stderr, "Seed overflow: seed must be between %ld and %ld\n",
-              LONG_MIN, LONG_MAX);
-            exit (-1);
+        {
+          char *begin = optarg;
+          char *end;
+          for (; seed_provided < max_seed_size; ++seed_provided) {
+            uint32_t seed = std::strtoul(begin, &end, 10);
+            if (begin == end)
+              break;
+            if (*end == ',')
+              end++;
+            begin = end;
+            gp->seed[seed_provided] = seed;
+          }
         }
         break;
       case 'r':
@@ -704,10 +710,11 @@ int main (int argc, char **argv) {
 
   /* The most suspect part of this program */
   if (!seed_provided) {
-    time_t seed;
-    (void) time (&seed);
-    gp->seed = seed;
+    std::random_device rd;
+    for (; seed_provided < seed_size[gp->random_engine]; ++seed_provided)
+      gp->seed[seed_provided] = rd();
   }
+  gp->seed_provided = std::min(seed_provided, (unsigned)seed_size[gp->random_engine]);
 
   if (gp->maxgenerate == 0)
     gp->maxgenerate = 10000000;
@@ -720,7 +727,12 @@ int main (int argc, char **argv) {
   if (gp->verbose) {
     printf ("Generated %d hands\n", gp->ngen);
     printf ("Produced %d hands\n", gp->nprod);
-    printf ("Initial random seed %zu\n", gp->seed);
+    if (gp->seed_provided) {
+      printf ("Initial random seed %u", gp->seed[0]);
+      for (unsigned i = 1; i < gp->seed_provided; i++)
+        printf(",%u", gp->seed[i]);
+      putchar('\n');
+    }
     printf ("Time needed %8.3f sec%s",
              (tvstop.tv_sec + tvstop.tv_usec / 1000000.0 -
              (tvstart.tv_sec + tvstart.tv_usec / 1000000.0)), crlf);

@@ -2,8 +2,8 @@ predeal south SAQ4, HJ, DKJ6543, C632
 
 lead = leadtricks(east, hearts)
 
-lowest = 6
-mid = 8
+lowest = 7
+mid = 9
 
 # Arithmetic
 lead_add_lho = lead + 1
@@ -70,7 +70,7 @@ lead_imps_4H = imps(lead_score_4H - lead_score_3H)
 
 produce 5
 
-condition lead <= 11
+condition lead <= 11 && lead >= lowest
 
 action
 	printoneline,

@@ -75,7 +75,7 @@ foreach $input (`ls $file`) {
     open my $info, $params;
     while( my $line = <$info>) {
       $line =~ s/\R//;
-      my($rule, $arg) = split(',', $line);
+      my($rule, $arg) = split(',', $line, 2);
       if (eval($rule)) {
         $arg =~ s/^ *//;
         print in_diff_io_write "$arg $input\n";

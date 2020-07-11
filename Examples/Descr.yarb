@@ -8,7 +8,7 @@ pointcount 1 1 1 1 1 0 0 0 0 0 0 0 0
 
 produce 10
 
-condition hcp(north)==0
+condition hcp(north)<6
 
 action
 	print (north),

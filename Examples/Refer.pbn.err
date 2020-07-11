@@ -7,3 +7,4 @@
 -s 1 -p 8 -v -C Descr.pbn
 -s 1 -p 8 -q -C Descr.pbn
 -s 1 -p 8 -q -v -C Descr.pbn
+-s 1,2,3,4 -p2 -C Descr.pbn
