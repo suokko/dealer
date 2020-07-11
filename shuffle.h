@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dealer.h"
+
 #include <pcg_random.hpp>
 #include <memory>
 
