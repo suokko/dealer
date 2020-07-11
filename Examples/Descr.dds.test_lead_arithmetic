@@ -2,7 +2,7 @@ predeal south SAQ4, HJ, DKJ6543, C632
 
 lead = leadtricks(east, hearts)
 
-lowest = 7
+lowest = 8
 mid = 9
 
 # Arithmetic

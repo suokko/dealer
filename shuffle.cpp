@@ -346,8 +346,12 @@ struct random_hand : public shuffle_rng<rng_t> {
     random_hand(globals *gp);
     int do_shuffle(board *d, globals *gp) override;
 protected:
-    void shuffle_pack(unsigned cards);
-    void build_hands(board* d, unsigned cards_per_player);
+    using rng_copy_t = typename rng_t::copy_type;
+    rng_copy_t shuffle_pack(rng_copy_t rng,
+                            hand &hand,
+                            unsigned &cardsleft,
+                            unsigned cards_to_deal,
+                            bool last);
 
     pack pack_;
 };
@@ -362,45 +366,48 @@ random_hand<rng_t>::random_hand(globals* gp) :
 template<typename rng_t>
 int random_hand<rng_t>::do_shuffle(board *d, globals *)
 {
-    shuffle_pack(52);
-    build_hands(d, 13);
+    unsigned cardsleft = 52;
+    unsigned cards_per_player = 13;
+    board deal{{0}};
+
+    hand temp{0};
+
+    this->rng_ = shuffle_pack(this->rng_, temp, cardsleft, cardsleft, true);
+
+    for (unsigned c = 0; c < cards_per_player; c++) {
+        card *in = &pack_.c[c*4];
+        deal.hands[0] = hand_add_card(deal.hands[0], in[0]);
+        deal.hands[1] = hand_add_card(deal.hands[1], in[1]);
+        deal.hands[2] = hand_add_card(deal.hands[2], in[2]);
+        deal.hands[3] = hand_add_card(deal.hands[3], in[3]);
+    }
+
+    *d = deal;
     return 0;
 }
 
 template<typename rng_t>
-void random_hand<rng_t>::shuffle_pack(unsigned cards)
+auto random_hand<rng_t>::shuffle_pack(typename rng_t::copy_type rng,
+                                      hand &hand,
+                                      unsigned &cardsleft,
+                                      unsigned cards_to_deal,
+                                      bool last) -> rng_copy_t
 {
-    // Make sure we can keep random number generator state in registers
-    typename rng_t::copy_type rng = this->rng_;
-    for (unsigned i = cards - 1; i > 0; --i) {
-        fast_uniform_int_distribution<unsigned> dist(0, i);
+    unsigned min = cardsleft - cards_to_deal;
+    if (last)
+        min++;
+
+    do {
+        fast_uniform_int_distribution<unsigned> dist(0, --cardsleft);
         const auto pos = dist(rng);
-        std::swap(pack_.c[pos], pack_.c[i]);
-    }
-    // Store random number generator state to memory
-    this->rng_ = rng;
-}
+        hand |= pack_.c[pos];
+        std::swap(pack_.c[pos], pack_.c[cardsleft]);
+    } while (cardsleft > min);
 
-template<typename rng_t>
-void random_hand<rng_t>::build_hands(board* d, unsigned cards_per_player)
-{
-    if (!cards_per_player) {
-        *d = board{0,0,0,0};
-        return;
-    }
+    if (last)
+        hand |= pack_.c[0];
 
-    // Make hands from pack using order which is easy to vectorize
-
-    board temp{0,0,0,0};
-    for (unsigned c = 0; c < cards_per_player; c++) {
-        card *in = &pack_.c[c*4];
-        temp.hands[0] = hand_add_card(temp.hands[0], in[0]);
-        temp.hands[1] = hand_add_card(temp.hands[1], in[1]);
-        temp.hands[2] = hand_add_card(temp.hands[2], in[2]);
-        temp.hands[3] = hand_add_card(temp.hands[3], in[3]);
-    }
-
-    *d = temp;
+    return rng;
 }
 
 /**
@@ -410,11 +417,23 @@ template<typename rng_t>
 struct predeal_cards : public random_hand<rng_t> {
     predeal_cards(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
+private:
+    using cardsleft_t = std::array<unsigned, 4>;
+    cardsleft_t cardsleft_;
+    unsigned totalleft_;
+    unsigned last_;
 };
 
 template<typename rng_t>
 predeal_cards<rng_t>::predeal_cards(globals* gp) :
-    random_hand<rng_t>(gp)
+    random_hand<rng_t>(gp),
+    cardsleft_{
+        13u - hand_count_cards(gp->predealt.hands[0]),
+        13u - hand_count_cards(gp->predealt.hands[1]),
+        13u - hand_count_cards(gp->predealt.hands[2]),
+        13u - hand_count_cards(gp->predealt.hands[3])
+    },
+    totalleft_{cardsleft_[0] + cardsleft_[1] + cardsleft_[2] + cardsleft_[3]}
 {
     // Combine all predealt cards together
     hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
@@ -422,53 +441,36 @@ predeal_cards<rng_t>::predeal_cards(globals* gp) :
     // Move all predealt cards to the end
     std::partition(std::begin(this->pack_.c), std::end(this->pack_.c),
             [predealt] (const card& c) { return !hand_has_card(predealt, c); });
+
+    last_ = std::find_if(std::rbegin(cardsleft_), std::rend(cardsleft_),
+                         [](unsigned v) {return v > 0;}
+                        ) - std::rbegin(cardsleft_);
+    last_ = 3 - last_;
 }
 
 template<typename rng_t>
 int predeal_cards<rng_t>::do_shuffle(board* d, globals* gp)
 {
-    unsigned cards[] = {
-        13u - hand_count_cards(gp->predealt.hands[0]),
-        13u - hand_count_cards(gp->predealt.hands[1]),
-        13u - hand_count_cards(gp->predealt.hands[2]),
-        13u - hand_count_cards(gp->predealt.hands[3])
-    };
-    unsigned sum = std::accumulate(std::begin(cards), std::end(cards), 0u);
-
-    // Shuffle cards which aren't set to a specific hand
-    this->shuffle_pack(sum);
-
-    unsigned cpp = *std::min_element(std::begin(cards), std::end(cards));
-
-    board temp;
-    // Use optimized path until reaching point where one of hands is full
-    this->build_hands(&temp, cpp);
-
-    // Update card counts to match inserted cards
-    std::for_each(std::begin(cards), std::end(cards),
-            [cpp](unsigned& v) { v -= cpp; });
-
-    auto cond_add = [&cards, &temp, this](unsigned& pos, unsigned compass) {
-        if (cards[compass] > 0) {
-            temp.hands[compass] = hand_add_card(temp.hands[compass], this->pack_.c[pos++]);
-            cards[compass]--;
-        }
-    };
-
-    // Add cards to remaining open hands
-    for (unsigned pos = cpp * 4; pos < sum;) {
-        cond_add(pos, 0);
-        cond_add(pos, 1);
-        cond_add(pos, 2);
-        cond_add(pos, 3);
+    if (last_ > 3) {
+        *d = gp->predealt;
+        return 0;
     }
 
-    // combine predealt cards to hands
-    std::transform(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
-            std::begin(temp.hands), std::begin(temp.hands),
-            [](const hand& a, const hand& b) { return a | b; });
+    unsigned player = 0;
+    typename rng_t::copy_type rng = this->rng_;
+    board deal{gp->predealt};
+    unsigned sum = totalleft_;
+    // Shuffle cards which aren't set to a specific hand
+    for (; player < last_; player++)
+        if (cardsleft_[player])
+            rng = this->shuffle_pack(rng, deal.hands[player],
+                                     sum, cardsleft_[player], false);
+    rng = this->shuffle_pack(rng, deal.hands[player],
+                             sum, cardsleft_[player], true);
+
+    this->rng_ = rng;
     // Store board to memory
-    *d = temp;
+    *d = deal;
     return 0;
 }
 
@@ -652,16 +654,21 @@ retry:
                     range--;
                 });
     }
+
+    unsigned cardsleft;
+    unsigned sum = first_ - std::begin(this->pack_.c);
+    for (int player = 0; player < 3; ++player) {
+        cardsleft = 13 - hand_count_cards(pd.hands[player]);
+        rng = this->shuffle_pack(rng, pd.hands[player],
+                                 sum, cardsleft, false);
+    }
+    cardsleft = 13 - hand_count_cards(pd.hands[3]);
+    rng = this->shuffle_pack(rng, pd.hands[3],
+                             sum, cardsleft, true);
     this->rng_ = rng;
 
-    // Temporary replace predealt in globals to shuffle rest of cards
-    std::swap(gp->predealt, pd);
-
-    int rv = predeal_cards<rng_t>::do_shuffle(d, gp);
-
-    std::swap(gp->predealt, pd);
-
-    return rv;
+    *d = pd;
+    return 0;
 }
 
 static constexpr long libdeal_size = 26;

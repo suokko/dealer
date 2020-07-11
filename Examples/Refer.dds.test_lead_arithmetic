@@ -1,54 +1,54 @@
-n J3.KQ8642.2.QJ94 e 965.953.QT7.AKT8 s AQ4.J.KJ6543.632 w KT872.AT7.A98.75
-n 93.Q96.A92.QJT74 e K762.T73.QT7.985 s AQ4.J.KJ6543.632 w JT85.AK8542.8.AK
-n K976.A63.AT87.98 e JT52.QT87.Q2.KJT s AQ4.J.KJ6543.632 w 83.K9542.9.AQ754
-n T5.KQ8652.Q2.JT5 e J8732.T4.A87.KQ7 s AQ4.J.KJ6543.632 w K96.A973.T9.A984
-n 732.K86.AT82.KQ4 e 65.AT9532.Q7.AJT s AQ4.J.KJ6543.632 w KJT98.Q74.9.9875
+n 72.AQ532.T987.Q4 e T985.K6.AQ2.A985 s AQ4.J.KJ6543.632 w KJ63.T9874..KJT7
+n 932.AT6.T8.A8754 e KJT75.Q85.A7.KQT s AQ4.J.KJ6543.632 w 86.K97432.Q92.J9
+n K965.K2.Q72.J987 e JT832.T9864.9.QT s AQ4.J.KJ6543.632 w 7.AQ753.AT8.AK54
+n KJT6.72.T.KJ9874 e 875.AK986.AQ8.T5 s AQ4.J.KJ6543.632 w 932.QT543.972.AQ
+n K972.Q6.Q72.QJ75 e JT5.K94.T98.AKT8 s AQ4.J.KJ6543.632 w 863.AT87532.A.94
 Frequency lead:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   7      1      2      2      2      2      2      2      2      2     17
-   8      1      0      0      0      0      0      0      0      0      1
-   9      2      1      2      2      2      2      2      2      2     17
-  10      1      2      1      1      1      1      1      1      1     10
+   8      2      2      2      3      1      1      2      2      2     17
+   9      1      0      0      0      2      2      1      1      1      8
+  10      1      2      2      0      0      0      0      0      0      5
+  11      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   8      1      2      2      2      2      2      2      2      2     17
-   9      1      0      0      0      0      0      0      0      0      1
-  10      2      1      2      2      2      2      2      2      2     17
-  11      1      2      1      1      1      1      1      1      1     10
+   9      2      2      2      3      1      1      2      2      2     17
+  10      1      0      0      0      2      2      1      1      1      8
+  11      1      2      2      0      0      0      0      0      0      5
+  12      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   8      1      2      2      2      2      2      2      2      2     17
-   9      1      0      0      0      0      0      0      0      0      1
-  10      2      1      2      2      2      2      2      2      2     17
-  11      1      2      1      1      1      1      1      1      1     10
+   9      2      2      2      3      1      1      2      2      2     17
+  10      1      0      0      0      2      2      1      1      1      8
+  11      1      2      2      0      0      0      0      0      0      5
+  12      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_add_both:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  14      1      2      2      2      2      2      2      2      2     17
-  16      1      0      0      0      0      0      0      0      0      1
-  18      2      1      2      2      2      2      2      2      2     17
-  20      1      2      1      1      1      1      1      1      1     10
+  16      2      2      2      3      1      1      2      2      2     17
+  18      1      0      0      0      2      2      1      1      1      8
+  20      1      2      2      0      0      0      0      0      0      5
+  22      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   6      1      2      2      2      2      2      2      2      2     17
-   7      1      0      0      0      0      0      0      0      0      1
-   8      2      1      2      2      2      2      2      2      2     17
-   9      1      2      1      1      1      1      1      1      1     10
+   7      2      2      2      3      1      1      2      2      2     17
+   8      1      0      0      0      2      2      1      1      1      8
+   9      1      2      2      0      0      0      0      0      0      5
+  10      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   3      1      2      1      1      1      1      1      1      1     10
-   4      2      1      2      2      2      2      2      2      2     17
-   5      1      0      0      0      0      0      0      0      0      1
-   6      1      2      2      2      2      2      2      2      2     17
+   2      1      1      1      2      2      2      2      2      2     15
+   3      1      2      2      0      0      0      0      0      0      5
+   4      1      0      0      0      2      2      1      1      1      8
+   5      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_sub_both:
@@ -58,41 +58,40 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  14      1      2      2      2      2      2      2      2      2     17
-  16      1      0      0      0      0      0      0      0      0      1
-  18      2      1      2      2      2      2      2      2      2     17
-  20      1      2      1      1      1      1      1      1      1     10
+  16      2      2      2      3      1      1      2      2      2     17
+  18      1      0      0      0      2      2      1      1      1      8
+  20      1      2      2      0      0      0      0      0      0      5
+  22      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  14      1      2      2      2      2      2      2      2      2     17
-  16      1      0      0      0      0      0      0      0      0      1
-  18      2      1      2      2      2      2      2      2      2     17
-  20      1      2      1      1      1      1      1      1      1     10
+  16      2      2      2      3      1      1      2      2      2     17
+  18      1      0      0      0      2      2      1      1      1      8
+  20      1      2      2      0      0      0      0      0      0      5
+  22      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mul_both:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  49      1      2      2      2      2      2      2      2      2     17
-  64      1      0      0      0      0      0      0      0      0      1
-  81      2      1      2      2      2      2      2      2      2     17
- 100      1      2      1      1      1      1      1      1      1     10
+  64      2      2      2      3      1      1      2      2      2     17
+  81      1      0      0      0      2      2      1      1      1      8
+ 100      1      2      2      0      0      0      0      0      0      5
+ 121      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   3      1      2      2      2      2      2      2      2      2     17
-   4      3      1      2      2      2      2      2      2      2     18
-   5      1      2      1      1      1      1      1      1      1     10
+   4      3      2      2      3      3      3      3      3      3     25
+   5      2      3      3      2      2      2      2      2      2     20
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  10      1      2      1      1      1      1      1      1      1     10
-  11      2      1      2      2      2      2      2      2      2     17
-  12      1      0      0      0      0      0      0      0      0      1
-  14      1      2      2      2      2      2      2      2      2     17
+   9      1      1      1      2      2      2      2      2      2     15
+  10      1      2      2      0      0      0      0      0      0      5
+  11      1      0      0      0      2      2      1      1      1      8
+  12      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div_both:
@@ -107,31 +106,30 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div0_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
--100      1      0      0      0      0      0      0      0      0      1
- -50      1      2      2      2      2      2      2      2      2     17
- 100      1      2      1      1      1      1      1      1      1     10
-High      2      1      2      2      2      2      2      2      2     17
+-100      2      2      2      3      1      1      2      2      2     17
+  50      1      1      1      2      2      2      2      2      2     15
+ 100      1      2      2      0      0      0      0      0      0      5
+High      1      0      0      0      2      2      1      1      1      8
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_div0_both:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-Low       2      2      2      2      2      2      2      2      2     18
-   0      2      1      2      2      2      2      2      2      2     17
-High      1      2      1      1      1      1      1      1      1     10
+Low       2      2      2      3      1      1      2      2      2     17
+   0      1      0      0      0      2      2      1      1      1      8
+High      2      3      3      2      2      2      2      2      2     20
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      2      1      1      1      1      1      1      1     11
-   1      3      3      4      4      4      4      4      4      4     34
+   0      3      4      4      3      1      1      2      2      2     22
+   1      2      1      1      2      4      4      3      3      3     23
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      1      2      1      1      1      1      1      1      1     10
-   1      2      1      2      2      2      2      2      2      2     17
-   2      1      2      2      2      2      2      2      2      2     17
-   4      1      0      0      0      0      0      0      0      0      1
+   0      1      2      2      0      0      0      0      0      0      5
+   1      2      1      1      2      4      4      3      3      3     23
+   4      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_mod_both:
@@ -156,14 +154,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      3      4      3      3      3      3      3      3      3     28
-   1      2      1      2      2      2      2      2      2      2     17
+   0      4      5      5      5      3      3      4      4      4     37
+   1      1      0      0      0      2      2      1      1      1      8
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      3      4      3      3      3      3      3      3      3     28
-   1      2      1      2      2      2      2      2      2      2     17
+   0      4      5      5      5      3      3      4      4      4     37
+   1      1      0      0      0      2      2      1      1      1      8
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_eq_both:
@@ -173,14 +171,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      1      2      2      2      2      2      2      2     17
-   1      3      4      3      3      3      3      3      3      3     28
+   0      1      0      0      0      2      2      1      1      1      8
+   1      4      5      5      5      3      3      4      4      4     37
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      1      2      2      2      2      2      2      2     17
-   1      3      4      3      3      3      3      3      3      3     28
+   0      1      0      0      0      2      2      1      1      1      8
+   1      4      5      5      5      3      3      4      4      4     37
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_neq_both:
@@ -190,14 +188,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      3      3      3      3      3      3      3      3      3     27
-   1      2      2      2      2      2      2      2      2      2     18
+   0      3      3      3      2      4      4      3      3      3     28
+   1      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      2      2      2      2      2      2      2      2     18
-   1      3      3      3      3      3      3      3      3      3     27
+   0      2      2      2      3      1      1      2      2      2     17
+   1      3      3      3      2      4      4      3      3      3     28
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_lt_both:
@@ -207,14 +205,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      1      2      1      1      1      1      1      1      1     10
-   1      4      3      4      4      4      4      4      4      4     35
+   0      2      3      3      2      2      2      2      2      2     20
+   1      3      2      2      3      3      3      3      3      3     25
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      4      3      4      4      4      4      4      4      4     35
-   1      1      2      1      1      1      1      1      1      1     10
+   0      3      2      2      3      3      3      3      3      3     25
+   1      2      3      3      2      2      2      2      2      2     20
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_le_both:
@@ -224,14 +222,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      4      3      4      4      4      4      4      4      4     35
-   1      1      2      1      1      1      1      1      1      1     10
+   0      3      2      2      3      3      3      3      3      3     25
+   1      2      3      3      2      2      2      2      2      2     20
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      1      2      1      1      1      1      1      1      1     10
-   1      4      3      4      4      4      4      4      4      4     35
+   0      2      3      3      2      2      2      2      2      2     20
+   1      3      2      2      3      3      3      3      3      3     25
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_gt_both:
@@ -241,14 +239,14 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_lho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      2      2      2      2      2      2      2      2     18
-   1      3      3      3      3      3      3      3      3      3     27
+   0      2      2      2      3      1      1      2      2      2     17
+   1      3      3      3      2      4      4      3      3      3     28
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_rho:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      3      3      3      3      3      3      3      3      3     27
-   1      2      2      2      2      2      2      2      2      2     18
+   0      3      3      3      2      4      4      3      3      3     28
+   1      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_ge_both:
@@ -258,80 +256,82 @@ Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_not:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      4      3      3      3      3      3      3      3      3     28
-   1      1      2      2      2      2      2      2      2      2     17
+   0      3      3      3      2      4      4      3      3      3     28
+   1      2      2      2      3      1      1      2      2      2     17
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_if_true:
     1	       5
 Frequency lead_if_false:
-    0	       2
-    1	       3
+    0	       3
+    1	       2
 Frequency lead_and_true:
     1	       5
 Frequency lead_and_false:
-    0	       2
-    1	       3
+    0	       3
+    1	       2
 Frequency lead_and_rho_true:
     1	       5
 Frequency lead_and_rho_false:
-    0	       2
-    1	       3
+    0	       3
+    1	       2
 Frequency lead_or_true:
     1	       5
 Frequency lead_or_false:
-    0	       2
-    1	       3
+    0	       3
+    1	       2
 Frequency lead_or_rho_true:
     1	       5
 Frequency lead_or_tho_false:
-    0	       2
-    1	       3
+    0	       3
+    1	       2
 Frequency lead_rnd:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      1      1      0      1      0      1      0      0      1      5
-   1      1      0      1      1      1      0      1      1      1      7
-   2      1      0      1      0      0      1      2      0      1      6
-   3      2      0      2      1      0      0      0      1      1      7
-   4      0      0      0      0      2      0      1      0      0      3
-   5      0      0      1      2      0      0      1      2      1      7
-   6      0      2      0      0      0      2      0      0      0      4
-   7      0      1      0      0      1      0      0      0      0      2
+   0      1      1      0      1      2      0      1      0      1      7
+   1      1      0      0      1      1      0      0      1      0      4
+   2      0      0      1      1      0      1      0      1      0      4
+   3      0      1      0      0      0      0      1      0      0      2
+   4      2      0      0      0      0      0      1      0      3      6
+   5      0      1      1      0      1      1      0      2      0      6
+   6      1      0      1      2      0      0      1      0      0      5
+   7      0      1      1      0      0      1      1      0      1      5
    8      0      1      0      0      1      1      0      1      0      4
+   9      0      0      1      0      0      0      0      0      0      1
+  10      0      0      0      0      0      1      0      0      0      1
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_abs:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-   0      2      1      2      2      2      2      2      2      2     17
-   1      2      2      1      1      1      1      1      1      1     11
-   2      1      2      2      2      2      2      2      2      2     17
+   0      1      0      0      0      2      2      1      1      1      8
+   1      3      4      4      3      1      1      2      2      2     22
+   2      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_score_3H:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
--200      1      2      2      2      2      2      2      2      2     17
--100      1      0      0      0      0      0      0      0      0      1
- 140      2      1      2      2      2      2      2      2      2     17
- 170      1      2      1      1      1      1      1      1      1     10
+-100      2      2      2      3      1      1      2      2      2     17
+ 140      1      0      0      0      2      2      1      1      1      8
+ 170      1      2      2      0      0      0      0      0      0      5
+ 200      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_score_4H:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
--300      1      2      2      2      2      2      2      2      2     17
--200      1      0      0      0      0      0      0      0      0      1
--100      2      1      2      2      2      2      2      2      2     17
- 620      1      2      1      1      1      1      1      1      1     10
+-200      2      2      2      3      1      1      2      2      2     17
+-100      1      0      0      0      2      2      1      1      1      8
+ 620      1      2      2      0      0      0      0      0      0      5
+ 650      1      1      1      2      2      2      2      2      2     15
 Sum       5      5      5      5      5      5      5      5      5     45
 
 Frequency lead_imps_4H:
          SA     SQ     S4     HJ     DK     DJ     D6     C6     C3    Sum
-  -6      2      1      2      2      2      2      2      2      2     17
-  -3      2      2      2      2      2      2      2      2      2     18
-  10      1      2      1      1      1      1      1      1      1     10
+  -6      1      0      0      0      2      2      1      1      1      8
+  -3      2      2      2      3      1      1      2      2      2     17
+  10      2      3      3      2      2      2      2      2      2     20
 Sum       5      5      5      5      5      5      5      5      5     45
 
-lead_imps_4H: -1.24444
-Generated 6 hands
+lead_imps_4H: 2.24444
+Generated 9 hands
 Produced 5 hands
 Initial random seed 1
-Time needed    0.673 sec
+Time needed    0.789 sec

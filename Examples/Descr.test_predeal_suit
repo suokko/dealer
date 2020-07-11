@@ -1,5 +1,12 @@
 predeal spades(north) == 5
 
+north_cards = spades(north) + hearts(north) + diamonds(north) + clubs(north)
+east_cards = spades(east) + hearts(east) + diamonds(east) + clubs(east)
+south_cards = spades(south) + hearts(south) + diamonds(south) + clubs(south)
+west_cards = spades(west) + hearts(west) + diamonds(west) + clubs(west)
+
+condition 1
+
 generate 100000
 
 action
@@ -19,3 +26,8 @@ action
 	frequency "WH" (hearts(west),0,13),
 	frequency "WD" (diamonds(west),0,13),
 	frequency "WC" (clubs(west),0,13),
+	frequency "north cards" (north_cards, 0, 13),
+	frequency "east cards" (east_cards, 0, 13),
+	frequency "south cards" (south_cards, 0, 13),
+	frequency "west cards" (west_cards, 0, 13),
+	frequency "all cards" (north_cards + east_cards + south_cards + west_cards, 0,52),
