@@ -208,13 +208,14 @@ int wmain(void) {rv = 0; return main();}"
 endif (WIN32)
 
 if (CMAKE_VERSION VERSION_GREATER 3.9)
-    check_ipo_supported(RESULT LTO_SUPPORTED LANGUAGES CXX)
+    check_ipo_supported(RESULT LTO_CHECK_SUPPORTED LANGUAGES CXX)
 
-    if (LTO_SUPPORTED)
+    if (LTO_CHECK_SUPPORTED)
         message(STATUS "Link time optimization supported.")
-    else (LTO_SUPPORTED)
+        option(LTO_SUPPORTED "Support link time optimization" ON)
+    else (LTO_CHECK_SUPPORTED)
         message(STATUS "CMAKE doesn't support link time optimization for your compiler.")
-    endif (LTO_SUPPORTED)
+    endif (LTO_CHECK_SUPPORTED)
 endif ()
 
 
