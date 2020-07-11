@@ -338,6 +338,7 @@ set(MV_SRC
     dealer.h
     shuffle.cpp
     shuffle.h
+    uniform_int.h
     )
 
 dealer_add_executable(dealer ${SRC})

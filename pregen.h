@@ -30,13 +30,12 @@ struct prngtable {
 	T operator[](T range) const
 	{
 		assert(range <= max && "Range must be smaller than max");
-		assert(range != 0 && "Range must not be empty");
-		return limits_[range-1];
+		return limits_[range];
 	}
 
 protected:
 
-	using table_t = std::array<T, max>;
+	using table_t = std::array<T, max+1>;
 
 	/// Helper to construct the table
 	static consteval table_t make_table();

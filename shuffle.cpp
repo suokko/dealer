@@ -4,11 +4,13 @@
 #include "genlib.h"
 #include "pregen.h"
 #include "shuffle.h"
+#include "uniform_int.h"
 #include "tree.h"
 
 #include <algorithm>
 #include <fstream>
 #include <numeric>
+#include <pcg_random.hpp>
 
 #if __cplusplus >= 202002L
 #include <bit>
@@ -35,83 +37,43 @@
 
 namespace DEFUN() {
 
-shuffle::shuffle(globals* gp) :
-    rng_{static_cast<unsigned long>(gp->seed)}
+shuffle::shuffle(globals *)
 {}
+
 shuffle::~shuffle()
 {}
 
-unsigned shuffle::random32(unsigned max)
+template<typename rng_t>
+struct shuffle_rng : public shuffle {
+    shuffle_rng(globals *gp);
+    uint32_t random32(const fast_uniform_int_distribution<uint32_t, false> &dist) override;
+
+    static std::unique_ptr<shuffle> factory(globals* gp);
+
+protected:
+    rng_t rng_;
+};
+
+template<typename rng_t>
+shuffle_rng<rng_t>::shuffle_rng(globals* gp) :
+    shuffle(gp),
+    rng_{static_cast<unsigned long>(gp->seed)}
+{}
+
+template<typename rng_t>
+uint32_t shuffle_rng<rng_t>::random32(const fast_uniform_int_distribution<uint32_t, false> &dist)
 {
-    std::uniform_int_distribution<unsigned> dist(0, max);
     return dist(rng_);
 }
-
-template<typename T>
-struct promote;
-
-template<> struct promote<uint32_t> { using type = uint64_t; };
-
-/**
- * Implement uniform int distribution for ranges between one and 52. It uses
- * compile time generate lookup table to filter values which result to uneven
- * distribution
- */
-template<typename IntType>
-struct fast_uniform_int_distribution {
-
-    using result_type = IntType;
-
-    struct param_type {
-        param_type(IntType a, IntType b) :
-            min_{a},
-            max_{b}
-        {}
-
-        IntType min_;
-        IntType max_;
-    };
-
-    fast_uniform_int_distribution(IntType a,
-            IntType b = std::numeric_limits<IntType>::max()) :
-        params_{a, b}
-    {}
-
-    template<typename Generator>
-    result_type operator()(Generator &g)
-    {
-        typename Generator::result_type n;
-        const result_type range = params_.max_ - params_.min_ + 1;
-        result_type low;
-        do {
-            n = mulhilo(g(), range, low);
-            // Make sure we have uniform distribution
-        } while(low < prnglookup[range]);
-
-        // Multiply value by range to get uniform values from 0 to range-1
-        return n + params_.min_;
-    }
-private:
-
-
-    result_type mulhilo(result_type a, result_type b, result_type& lo)
-    {
-        typename promote<result_type>::type res = a;
-        res *= b;
-        lo = res;
-        return res >> std::numeric_limits<result_type>::digits;
-    }
-
-    param_type params_;
-};
 
 /**
  * Use deals from library.dat instead of random hands.
  */
-struct load_library : public shuffle {
+template<typename rng_t>
+struct load_library : public shuffle_rng<rng_t> {
 
-    load_library(globals* gp);
-    int do_shuffle(board* d, globals* gp) override;
+    load_library(globals *gp);
+    int do_shuffle(board *d, globals *gp) override;
 
     struct library_not_found {};
 private:
@@ -121,7 +83,8 @@ private:
 /**
  * Generate all possible deals if two hands are completely know
  */
-struct exhaust_mode : public shuffle {
+template<typename rng_t>
+struct exhaust_mode : public shuffle_rng<rng_t> {
     exhaust_mode(globals *gp);
 
     int do_shuffle(board *d, globals *gp) override;
@@ -146,7 +109,7 @@ private:
      * For computing those vectors, we use a straightforward
      * meet in the middle approach.
      */
-   unsigned bitvector_;
+    unsigned bitvector_;
 #if __BMI2__
     /// Bit mask mapping card positions in hand representation (pdep required)
     hand exh_card_at_bit_[1];
@@ -164,7 +127,8 @@ private:
  * Find two hands which don't have all cards defined.
  * @return lookup table to player positions with unknown cards
  */
-std::array<unsigned, 2> exhaust_mode::map_players(const globals *gp)
+template<typename rng_t>
+std::array<unsigned, 2> exhaust_mode<rng_t>::map_players(const globals *gp)
 {
     std::array<unsigned, 2> exh_player;
     /* Just finds who are the 2 players for whom we make exhaustive dealing */
@@ -188,8 +152,9 @@ std::array<unsigned, 2> exhaust_mode::map_players(const globals *gp)
     return exh_player;
 }
 
-exhaust_mode::exhaust_mode(globals* gp) :
-    shuffle{gp},
+template<typename rng_t>
+exhaust_mode<rng_t>::exhaust_mode(globals* gp) :
+    shuffle_rng<rng_t>{gp},
     players_{map_players(gp)}
 {
     int i;
@@ -256,7 +221,8 @@ exhaust_mode::exhaust_mode(globals* gp) :
     gp->ngen = gp->nprod = 0;
 }
 
-unsigned exhaust_mode::bitpermutate(unsigned vector)
+template<typename rng_t>
+unsigned exhaust_mode<rng_t>::bitpermutate(unsigned vector)
 {
     /* set all lowest zeros to one */
     unsigned bottomones = vector | (vector - 1);
@@ -277,7 +243,8 @@ unsigned exhaust_mode::bitpermutate(unsigned vector)
     return nextvector | moveback;
 }
 
-int exhaust_mode::do_shuffle(board *b, globals *gp)
+template<typename rng_t>
+int exhaust_mode<rng_t>::do_shuffle(board *b, globals *gp)
 {
     if (gp->ngen >= gp->maxgenerate)
         return 1;
@@ -353,9 +320,10 @@ struct limit final : public parent {
  * Generate random hands with no constraints like fixed cards or defined
  * shapes.
  */
-struct random_hand : public shuffle {
-    random_hand(globals* gp);
-    int do_shuffle(board* d, globals* gp) override;
+template<typename rng_t>
+struct random_hand : public shuffle_rng<rng_t> {
+    random_hand(globals *gp);
+    int do_shuffle(board *d, globals *gp) override;
 protected:
     void shuffle_pack(unsigned cards);
     void build_hands(board* d, unsigned cards_per_player);
@@ -363,33 +331,37 @@ protected:
     pack pack_;
 };
 
-random_hand::random_hand(globals* gp) :
-    shuffle(gp)
+template<typename rng_t>
+random_hand<rng_t>::random_hand(globals* gp) :
+    shuffle_rng<rng_t>(gp)
 {
     newpack(&pack_, gp->initialpack);
 }
 
-int random_hand::do_shuffle(board* d, globals*)
+template<typename rng_t>
+int random_hand<rng_t>::do_shuffle(board *d, globals *)
 {
     shuffle_pack(52);
     build_hands(d, 13);
     return 0;
 }
 
-void random_hand::shuffle_pack(unsigned cards)
+template<typename rng_t>
+void random_hand<rng_t>::shuffle_pack(unsigned cards)
 {
     // Make sure we can keep random number generator state in registers
-    auto rng = rng_;
+    auto rng = this->rng_;
     for (unsigned i = cards - 1; i > 0; --i) {
         fast_uniform_int_distribution<unsigned> dist(0, i);
         const auto pos = dist(rng);
         std::swap(pack_.c[pos], pack_.c[i]);
     }
     // Store random number generator state to memory
-    rng_ = rng;
+    this->rng_ = rng;
 }
 
-void random_hand::build_hands(board* d, unsigned cards_per_player)
+template<typename rng_t>
+void random_hand<rng_t>::build_hands(board* d, unsigned cards_per_player)
 {
     if (!cards_per_player) {
         *d = board{0,0,0,0};
@@ -413,23 +385,26 @@ void random_hand::build_hands(board* d, unsigned cards_per_player)
 /**
  * Deal random hands with fixed cards
  */
-struct predeal_cards : public random_hand {
+template<typename rng_t>
+struct predeal_cards : public random_hand<rng_t> {
     predeal_cards(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
 };
 
-predeal_cards::predeal_cards(globals* gp) :
-    random_hand(gp)
+template<typename rng_t>
+predeal_cards<rng_t>::predeal_cards(globals* gp) :
+    random_hand<rng_t>(gp)
 {
     // Combine all predealt cards together
     hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
             hand{0}, std::bit_or<hand>());
     // Move all predealt cards to the end
-    std::partition(std::begin(pack_.c), std::end(pack_.c),
+    std::partition(std::begin(this->pack_.c), std::end(this->pack_.c),
             [predealt] (const card& c) { return !hand_has_card(predealt, c); });
 }
 
-int predeal_cards::do_shuffle(board* d, globals* gp)
+template<typename rng_t>
+int predeal_cards<rng_t>::do_shuffle(board* d, globals* gp)
 {
     unsigned cards[] = {
         13u - hand_count_cards(gp->predealt.hands[0]),
@@ -440,13 +415,13 @@ int predeal_cards::do_shuffle(board* d, globals* gp)
     unsigned sum = std::accumulate(std::begin(cards), std::end(cards), 0u);
 
     // Shuffle cards which aren't set to a specific hand
-    shuffle_pack(sum);
+    this->shuffle_pack(sum);
 
     unsigned cpp = *std::min_element(std::begin(cards), std::end(cards));
 
     board temp;
     // Use optimized path until reaching point where one of hands is full
-    build_hands(&temp, cpp);
+    this->build_hands(&temp, cpp);
 
     // Update card counts to match inserted cards
     std::for_each(std::begin(cards), std::end(cards),
@@ -454,7 +429,7 @@ int predeal_cards::do_shuffle(board* d, globals* gp)
 
     auto cond_add = [&cards, &temp, this](unsigned& pos, unsigned compass) {
         if (cards[compass] > 0) {
-            temp.hands[compass] = hand_add_card(temp.hands[compass], pack_.c[pos++]);
+            temp.hands[compass] = hand_add_card(temp.hands[compass], this->pack_.c[pos++]);
             cards[compass]--;
         }
     };
@@ -479,12 +454,13 @@ int predeal_cards::do_shuffle(board* d, globals* gp)
 /**
  * Deal random hands with potentially fixed cards and shape restrictions
  */
-struct predeal_bias : public predeal_cards {
+template<typename rng_t>
+struct predeal_bias : public predeal_cards<rng_t> {
     predeal_bias(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
 protected:
 
-    decltype(std::begin(pack_.c)) first_;
+    decltype(std::begin(predeal_bias::pack_.c)) first_;
 
     struct bt {
         int total[4];
@@ -542,8 +518,9 @@ static void setup_bias(globals* gp) {
     }
 }
 
-predeal_bias::predeal_bias(globals* gp) :
-    predeal_cards(gp),
+template<typename rng_t>
+predeal_bias<rng_t>::predeal_bias(globals* gp) :
+    predeal_cards<rng_t>(gp),
     first_()
 {
     hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
@@ -553,9 +530,9 @@ predeal_bias::predeal_bias(globals* gp) :
 
     bt bias = biastotal(gp);
 
-    auto end = std::end(pack_.c) - hand_count_cards(predealt);
+    auto end = std::end(this->pack_.c) - hand_count_cards(predealt);
     // Partition cards from biased suits to the middle
-    first_ = std::partition(std::begin(pack_.c), end,
+    first_ = std::partition(std::begin(this->pack_.c), end,
             [&bias](const card& c) {
                 return bias.total[C_SUIT(c)] == -1;
             });
@@ -567,7 +544,8 @@ predeal_bias::predeal_bias(globals* gp) :
             });
 }
 
-int predeal_bias::do_shuffle(board* d, globals* gp)
+template<typename rng_t>
+int predeal_bias<rng_t>::do_shuffle(board* d, globals* gp)
 {
     // This implementation isn't perfect. Unlikely cases may not generate any or
     // very few hands. Too bad better implementation would require shape based
@@ -576,12 +554,12 @@ int predeal_bias::do_shuffle(board* d, globals* gp)
     hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
             hand{0}, std::bit_or<hand>());
 
-    auto end = std::end(pack_.c) - hand_count_cards(predealt);
+    auto end = std::end(this->pack_.c) - hand_count_cards(predealt);
 
 retry:
     board pd{gp->predealt};
 
-    auto rng = rng_;
+    auto rng = this->rng_;
     // shuffle biased cards for each player and suit
     auto first = first_;
     for (;first != end;) {
@@ -653,12 +631,12 @@ retry:
                     range--;
                 });
     }
-    rng_ = rng;
+    this->rng_ = rng;
 
     // Temporary replace predealt in globals to shuffle rest of cards
     std::swap(gp->predealt, pd);
 
-    int rv = predeal_cards::do_shuffle(d, gp);
+    int rv = predeal_cards<rng_t>::do_shuffle(d, gp);
 
     std::swap(gp->predealt, pd);
 
@@ -667,8 +645,9 @@ retry:
 
 static constexpr long libdeal_size = 26;
 
-load_library::load_library(globals* gp) :
-    shuffle(gp)
+template<typename rng_t>
+load_library<rng_t>::load_library(globals* gp) :
+    shuffle_rng<rng_t>(gp)
 {
     // Find library.dat from predefined search paths
     static const std::string prefixes[] = { "", "./", "../", "../../", "c:/", "c:/data/",
@@ -694,7 +673,8 @@ uint16_t rotl(uint16_t v, int s)
 }
 #endif
 
-int load_library::do_shuffle(board* d, globals* gp)
+template<typename rng_t>
+int load_library<rng_t>::do_shuffle(board* d, globals* gp)
 {
     tagLibdeal libdeal;
 retry_read:
@@ -784,41 +764,47 @@ std::unique_ptr<T> make_unique(Args&&... args)
 }
 #endif
 
-struct std::unique_ptr<shuffle> shuffle::factory(globals* gp)
+struct std::unique_ptr<shuffle> shuffle::factory(globals *gp)
+{
+    return shuffle_rng<pcg32_fast>::factory(gp);
+}
+
+template<typename rng_t>
+struct std::unique_ptr<shuffle> shuffle_rng<rng_t>::factory(globals *gp)
 {
     try {
        // Are we using exhaust mode?
        if (gp->computing_mode == EXHAUST_MODE)
-          return make_unique<exhaust_mode>(gp);
+          return make_unique<exhaust_mode<rng_t>>(gp);
 
         // Are we loading from library.dat?
         if (gp->loading) {
             if (gp->swapping)
-                return make_unique<limit<shuffle_swap<load_library>>>(gp);
+                return make_unique<limit<shuffle_swap<load_library<rng_t>>>>(gp);
             else
-                return make_unique<limit<load_library>>(gp);
+                return make_unique<limit<load_library<rng_t>>>(gp);
         }
 
         // Is there suit length biases?
         if (!std::all_of(std::begin(gp->biasdeal[0]), std::end(gp->biasdeal[3]),
                     [](const char& v) { return v == -1; })) {
-            return make_unique<limit<predeal_bias>>(gp);
+            return make_unique<limit<predeal_bias<rng_t>>>(gp);
         }
 
         // Is there cards attached to a hand?
         if (std::any_of(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
                     [](const hand& h) { return h != 0; })) {
             if (gp->swapping)
-                return make_unique<limit<shuffle_swap<predeal_cards>>>(gp);
+                return make_unique<limit<shuffle_swap<predeal_cards<rng_t>>>>(gp);
             else
-                return make_unique<limit<predeal_cards>>(gp);
+                return make_unique<limit<predeal_cards<rng_t>>>(gp);
         }
 
         // Completely random hands
         if (gp->swapping)
-            return make_unique<limit<shuffle_swap<random_hand>>>(gp);
+            return make_unique<limit<shuffle_swap<random_hand<rng_t>>>>(gp);
         else
-            return make_unique<limit<random_hand>>(gp);
+            return make_unique<limit<random_hand<rng_t>>>(gp);
     } catch(...) {
         return {};
     }

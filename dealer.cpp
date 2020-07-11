@@ -18,6 +18,7 @@
 #include "pbn.h"
 #include "genlib.h"
 #include "shuffle.h"
+#include "uniform_int.h"
 
 #include "card.h"
 
@@ -1066,8 +1067,12 @@ static struct value evaltree (struct treebase *b, std::unique_ptr<shuffle> &shuf
     case TRT_ABS:
       return evaltree (t->tr_leaf1, shuffle).transform([](int value) {return abs(value);});
     case TRT_RND:
-      return evaltree(t->tr_leaf1, shuffle).transform([&shuffle](int value)
-            {return shuffle->random32(value - 1);});
+      return evaltree(t->tr_leaf1, shuffle).transform(
+          [&shuffle](int value)
+          {
+              fast_uniform_int_distribution<uint32_t, false> dist(0, value-1);
+              return shuffle->random32(dist);
+          });
   }
 }
 

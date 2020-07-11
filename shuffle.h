@@ -1,8 +1,8 @@
 #pragma once
 
 #include "dealer.h"
+#include "uniform_int.h"
 
-#include <pcg_random.hpp>
 #include <memory>
 
 namespace DEFUN() {
@@ -16,7 +16,7 @@ struct shuffle {
 
     /// Generate a 32bit random number
     // Used for rnd() function in scripts
-    unsigned random32(unsigned max);
+    virtual uint32_t random32(const fast_uniform_int_distribution<uint32_t, false> &dist) = 0;
 
     // Factory function to construct shuffle object based on state
     static std::unique_ptr<shuffle> factory(globals* gp);
@@ -25,8 +25,6 @@ protected:
     /// Construct shuffle from global state
     // @TODO: should be const if globals wouldn't be modified in runtime
     shuffle(globals* gp);
-
-    pcg32_fast rng_;
 };
 
 }

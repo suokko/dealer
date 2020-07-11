@@ -61,14 +61,14 @@ constinit const ncr_lookup<uint64_t, 52, 27> ncrtablelarge{};
 template<typename T, unsigned max, unsigned bits>
 consteval auto prngtable<T, max, bits>::make_table() -> table_t
 {
-	T rv[max] = {0};
+	T rv[std::tuple_size<table_t>()] = {0};
 
 	for (T cards = 1; cards <= max; ++cards) {
 
 		// calculate upper limit value to accept for uniform result
 		T limit = -cards % cards;
 
-		rv[cards - 1] = limit;
+		rv[cards] = limit;
 	}
 
 	return to_array(rv);
