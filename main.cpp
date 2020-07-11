@@ -575,7 +575,7 @@ int main (int argc, char **argv) {
 
   gettimeofday (&tvstart, nullptr);
 
-  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:C")) != -1) {
+  while ((c = getopt (argc, argv, "023ehvmqp:g:s:l:Vi:Cr:")) != -1) {
     switch (c) {
       case '0':
       case '2':
@@ -613,6 +613,18 @@ int main (int argc, char **argv) {
             exit (-1);
         }
         break;
+      case 'r':
+        if (!std::strcmp(optarg, "pcg"))
+          gp->random_engine = 0;
+        else if (!std::strcmp(optarg, "dev"))
+          gp->random_engine = 1;
+        else {
+          fprintf(stderr,
+                  "Unknown random number generator '%s'.\n"
+                  "Supported generators are pcg and dev.\n",
+                  optarg);
+          errflg |= 2;
+        }
       case 'v':
         gp->verbose ^= 1;
         break;
@@ -658,6 +670,10 @@ int main (int argc, char **argv) {
 "                               \"rng\" parameter requests unpredictable\n"
 "                               randomization. PACK must be string including\n"
 "                               52 cards with suit symbol before rank.\n"
+"  -s seed,...                Set seed for pseudo random number generator.\n"
+"  -R pcg|dev                 Select random number generator.\n"
+"                               pcg: Use pcg32 generator.\n"
+"                               dev: Use indeterministic generator.\n"
 "  -C                         Use C locale. Helpful if trying to parse output.\n"
 "  -V                         Prints version information.\n"
         , argv[0]);

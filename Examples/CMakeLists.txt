@@ -213,43 +213,51 @@ if (PERL_FOUND)
     set(CFGS ${COMPILER_CONFIGS})
     list(REVERSE CFGS)
     list(REMOVE_ITEM CFGS default)
+    set(RNGS pcg dev)
 
-    add_test(NAME test_distribution
-        COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set_tests_properties(test_distribution
-        PROPERTIES LABELS "regular_one;regular_all")
-
-    foreach (CFG ${CFGS})
-        add_test(NAME test_distribution_no${CFG}
+    foreach (RNG ${RNGS})
+        add_test(NAME test_distribution_${RNG}
             COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
+                -D RNG=-r${RNG}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        set_tests_properties(test_distribution_no${CFG}
-            PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
-        set_tests_properties(test_distribution_no${CFG}
-            PROPERTIES LABELS "regular_no${CFG};regular_all")
-    endforeach ()
-
-    if (COVERAGE_COMPILER_SUPPORTED)
-        add_test(NAME test_distribution_cov
-            COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
-                -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        set_tests_properties(test_distribution_cov PROPERTIES LABELS "coverage_one;coverage_all")
+        set_tests_properties(test_distribution_${RNG}
+            PROPERTIES LABELS "regular_one;regular_all")
 
         foreach (CFG ${CFGS})
-            add_test(NAME test_distribution_cov_no${CFG}
-                COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
+            add_test(NAME test_distribution_${RNG}_no${CFG}
+                COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer> -D DIFF_COMMAND=${DIFF_COMMAND}
+                    -D RNG=-r${RNG}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-            set_tests_properties(test_distribution_cov_no${CFG}
+            set_tests_properties(test_distribution_${RNG}_no${CFG}
                 PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
-            set_tests_properties(test_distribution_cov_no${CFG}
-                PROPERTIES LABELS "coverage_no${CFG};coverage_all")
+            set_tests_properties(test_distribution_${RNG}_no${CFG}
+                PROPERTIES LABELS "regular_no${CFG};regular_all")
         endforeach ()
-    endif ()
+
+        if (COVERAGE_COMPILER_SUPPORTED)
+            add_test(NAME test_distribution_${RNG}_cov
+                COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
+                    -D RNG=-r${RNG}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+            set_tests_properties(test_distribution_${RNG}_cov
+                PROPERTIES LABELS "coverage_one;coverage_all")
+
+            foreach (CFG ${CFGS})
+                add_test(NAME test_distribution_${RNG}_cov_no${CFG}
+                    COMMAND ${CMAKE_COMMAND} -D CMD=$<TARGET_FILE:dealer.cov> -D DIFF_COMMAND=${DIFF_COMMAND}
+                        -D RNG=-r${RNG}
+                        -P ${CMAKE_CURRENT_SOURCE_DIR}/test_distribution.cmake
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+                set_tests_properties(test_distribution_${RNG}_cov_no${CFG}
+                    PROPERTIES ENVIRONMENT CPUSUPPORTS=${COMPILER_ENV_${CFG}})
+                set_tests_properties(test_distribution_${RNG}_cov_no${CFG}
+                    PROPERTIES LABELS "coverage_no${CFG};coverage_all")
+            endforeach ()
+        endif ()
+    endforeach ()
 
     foreach (SRC ${EXAMPLES})
         add_test(NAME test_${SRC}

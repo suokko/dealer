@@ -5,7 +5,7 @@ dealer - bridge hand generator
 
 =head1 SYNOPSIS
 
-B<dealer> [-023ehuvmqVC] [-p I<n>] [-g I<n>] [-s I<seed>] [-i S<rng>] [-i I<n1>,-I<n2>,...,-I<n52>] [-l I<n>] [I<inputfile>]
+B<dealer> [-023ehuvmqVC] [-p I<n>] [-g I<n>] [-r S<name>] [-s I<seed>] [-i S<rng>] [-i I<n1>,-I<n2>,...,-I<n52>] [-l I<n>] [I<inputfile>]
 
 =head1 DESCRIPTION AND EXAMPLE
 
@@ -64,6 +64,12 @@ Maximum number of hands to produce (default is 40).
 
 Suppress PBN output (useful for testing, then switch it back on when generating the "final" sample).
 
+=item B<-r> S<name>
+
+Select the random number generator used for hand generation. Possible values
+are 'pcg' and 'dev'. 'pcg' uses pcg32 random number generator.  'dev' uses
+std::random_device generator which provides indeterministic random numbers.
+
 =item B<-s> I<number>
 
 Uses number as the seed for the random generator, running the program twice
@@ -71,7 +77,7 @@ with the same seed will produce the same sequence of hands.
 
 =item B<-i> S<rng>
 
-Initial pack order using system random number generator (/dev/random).
+Initial pack order using system random number generator (std::random_device).
 
 =item B<-i> S<c1>S<c2>...S<c52>
 

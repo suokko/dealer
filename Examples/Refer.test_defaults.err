@@ -24,6 +24,10 @@ Default is to read script from standard input.
                                "rng" parameter requests unpredictable
                                randomization. PACK must be string including
                                52 cards with suit symbol before rank.
+  -s seed,...                Set seed for pseudo random number generator.
+  -R pcg|dev                 Select random number generator.
+                               pcg: Use pcg32 generator.
+                               dev: Use indeterministic generator.
   -C                         Use C locale. Helpful if trying to parse output.
   -V                         Prints version information.
 -s 1 -g 2 -? -C Descr.test_defaults
@@ -47,6 +51,10 @@ Default is to read script from standard input.
                                "rng" parameter requests unpredictable
                                randomization. PACK must be string including
                                52 cards with suit symbol before rank.
+  -s seed,...                Set seed for pseudo random number generator.
+  -R pcg|dev                 Select random number generator.
+                               pcg: Use pcg32 generator.
+                               dev: Use indeterministic generator.
   -C                         Use C locale. Helpful if trying to parse output.
   -V                         Prints version information.
 -s 1 -C SecondParam.file Descr.test_defaults

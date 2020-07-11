@@ -11,6 +11,7 @@
 #include <fstream>
 #include <numeric>
 #include <pcg_random.hpp>
+#include <random>
 
 #if __cplusplus >= 202002L
 #include <bit>
@@ -42,6 +43,25 @@ shuffle::shuffle(globals *)
 
 shuffle::~shuffle()
 {}
+
+struct random_device : public std::random_device {
+    random_device(unsigned long) :
+        std::random_device{}
+    {}
+
+    random_device& operator=(const random_device&)
+    { return *this; }
+
+    using copy_type = random_device&;
+};
+
+struct pcg32 : public pcg32_fast {
+    pcg32(unsigned long seed) :
+        pcg32_fast{seed}
+    {}
+
+    using copy_type = pcg32;
+};
 
 template<typename rng_t>
 struct shuffle_rng : public shuffle {
@@ -350,7 +370,7 @@ template<typename rng_t>
 void random_hand<rng_t>::shuffle_pack(unsigned cards)
 {
     // Make sure we can keep random number generator state in registers
-    auto rng = this->rng_;
+    typename rng_t::copy_type rng = this->rng_;
     for (unsigned i = cards - 1; i > 0; --i) {
         fast_uniform_int_distribution<unsigned> dist(0, i);
         const auto pos = dist(rng);
@@ -559,7 +579,7 @@ int predeal_bias<rng_t>::do_shuffle(board* d, globals* gp)
 retry:
     board pd{gp->predealt};
 
-    auto rng = this->rng_;
+    typename rng_t::copy_type rng = this->rng_;
     // shuffle biased cards for each player and suit
     auto first = first_;
     for (;first != end;) {
@@ -766,7 +786,13 @@ std::unique_ptr<T> make_unique(Args&&... args)
 
 struct std::unique_ptr<shuffle> shuffle::factory(globals *gp)
 {
-    return shuffle_rng<pcg32_fast>::factory(gp);
+    switch (gp->random_engine) {
+    case 0:
+    default:
+        return shuffle_rng<pcg32>::factory(gp);
+    case 1:
+        return shuffle_rng<random_device>::factory(gp);
+    }
 }
 
 template<typename rng_t>

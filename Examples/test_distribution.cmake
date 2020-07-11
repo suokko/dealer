@@ -4,7 +4,11 @@
 # shape function parser would need to be expanded to handle all Pre_Processors
 # features.
 
-execute_process(COMMAND ${CMD} -s 1 Test.distribution
+if (RNG STREQUAL "-rdev")
+    list(APPEND RNG -g100000)
+endif ()
+
+execute_process(COMMAND ${CMD} -s 1 ${RNG} Test.distribution
     COMMAND ./convert.pl
     COMMAND ${DIFF_COMMAND} -u Refer.distribution -
     OUTPUT_VARIABLE OUT

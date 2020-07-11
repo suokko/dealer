@@ -18,6 +18,10 @@ to generate all 10 400 600 hands in less than 10 seconds on any modern computer.
  <li> <b>-p number :</b> Maximum number of hands to produce  (default 40).
  <li> <b>-q :</b> Suppress PBN output (useful for testing, then switch it back
       on when generating the "final" sample).
+ <li> <b>-r name :</b>Select the random number generator used for hand
+      generation. Possible values are 'pcg' and 'dev'. 'pcg' uses pcg32 random
+      number generator.  'dev' uses std::random_device generator which provides
+      indeterministic random numbers.
  <li> <b>-s number :</b> Uses number as the seed for the random generator,
       running the program twice with the same seed, will produce the
       same sequence of hands.

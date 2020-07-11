@@ -64,6 +64,7 @@ struct globals {
     unsigned loading        : 1;
     unsigned use_compass    : 4;
     unsigned computing_mode : 2;
+    unsigned random_engine  : 1;
 };
 
 /**
