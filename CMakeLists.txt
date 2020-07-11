@@ -232,6 +232,12 @@ if (NOT SUBMODULES)
     set(PCGREQUIRED REQUIRED)
 endif ()
 
+find_package(Boost REQUIRED)
+if (Boost_FOUND AND NOT TARGET Boost::boost)
+    add_library(Boost::boost IMPORTED INTERFACE)
+    target_include_directories(Boost::boost INTERFACE ${Boost_INCLUDE_DIRS})
+endif ()
+
 find_package(DDS ${DDSREQUIRED})
 find_package(PCGCXX ${PCGREQUIRED})
 
@@ -362,7 +368,7 @@ foreach (CFG ${COMPILER_CONFIGS})
     # Make sure pcg headers are found during compile
     dealer_target_link_libraries(dealer_${CFG} PCGCXX)
     # Make config part of binary (just appends objects to link command)
-    dealer_target_link_libraries(dealer dealer_${CFG})
+    dealer_target_link_libraries(dealer dealer_${CFG} Boost::boost)
     dealer_target_include_directories(dealer_${CFG} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpudetect)
     dealer_target_compile_options(dealer_${CFG} PRIVATE ${OPTIMIZE_${CFG}_CPP_FLAGS})
     if (LTO_SUPPORTED)

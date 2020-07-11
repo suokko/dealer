@@ -13,6 +13,15 @@
 #include <pcg_random.hpp>
 #include <random>
 
+#include <vector>
+
+#include <iostream>
+#include <iomanip>
+
+#include <boost/multiprecision/cpp_int.hpp>
+
+namespace mp = boost::multiprecision;
+
 #if __cplusplus >= 202002L
 #include <bit>
 #else
@@ -481,35 +490,362 @@ int predeal_cards<rng_t>::do_shuffle(board* d, globals* gp)
     return 0;
 }
 
+using uint96_t = mp::number<mp::cpp_int_backend<96, 96, mp::unsigned_magnitude, mp::unchecked, void>>;
+
+struct shape_probability {
+    shape_probability() :
+       combinations_{1},
+       shapes_{0}
+    {}
+
+    shape_probability& operator*=(unsigned combinations)
+    {
+        combinations_ *= combinations;
+        return *this;
+    }
+
+    shape_probability operator+(const shape_probability &o) const
+    {
+        shape_probability rv{o};
+        rv.combinations_ += combinations_;
+        return rv;
+    }
+
+    shape_probability& add_suit(unsigned player, unsigned suit, unsigned length)
+    {
+        assert(length <= 13 && "Suit length must be at most 13");
+        assert(player < 4 && "There is at most 4 hands in a deal");
+        assert(suit < 4 && "There is at most 4 suits in a hand");
+
+        unsigned shift = (player * 4 + suit) * 4;
+        shapes_ |= static_cast<uint64_t>(length) << shift;
+        return *this;
+    }
+
+    struct depth_shape {
+        depth_shape(uint64_t shape) : shape_{shape} {}
+        uint64_t operator[](unsigned suit) const
+        { return (shape_ >> (4*suit)) & 0xf; }
+
+        operator bool() const
+        { return shape_ & 0xffff; }
+    private:
+        uint64_t shape_;
+    };
+
+    depth_shape operator[](unsigned player)
+    { return {shapes_ >> (4*4*player)}; }
+
+    explicit operator uint96_t() const
+    { return combinations_; }
+
+    friend std::ostream& operator<<(std::ostream&, const shape_probability&);
+private:
+    uint96_t combinations_;
+    uint64_t shapes_;
+};
+
+bool operator<(const shape_probability &a, const uint96_t &b)
+{
+    return static_cast<uint96_t>(a) < b;
+}
+
+bool operator<(const uint96_t &a, const shape_probability &b)
+{
+    return a < static_cast<uint96_t>(b);
+}
+
+
+std::ostream& operator<<(std::ostream& os, const shape_probability& sp)
+{
+    auto flags = os.flags(os.basefield);
+    os << std::hex << std::setw(16) <<  sp.shapes_ << ":"
+        << std::setw(24) << sp.combinations_;
+    os.setf(flags, os.basefield);
+    return os;
+}
+
 /**
  * Deal random hands with potentially fixed cards and shape restrictions
  */
 template<typename rng_t>
 struct predeal_bias : public predeal_cards<rng_t> {
-    predeal_bias(globals* gp);
-    int do_shuffle(board* d, globals* gp) override;
+    predeal_bias(globals *gp);
+    int do_shuffle(board *d, globals *gp) override;
 protected:
+    using suit_map_t = std::array<std::array<unsigned, 13>, 4>;
+    using suit_end_t = std::array<unsigned, 4>;
+    using rng_copy_t = typename rng_t::copy_type;
 
-    decltype(std::begin(predeal_bias::pack_.c)) first_;
+    /**
+     * Build shape selection table
+     */
+    void build_shape_table(globals *gp);
 
-    struct bt {
-        int total[4];
-    };
+    inline
+    rng_copy_t shuffle_player(rng_copy_t rng,
+                              hand &cards,
+                              shape_probability::depth_shape shape,
+                              suit_map_t &suit_map,
+                              suit_end_t &suit_end,
+                              unsigned &destination);
 
-    bt biastotal(const globals* gp) const {
-
-        bt rv{{-1,-1,-1,-1}};
-
-        // Find out how may cards bias affects in each suit
-        for (const auto& pl: gp->biasdeal)
-            for (unsigned i = 0; i < 4; ++i)
-                if (pl[i] != -1)
-                    rv.total[i] = std::max(rv.total[i], 0) + pl[i];
-        return rv;
-    }
+    std::vector<shape_probability> probabilities_;
+    unsigned predeal_end_;
+    unsigned free_cards_;
+    unsigned bits_required_;
 };
 
-static void setup_bias(globals* gp) {
+struct shape_builder {
+    int depth_;
+    bool all_players_;
+    struct hand_type {
+        std::array<int, 4> lengths_;
+        std::array<int, 4> predeal_;
+        int compass_;
+        int slotsleft_;
+    };
+    std::array<hand_type, 4> players_;
+    std::array<int, 4> total_predeal_;
+
+    shape_builder(globals *gp) :
+        depth_{0},
+        players_{},
+        total_predeal_{}
+    {
+        hand predealt = std::accumulate(std::begin(gp->predealt.hands),
+                                        std::end(gp->predealt.hands),
+                                        hand{0}, std::bit_or<hand>());
+
+        std::generate(std::begin(total_predeal_), std::end(total_predeal_),
+                      [&predealt]() {
+                          unsigned rv = hand_count_cards(predealt & club_mask);
+                          predealt >>= SUIT_WIDTH;
+                          return rv;
+                      });
+
+        for (int player = 0; player < 4; player++) {
+            if (!std::all_of(std::begin(gp->biasdeal[player]),
+                             std::end(gp->biasdeal[player]),
+                             [](int v) {return v == -1;})) {
+
+                players_[depth_++] = hand_type{
+                    {
+                        gp->biasdeal[player][0],
+                        gp->biasdeal[player][1],
+                        gp->biasdeal[player][2],
+                        gp->biasdeal[player][3]
+                    },
+                    {
+                        hand_count_cards(gp->predealt.hands[player] & club_mask),
+                        hand_count_cards(gp->predealt.hands[player] & diamond_mask),
+                        hand_count_cards(gp->predealt.hands[player] & heart_mask),
+                        hand_count_cards(gp->predealt.hands[player] & spade_mask)
+                    },
+                    player,
+                    13 - std::accumulate(std::begin(gp->biasdeal[player]),
+                                         std::end(gp->biasdeal[player]),
+                                         0, [](int a, int b) {return b == -1 ? a : a + b;}),
+                };
+            }
+        }
+        all_players_ = depth_ == 4;
+    }
+
+    void operator()(globals *gp,
+                    std::vector<shape_probability> &list,
+                    shape_probability element = shape_probability{})
+    {
+        std::array<int, 4> cardsleft = {13, 13, 13, 13};
+        std::array<int, 4> reservedslots = {0, 0, 0, 0};
+        for (int player = 0; player < depth_; player++)
+            std::transform(std::begin(reservedslots),
+                           std::end(reservedslots),
+                           std::begin(players_[player].lengths_),
+                           std::begin(reservedslots),
+                           [](int a, int b) {return b == - 1? a : a + b;});
+        (*this)(gp, list, element, cardsleft, reservedslots);
+    }
+
+    void operator()(globals *gp,
+                    std::vector<shape_probability> &list,
+                    shape_probability element,
+                    std::array<int, 4> cardsleft,
+                    std::array<int, 4> reservedslots)
+    {
+        auto lengths = players_[depth_-1].lengths_;
+        if (depth_ == 1 && all_players_) {
+            auto iter = std::begin(lengths);
+            for (int left: cardsleft) {
+                if (0)
+                    std::cout << depth_ << ", "
+                        << players_[depth_-1].compass_ << ": "
+                        << *iter << " != "
+                        << left << "\n";
+                if (*iter != -1 && left != *iter)
+                    return;
+                iter++;
+            }
+        }
+        int slotsleft = players_[--depth_].slotsleft_;
+
+        auto iter = std::begin(lengths);
+        int totalleft = std::accumulate(std::begin(cardsleft),
+                                        std::end(cardsleft), 0,
+                                        [&iter](int a, int b) {return *iter++ == -1 ? a + b : a;});
+
+        iter = std::begin(lengths);
+        totalleft = std::accumulate(std::begin(reservedslots),
+                                    std::end(reservedslots), totalleft,
+                                    [&iter](int a, int b) {return *iter++ == -1 ? a - b : a;});
+
+        loop_lengths<0>(gp, list, element, cardsleft, reservedslots, totalleft,
+                        slotsleft);
+        depth_++;
+    }
+
+    template<int suit>
+    void loop_lengths(globals *gp, std::vector<shape_probability> &list,
+                      shape_probability element, std::array<int, 4> cardsleft,
+                      std::array<int, 4> reservedslots, int totalleft,
+                      int slotsleft) {
+        if (0)
+            std::cout << players_[depth_].compass_ << ", " << suit << ": "
+                << element << ", " << std::setw(2) << totalleft << ", "
+                << std::setw(2) << slotsleft << ": " << std::setw(2)
+                << cardsleft[3] << "=" << std::setw(2) << cardsleft[2] << "="
+                << std::setw(2) << cardsleft[1] << "=" << std::setw(2)
+                << cardsleft[0] << " - " << std::setw(2) << reservedslots[3]
+                << "=" << std::setw(2) << reservedslots[2] << "="
+                << std::setw(2) << reservedslots[1] << "=" << std::setw(2)
+                << reservedslots[0] << "\n";
+        if (players_[depth_].lengths_[suit] != -1) {
+            int length = !depth_ && all_players_ ? cardsleft[suit]
+                : players_[depth_].lengths_[suit];
+            reservedslots[suit] -= length;
+            return calculate<suit>(gp, list, element, cardsleft, reservedslots,
+                                   totalleft, slotsleft, length);
+        }
+
+        int suitcardsleft = cardsleft[suit] - reservedslots[suit];
+        totalleft -= suitcardsleft;
+
+        for (int length =
+             std::max(players_[depth_].predeal_[suit], slotsleft - totalleft);
+             length <= std::min(slotsleft, suitcardsleft); length++)
+            calculate<suit>(gp, list, element, cardsleft, reservedslots, totalleft,
+                            slotsleft - length, length);
+    }
+
+    template<int suit>
+    void calculate(globals *gp,
+                   std::vector<shape_probability> &list,
+                   shape_probability element,
+                   std::array<int, 4> cardsleft,
+                   std::array<int, 4> reservedslots,
+                   int totalleft,
+                   int slotsleft,
+                   int length)
+    {
+        if (0)
+            std::cout << players_[depth_].compass_ << ": "
+                << slotsleft << ": "
+                << cardsleft[suit] << " L "
+                << length << " P "
+                << players_[depth_].predeal_[suit] << "\n";
+
+        element.add_suit(players_[depth_].compass_, suit,
+                         length - players_[depth_].predeal_[suit]);
+        element *= ncrtable(cardsleft[suit] - total_predeal_[suit],
+                            length - players_[depth_].predeal_[suit]);
+        total_predeal_[suit] -= players_[depth_].predeal_[suit];
+        cardsleft[suit] -= length;
+
+        next_suit<suit>(gp, list, element,
+                        cardsleft, reservedslots,
+                        totalleft, slotsleft);
+        total_predeal_[suit] += players_[depth_].predeal_[suit];
+    }
+
+    template<int suit>
+    void next_suit(globals *gp,
+                   std::vector<shape_probability> &list,
+                   shape_probability element,
+                   std::array<int, 4> cardsleft,
+                   std::array<int, 4> reservedslots,
+                   int totalleft,
+                   int slotsleft)
+    {
+        loop_lengths<suit + 1>(gp, list, element, cardsleft, reservedslots,
+                               totalleft, slotsleft);
+    }
+
+};
+
+template<>
+void shape_builder::next_suit<3>(globals *gp,
+        std::vector<shape_probability> &list,
+        shape_probability element,
+        std::array<int, 4> cardsleft,
+        std::array<int, 4> reservedslots,
+        int,
+        int slotsleft)
+{
+    int player = players_[depth_].compass_;
+    if (0)
+        std::cout << players_[depth_].compass_ << ": "
+            << element << " - "
+            << element[player][3] << "-"
+            << element[player][2] << "-"
+            << element[player][1] << "-"
+            << element[player][0] << "\n";
+    assert(element[player][0] + players_[depth_].predeal_[0] +
+            element[player][1] + players_[depth_].predeal_[1] +
+            element[player][2] + players_[depth_].predeal_[2] +
+            element[player][3] + players_[depth_].predeal_[3] == 13);
+    if (depth_) {
+        (*this)(gp, list, element, cardsleft, reservedslots);
+    } else {
+        list.push_back(element);
+    }
+}
+
+template<typename rng_t>
+void predeal_bias<rng_t>::build_shape_table(globals *gp)
+{
+    shape_builder{gp}(gp, probabilities_);
+
+    if (probabilities_.empty())
+        error("No shapes are possible for the predeal shape limits.");
+
+    std::partial_sum(std::begin(probabilities_),
+                     std::end(probabilities_),
+                     std::begin(probabilities_));
+
+    bits_required_ = mp::msb(static_cast<uint96_t>(probabilities_.back())) + 1;
+
+    // Create a lookup table where players with bias are before rest of players.
+    unsigned pos = 0;
+    unsigned pos_end = 3;
+    for (unsigned player = 0; player < 4; ++player) {
+        if (hand_count_cards(gp->predealt.hands[player]) == 13)
+            continue;
+        if (probabilities_.back()[player])
+            this->player_map_[pos++] = player;
+        else
+            this->player_map_[pos_end--] = player;
+    }
+
+    this->predeal_end_ = pos;
+    this->player_end_ = 4;
+    if (pos < pos_end + 1) {
+        std::copy(std::begin(this->player_map_) + pos_end + 1, std::end(this->player_map_),
+                  std::begin(this->player_map_) + pos);
+        this->player_end_ -= (pos_end + 1) - pos;
+    }
+}
+
+static inline void validate_bias(globals* gp) {
     int p, s;
     char err[256];
     int biastotal = 0;
@@ -529,7 +865,6 @@ static void setup_bias(globals* gp) {
                 tot += gp->biasdeal[p][s];
                 totset++;
                 biastotal += gp->biasdeal[p][s] - predealcnt;
-                /* Remove predealt cards from bias length */
             } else {
                 len[s] += predealcnt;
                 tot += predealcnt;
@@ -550,131 +885,118 @@ static void setup_bias(globals* gp) {
 
 template<typename rng_t>
 predeal_bias<rng_t>::predeal_bias(globals* gp) :
-    predeal_cards<rng_t>(gp),
-    first_()
+    predeal_cards<rng_t>(gp)
 {
-    hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
-            hand{0}, std::bit_or<hand>());
-
-    setup_bias(gp);
-
-    bt bias = biastotal(gp);
-
-    auto end = std::end(this->pack_.c) - hand_count_cards(predealt);
-    // Partition cards from biased suits to the middle
-    first_ = std::partition(std::begin(this->pack_.c), end,
-            [&bias](const card& c) {
-                return bias.total[C_SUIT(c)] == -1;
-            });
-
-    // Sort middle based on suit
-    std::sort(first_, end,
-            [](const card& a, const card& b) {
-                return a < b;
-            });
+    validate_bias(gp);
+    build_shape_table(gp);
 }
 
 template<typename rng_t>
-int predeal_bias<rng_t>::do_shuffle(board* d, globals* gp)
+auto predeal_bias<rng_t>::shuffle_player(rng_copy_t rng,
+                                         hand &cards,
+                                         shape_probability::depth_shape shape,
+                                         suit_map_t &suit_map,
+                                         suit_end_t &suit_end,
+                                         unsigned &destination) -> rng_copy_t
 {
-    // This implementation isn't perfect. Unlikely cases may not generate any or
-    // very few hands. Too bad better implementation would require shape based
-    // predeal tables. Tables would allow more generic predeal requirements but
-    // they are also harder to implement.
-    hand predealt = std::accumulate(std::begin(gp->predealt.hands), std::end(gp->predealt.hands),
-            hand{0}, std::bit_or<hand>());
+    for (unsigned suit = 0; suit < 4; suit++) {
+        unsigned length = shape[suit];
 
-    auto end = std::end(this->pack_.c) - hand_count_cards(predealt);
+        for (; length > 0; --length, --suit_end[suit], --destination) {
+            fast_uniform_int_distribution<unsigned> dist{0, suit_end[suit] - 1};
+            unsigned suitsrc = dist(rng);
+            unsigned src = suit_map[suit][suitsrc];
+            unsigned dst = destination - 1;
 
-retry:
-    board pd{gp->predealt};
+            cards |= this->pack_.c[src];
+            card dstcard = this->pack_.c[dst];
+            std::swap(this->pack_.c[dst], this->pack_.c[src]);
 
+            unsigned dstsuit = C_SUIT(dstcard);
+
+            auto iter = std::find(std::rend(suit_map[dstsuit]) - suit_end[dstsuit],
+                                  std::rend(suit_map[dstsuit]),
+                                  dst);
+
+            assert(iter != std::rend(suit_map[dstsuit]) &&
+                   "Per suit map doesn't have expected index");
+
+            *iter = src;
+            suit_map[suit][suitsrc] = suit_map[suit][suit_end[suit]-1];
+        }
+    }
+    return rng;
+}
+
+template<typename rng_t>
+int predeal_bias<rng_t>::do_shuffle(board *d, globals *gp)
+{
+    using result_type = typename rng_t::result_type;
+    constexpr size_t rng_bits = std::numeric_limits<result_type>::digits;
+    // Select shape to use
     typename rng_t::copy_type rng = this->rng_;
-    // shuffle biased cards for each player and suit
-    auto first = first_;
-    for (;first != end;) {
-        unsigned s = C_SUIT(*first);
-        // Find the end of suit in middle section
-        auto send = std::find_if(first, end,
-                [s](const card& c) { return (c & suit_masks[s]) == 0; });
-        auto last = send - 1;
+    uint96_t shape_number;
+    do {
+        unsigned bits = 0;
+        shape_number = 0;
 
-        for (unsigned p = 0; p < 4; ++p) {
-            if (gp->biasdeal[p][s] == -1)
-                continue;
-            unsigned bc = gp->biasdeal[p][s];
-            for (; bc-- > 0; --last) {
-                fast_uniform_int_distribution<unsigned> dist(0, last - first);
-                unsigned r = dist(rng);
-                std::swap(*(first + r), *last);
-                // Assign selected cards to predeal hands
-                pd.hands[p] |= *last;
-            }
-        }
-        first = send;
-        assert(first == end || s != (unsigned)C_SUIT(*first));
-    }
-    // Shuffle remaining cards in suits which has bias limits
-    bt bias = biastotal(gp);
-    for (unsigned s = 0; s < 4; ++s) {
-        // Nothing to do if no cards or all cards in suit have been handled
-        if (bias.total[s] == -1 ||
-                bias.total[s] == 13 - hand_count_cards(predealt & suit_masks[s]))
-            continue;
-        // Count free slot in each hand without limits
-        unsigned free_slots[4] = {0};
-        unsigned range = 0;
-        for (unsigned p = 0; p < 4; ++p) {
-            if (gp->biasdeal[p][s] == -1)
-                range += free_slots[p] = 13 - hand_count_cards(pd.hands[p]);
-        }
+        for (; bits + rng_bits < bits_required_; bits += rng_bits)
+          shape_number |= uint96_t{rng()} << bits;
 
-        unsigned left = 13 - hand_count_cards(predealt & suit_masks[s]) - bias.total[s];
+        const size_t mask = (size_t{1} << (bits_required_ - bits)) - 1;
+        shape_number |= uint96_t{rng() & mask} << bits;
+    } while (!(shape_number < probabilities_.back()));
 
-        // If not enough slots left for remaining cards then retry. It might
-        // mean requirements are unlikely to match or impossible.
-        if (range < left) {
-            if (++gp->ngen < gp->maxgenerate)
-                goto retry;
-            return 1;
-        }
+    auto shape = std::upper_bound(std::begin(probabilities_),
+                                  std::end(probabilities_),
+                                  shape_number);
 
+    assert(shape != std::end(probabilities_) &&
+           "shape_number must be less than the maximum combinations number");
 
-        const card lim = card{1} << suit_shifts[s];
-        auto first = std::lower_bound(first_, end, lim);
-        auto send = first + left;
-        // Give remaining cards to rest of players
-        std::for_each(first, send,
-                [&pd, &range, &free_slots, &rng](const card& c) {
-                    fast_uniform_int_distribution<unsigned> dist(0, range-1);
-                    unsigned pos = dist(rng);
-                    unsigned p = 0;
-                    // Find player which matches the random card slot
-                    for (; p < 4; pos -= free_slots[p], ++p)
-                        if (pos < free_slots[p])
-                            break;
+    board deal{gp->predealt};
+    unsigned cards_end = this->totalleft_;
+    suit_map_t suit_map;
+    suit_end_t suit_end{0,0,0,0};
+    unsigned pos;
 
-
-                    // Give the card to selected player
-                    pd.hands[p] |= c;
-                    free_slots[p]--;
-                    range--;
-                });
+    // Build lookup table for card locations
+    for (pos = 0; pos < cards_end; pos++) {
+        unsigned suit = C_SUIT(this->pack_.c[pos]);
+        suit_map[suit][suit_end[suit]++] = pos;
     }
 
-    unsigned cardsleft;
-    unsigned sum = first_ - std::begin(this->pack_.c);
-    for (int player = 0; player < 3; ++player) {
-        cardsleft = 13 - hand_count_cards(pd.hands[player]);
-        rng = this->shuffle_pack(rng, pd.hands[player],
-                                 sum, cardsleft, false);
+    for (pos = 0; pos < predeal_end_; pos++) {
+        unsigned player = this->player_map_[pos];
+        auto player_shape = (*shape)[player];
+        rng = shuffle_player(rng,
+                             deal.hands[player],
+                             player_shape,
+                             suit_map,
+                             suit_end,
+                             cards_end);
     }
-    cardsleft = 13 - hand_count_cards(pd.hands[3]);
-    rng = this->shuffle_pack(rng, pd.hands[3],
-                             sum, cardsleft, true);
+
+    for (;pos < this->player_end_ - 1; pos++) {
+        unsigned player = this->player_map_[pos];
+        rng = this->shuffle_pack(rng,
+                                 deal.hands[player],
+                                 cards_end,
+                                 this->cardsleft_[player],
+                                 false);
+    }
+
+    if (pos < this->player_end_) {
+        unsigned player = this->player_map_[pos];
+        rng = this->shuffle_pack(rng,
+                                 deal.hands[player],
+                                 cards_end,
+                                 this->cardsleft_[player],
+                                 true);
+    }
+
     this->rng_ = rng;
-
-    *d = pd;
+    *d = deal;
     return 0;
 }
 

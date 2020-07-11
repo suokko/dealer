@@ -1,0 +1,134 @@
+Frequency NS:
+    5	  100000
+Frequency NH:
+    0	    2449
+    1	   14500
+    2	   31785
+    3	   31397
+    4	   15516
+    5	    3864
+    6	     473
+    7	      16
+Frequency ND:
+    0	    1413
+    1	   10094
+    2	   27046
+    3	   33170
+    4	   20584
+    5	    6569
+    6	    1060
+    7	      64
+Frequency NC:
+    0	    2468
+    1	   14439
+    2	   31409
+    3	   31383
+    4	   15743
+    5	    4031
+    6	     502
+    7	      25
+Frequency ES:
+    0	     754
+    1	    7304
+    2	   24025
+    3	   35435
+    4	   24249
+    5	    7466
+    6	     767
+Frequency EH:
+    0	     934
+    1	    6765
+    2	   20891
+    3	   31025
+    4	   25394
+    5	   11621
+    6	    2934
+    7	     394
+    8	      41
+    9	       1
+Frequency ED:
+    0	     447
+    1	    4377
+    2	   15598
+    3	   28327
+    4	   28356
+    5	   16352
+    6	    5438
+    7	     998
+    8	     100
+    9	       6
+   10	       1
+Frequency EC:
+    0	     892
+    1	    7020
+    2	   20720
+    3	   31376
+    4	   25026
+    5	   11741
+    6	    2804
+    7	     396
+    8	      23
+    9	       2
+Frequency SS:
+    2	  100000
+Frequency SH:
+    4	  100000
+Frequency SD:
+    3	  100000
+Frequency SC:
+    4	  100000
+Frequency WS:
+    0	     767
+    1	    7466
+    2	   24249
+    3	   35435
+    4	   24025
+    5	    7304
+    6	     754
+Frequency WH:
+    0	     901
+    1	    7069
+    2	   20730
+    3	   31120
+    4	   25268
+    5	   11522
+    6	    2931
+    7	     427
+    8	      31
+    9	       1
+Frequency WD:
+    0	     437
+    1	    4169
+    2	   15484
+    3	   28060
+    4	   28510
+    5	   16569
+    6	    5604
+    7	    1066
+    8	      98
+    9	       3
+Frequency WC:
+    0	     885
+    1	    6943
+    2	   20966
+    3	   31311
+    4	   25028
+    5	   11479
+    6	    2971
+    7	     394
+    8	      21
+    9	       2
+Frequency north cards:
+   13	  100000
+Frequency east cards:
+   13	  100000
+Frequency south cards:
+   13	  100000
+Frequency west cards:
+   13	  100000
+Frequency all cards:
+   52	  100000
+Generated 100000 hands
+Produced 100000 hands
+Initial random seed 1
+Time needed    0.116 sec

@@ -45,9 +45,10 @@ set(EXAMPLES
     Descr.test_packorder_random
     Descr.test_pointcount_aliases
     Descr.test_pointcount_too_many
+    Descr.test_predeal_all_suits
+    Descr.test_predeal_all_suits_and_hand
     Descr.test_predeal_all_cards
-    # bias deal impossible error checking is expected to fail for now
-    #    Descr.test_predeal_bias_impossible
+    Descr.test_predeal_bias_impossible
     Descr.test_predeal_bias_player_under
     Descr.test_predeal_bias_suit_under
     Descr.test_predeal_card_twice
@@ -56,6 +57,7 @@ set(EXAMPLES
     Descr.test_predeal_more_than_13_specific
     Descr.test_predeal_more_than_bias
     Descr.test_predeal_suit
+    Descr.test_predeal_suit_and_hand
     Descr.test_predeal_suit_already_set
     Descr.test_predeal_suit_too_long
     Descr.test_predeal_suit_too_long_suit

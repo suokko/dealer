@@ -1,0 +1,52 @@
+predeal spades(north) == 5
+predeal hearts(north) == 3
+predeal diamonds(north) == 3
+predeal clubs(north) == 2
+
+predeal spades(east) == 2
+predeal hearts(east) == 5
+predeal diamonds(east) == 3
+predeal clubs(east) == 3
+
+predeal spades(south) == 3
+predeal hearts(south) == 2
+predeal diamonds(south) == 5
+predeal clubs(south) == 3
+predeal south SKT3, HJT, DAT753, CQ96
+
+predeal spades(west) == 3
+predeal hearts(west) == 3
+predeal diamonds(west) == 2
+predeal clubs(west) == 5
+
+north_cards = spades(north) + hearts(north) + diamonds(north) + clubs(north)
+east_cards = spades(east) + hearts(east) + diamonds(east) + clubs(east)
+south_cards = spades(south) + hearts(south) + diamonds(south) + clubs(south)
+west_cards = spades(west) + hearts(west) + diamonds(west) + clubs(west)
+
+condition 1
+
+generate 100000
+
+action
+	frequency "NS" (spades(north),0,13),
+	frequency "NH" (hearts(north),0,13),
+	frequency "ND" (diamonds(north),0,13),
+	frequency "NC" (clubs(north),0,13),
+	frequency "ES" (spades(east),0,13),
+	frequency "EH" (hearts(east),0,13),
+	frequency "ED" (diamonds(east),0,13),
+	frequency "EC" (clubs(east),0,13),
+	frequency "SS" (spades(south),0,13),
+	frequency "SH" (hearts(south),0,13),
+	frequency "SD" (diamonds(south),0,13),
+	frequency "SC" (clubs(south),0,13),
+	frequency "WS" (spades(west),0,13),
+	frequency "WH" (hearts(west),0,13),
+	frequency "WD" (diamonds(west),0,13),
+	frequency "WC" (clubs(west),0,13),
+	frequency "north cards" (north_cards, 0, 13),
+	frequency "east cards" (east_cards, 0, 13),
+	frequency "south cards" (south_cards, 0, 13),
+	frequency "west cards" (west_cards, 0, 13),
+	frequency "all cards" (north_cards + east_cards + south_cards + west_cards, 0,52),

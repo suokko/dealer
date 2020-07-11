@@ -1,0 +1,46 @@
+Frequency NS:
+    5	  100000
+Frequency NH:
+    3	  100000
+Frequency ND:
+    3	  100000
+Frequency NC:
+    2	  100000
+Frequency ES:
+    2	  100000
+Frequency EH:
+    5	  100000
+Frequency ED:
+    3	  100000
+Frequency EC:
+    3	  100000
+Frequency SS:
+    3	  100000
+Frequency SH:
+    2	  100000
+Frequency SD:
+    5	  100000
+Frequency SC:
+    3	  100000
+Frequency WS:
+    3	  100000
+Frequency WH:
+    3	  100000
+Frequency WD:
+    2	  100000
+Frequency WC:
+    5	  100000
+Frequency north cards:
+   13	  100000
+Frequency east cards:
+   13	  100000
+Frequency south cards:
+   13	  100000
+Frequency west cards:
+   13	  100000
+Frequency all cards:
+   52	  100000
+Generated 100000 hands
+Produced 100000 hands
+Initial random seed 1
+Time needed    0.149 sec
