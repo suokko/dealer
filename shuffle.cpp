@@ -417,11 +417,14 @@ template<typename rng_t>
 struct predeal_cards : public random_hand<rng_t> {
     predeal_cards(globals* gp);
     int do_shuffle(board* d, globals* gp) override;
-private:
+protected:
     using cardsleft_t = std::array<unsigned, 4>;
+    using player_map_t = std::array<unsigned, 4>;
+
     cardsleft_t cardsleft_;
+    player_map_t player_map_;
     unsigned totalleft_;
-    unsigned last_;
+    unsigned player_end_;
 };
 
 template<typename rng_t>
@@ -442,29 +445,33 @@ predeal_cards<rng_t>::predeal_cards(globals* gp) :
     std::partition(std::begin(this->pack_.c), std::end(this->pack_.c),
             [predealt] (const card& c) { return !hand_has_card(predealt, c); });
 
-    last_ = std::find_if(std::rbegin(cardsleft_), std::rend(cardsleft_),
-                         [](unsigned v) {return v > 0;}
-                        ) - std::rbegin(cardsleft_);
-    last_ = 3 - last_;
+    player_end_ = 0;
+    for (unsigned player = 0; player < 4; player++)
+        if (cardsleft_[player] > 0)
+            player_map_[player_end_++] = player;
 }
 
 template<typename rng_t>
 int predeal_cards<rng_t>::do_shuffle(board* d, globals* gp)
 {
-    if (last_ > 3) {
+    if (!player_end_) {
         *d = gp->predealt;
         return 0;
     }
 
     unsigned player = 0;
+    unsigned pos = 0;
     typename rng_t::copy_type rng = this->rng_;
     board deal{gp->predealt};
     unsigned sum = totalleft_;
     // Shuffle cards which aren't set to a specific hand
-    for (; player < last_; player++)
-        if (cardsleft_[player])
-            rng = this->shuffle_pack(rng, deal.hands[player],
-                                     sum, cardsleft_[player], false);
+    for (; pos < player_end_ - 1; pos++) {
+        player = player_map_[pos];
+        rng = this->shuffle_pack(rng, deal.hands[player],
+                                 sum, cardsleft_[player], false);
+    }
+
+    player = player_map_[pos];
     rng = this->shuffle_pack(rng, deal.hands[player],
                              sum, cardsleft_[player], true);
 

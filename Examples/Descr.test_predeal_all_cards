@@ -1,0 +1,9 @@
+predeal north SAKQJ, HT98, D765, C432
+predeal east S432, HAKQJ, DT98, C765
+predeal south S765, H432, DAKQJ, CT98
+predeal west ST98, H765, D432, CAKQJ
+
+produce 3
+
+action
+    printoneline,
